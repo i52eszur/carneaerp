@@ -1,0 +1,154 @@
+' Gambas module file
+
+'' Función para acciones de Introduccion, Borrado y Actualizacion de los datos en la base de datos.<br>
+'' Parametros:<br>
+'' Sql --> donde introducimos la sentencia sql q ejecutar.
+
+Public Sub In_Act_Bor(Sql As String)
+  
+  FMain.Conexion_Base_Datos.Close
+  Try FMain.Conexion_Base_Datos.Open
+  FMain.Conexion_Base_Datos.Exec(Sql)
+  Catch
+    Message.Error( Error )
+    
+End
+
+'' Funcion para comprobar que un dato existe en la base de datos.<br>
+'' Parametros:<br>
+''  Sql --> Sentencia select para comprobar la existencia del dato.<br>
+'' Devuelve:<br>
+''  True -->  Si existe el valor buscado<br>
+''  False --> Si no esiste el valor buscado<br>
+
+Public Function Comprobar_existe_dato(Sql As String) As Boolean
+  
+  Dim Resultado As Result
+  Dim Validar As Boolean
+  Validar = False
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  
+  Resultado = FMain.Conexion_Base_Datos.Exec(Sql)
+  If Resultado.Count > 0 Then
+    Validar = True
+  Endif
+  
+  Return Validar
+  
+End
+
+
+'' Procedimiento  para rellenar con datos un combo box.<br>
+'' Parametros:<br>
+'' Sql --> donde introducimos la sentencia sql q ejecutar.<br>
+'' Combobox_Trabajo --> Combobox a rrellenar.<br>
+'' Campo --> Campo con que rellenar el Combobox.
+
+Public Sub Llenar_Combobox(Sql As String, ByRef Combobox_Trabajo As ComboBox, Campo As String)
+  Dim Result_Trabajo As Result
+  
+  Combobox_Trabajo.Clear
+  
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  
+  Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
+  Result_Trabajo.MoveFirst
+  While Result_Trabajo.Available
+    Combobox_Trabajo.Add(Result_Trabajo[Campo])
+    Result_Trabajo.MoveNext
+  Wend
+  Combobox_Trabajo.text = ""
+  FMain.Conexion_Base_Datos.Close
+  
+End
+
+
+'' Procedimiento  para rellenar con datos un combo box.<br>
+'' Parametros:<br>
+'' Sql --> donde introducimos la sentencia sql q ejecutar.<br>
+'' Listobox_Trabajo --> Listbox a rrellenar.<br>
+'' Campo --> Campo con que rellenar el Combobox.
+
+Public Sub Llenar_Listbox(Sql As String, ByRef Listbox_Trabajo As ListBox, Campo As String)
+  Dim Result_Trabajo As Result
+  
+  Listbox_Trabajo.Clear
+  
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  
+  Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
+  Result_Trabajo.MoveFirst
+  While Result_Trabajo.Available
+    Listbox_Trabajo.Add(Result_Trabajo[Campo])
+    Result_Trabajo.MoveNext
+  Wend
+  FMain.Conexion_Base_Datos.Close
+  
+End
+
+'' Funcion para otener un dato de una tabla, devuelve el dato en un String.<br>
+'' Parametros:<br>
+''  Sql --> Sentencia select para comprobar la existencia del dato.<br>
+'' Devuelve:<br>
+''  El valor del campo<br>
+''  
+Public Function Obtener_Campo_Tabla(sql As String, Campo As String) As String
+  Dim Valor_A_Devolver As String
+  Dim Result_Trabajo As Result
+  
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
+  Result_Trabajo.MoveFirst
+  Valor_A_Devolver = Result_Trabajo[Campo]
+  FMain.Conexion_Base_Datos.Close
+  Return Valor_A_Devolver
+End
+
+
+'' Funcion para comprobar si una tabla tiene datos o esta vacia. Para ello vamos a devolver el numero de elementos.< br >
+'' Parametros:<br>
+''  Sql --> Sentencia select para comprobar la existencia de datos en la tabla.<br>
+'' Devuelve:<br>
+''  El numero de elementos.
+
+
+Public Function Tabla_Vacia(Sql As String) As Integer
+  Dim N_filas As Integer
+  Dim Result_Trabajo As Result
+  N_filas = 0
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
+  N_filas = Result_Trabajo.Count
+  Return N_filas
+  
+End
+
+'' Procediminento para eliminar un elemento de un combobox.<br>
+'' Parametros_<br>
+''  Combobox_Trabajo --> El combobox donde eliminar el elemento.<br>
+''  Valor_Elimiar --> Elemento a eliminar.
+Public Sub Elimirar_Elemento_ComboBox(ByRef Combobox_Trabajo As ComboBox, Valor_Eliminar As String)
+  Dim i As Integer
+  Dim Lista_Auxiliar As New String[]
+  Dim Elementos_Combobox As Integer
+  Dim Elementos_Lista As Integer
+  Elementos_Combobox = Combobox_Trabajo.Count
+  For i = 0 To Elementos_Combobox - 1
+    If Combobox_Trabajo[i].Text = Valor_Eliminar Then
+     Else 
+      Lista_Auxiliar.Add(Combobox_Trabajo[i].Text)
+    Endif
+  Next
+  Combobox_Trabajo.Clear
+  Elementos_Lista = Lista_Auxiliar.Count
+  
+  For i = 0 To Elementos_Lista - 1
+    Combobox_Trabajo.Add(Lista_Auxiliar[i])
+  Next
+End
+

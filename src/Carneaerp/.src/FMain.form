@@ -1,0 +1,265 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,123,78)
+  Font = Font["Loma"]
+  Text = ("CARNEA ERP")
+  Resizable = False
+  { MenuArchivo Menu
+    Text = ("Archivo")
+    Radio = True
+    { MenuSalir Menu
+      Text = ("Salir")
+    }
+  }
+  { MenuGestion Menu
+    Text = ("Gestion")
+    { MenuArticulos Menu
+      Text = ("Articulos")
+      Picture = Picture["imagenes/32x32/articulos.png"]
+    }
+    { MenuClientes Menu
+      Text = ("Clientes")
+      Picture = Picture["imagenes/32x32/clientes.png"]
+    }
+    { MenuProveedores Menu
+      Text = ("Proveedores")
+      Picture = Picture["imagenes/32x32/proveedores.png"]
+    }
+    { MenuVendedores Menu
+      Text = ("Vendedores")
+      Picture = Picture["imagenes/32x32/vendedores.png"]
+    }
+  }
+  { MenuFacturacion Menu
+    Text = ("Facturacion")
+    { MenuFacturacion2 Menu
+      Text = ("Facturacion")
+      Picture = Picture["imagenes/32x32/facturacion.png"]
+    }
+    { MenuAverias Menu
+      Text = ("Averias")
+      Picture = Picture["imagenes/32x32/averias.png"]
+    }
+  }
+  { MenuAlmacen Menu
+    Text = ("Almacen")
+    { MenuCompras Menu
+      Text = ("Compras")
+      Picture = Picture["imagenes/32x32/compras.png"]
+    }
+    { MenuStock Menu
+      Text = ("Stock")
+      Picture = Picture["imagenes/32x32/stock.png"]
+    }
+  }
+  { MenuLotes Menu
+    Text = ("Lotes")
+    { Menu1Lotes Menu
+      Text = ("Lotes")
+      Picture = Picture["imagenes/32x32/lotes.png"]
+    }
+    { MenuTrazabilidad Menu
+      Text = ("Trazabilidad")
+      Picture = Picture["imagenes/32x32/trazabilidad.png"]
+    }
+  }
+  { MenuUtilidades Menu
+    Text = ("Utilidades")
+    { MenuCopiasSeguridad Menu
+      Text = ("Copias Seguridad")
+      Picture = Picture["imagenes/32x32/copia-de-seguridad.png"]
+    }
+    { MenuInformes Menu
+      Text = ("Informes")
+      Picture = Picture["imagenes/32x32/informes.png"]
+    }
+    { Menu1 Menu
+      Text = ("Utilidades")
+      Picture = Picture["imagenes/32x32/utilidades.png"]
+      { MenuConexionBd Menu
+        Text = ("Conexion Base Datos")
+      }
+    }
+  }
+  { FrameGestion Frame
+    MoveScaled(5,4,73,22)
+    Background = Color.Background
+    Text = ("Modulo de Gestion")
+    { ButtonArticulos Button
+      MoveScaled(6,7,9,9)
+      ToolTip = ("Familias, Articulos, Materia Prima, Tarifas")
+      Picture = Picture["imagenes/64x64/articulos.png"]
+    }
+    { LabelArticulos Label
+      MoveScaled(4,16,11,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("ARTICULOS")
+    }
+    { ButtonClientes Button
+      MoveScaled(23,7,9,9)
+      ToolTip = ("Clientes, Forma de Pago")
+      Picture = Picture["imagenes/64x64/clientes.png"]
+    }
+    { LabelClientes Label
+      MoveScaled(22,16,11,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("CLIENTES")
+    }
+    { ButtonProveedores Button
+      MoveScaled(40,7,9,9)
+      ToolTip = ("Proveedores")
+      Picture = Picture["imagenes/64x64/proveedores.png"]
+      Default = True
+    }
+    { LabelProveedores Label
+      MoveScaled(38,16,15,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("PROVEEDORES")
+    }
+    { ButtonVendedores Button
+      MoveScaled(57,7,9,9)
+      ToolTip = ("Vendedores, Dispositivos Moviles")
+      Picture = Picture["imagenes/64x64/vendedores.png"]
+    }
+    { LabelVendedores Label
+      MoveScaled(55,16,14,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("VENDEDORES")
+    }
+  }
+  { ButtonSalir Button
+    MoveScaled(103,57,9,9)
+    Picture = Picture["imagenes/64x64/salida.png"]
+  }
+  { LabelSalir Label
+    MoveScaled(102,66,9,4)
+    Font = Font["Bold,+4"]
+    Foreground = Color.Red
+    Text = ("SALIR")
+  }
+  { FrameFacturacion Frame
+    MoveScaled(80,4,29,22)
+    Background = Color.Background
+    Text = ("Modulo de Facturacion")
+    { ButtonFacturacion Button
+      MoveScaled(3,7,9,9)
+      ToolTip = ("Facturas, Albaranes")
+      Picture = Picture["imagenes/64x64/facturacion.png"]
+    }
+    { ButtonAverias Button
+      MoveScaled(17,7,9,9)
+      ToolTip = ("Averias producicas por transporte etc..")
+      Picture = Picture["imagenes/64x64/averias.png"]
+    }
+  }
+  { LabelFacturacion Label
+    MoveScaled(81,20,14,4)
+    Font = Font["Bold"]
+    AutoResize = True
+    Text = ("FACTURACION")
+  }
+  { LabelAverias Label
+    MoveScaled(98,20,9,4)
+    Font = Font["Bold"]
+    AutoResize = True
+    Text = ("AVERIAS")
+  }
+  { FrameAlmacen Frame
+    MoveScaled(5,30,29,22)
+    Background = Color.Background
+    Text = ("Modulo de Almacen")
+    { ButtonCompras Button
+      MoveScaled(4,8,9,9)
+      ToolTip = ("Compras a Proveedores")
+      Picture = Picture["imagenes/64x64/compras.png"]
+    }
+    { ButtonStock Button
+      MoveScaled(17,8,9,9)
+      ToolTip = ("Stock")
+      Picture = Picture["imagenes/64x64/stock.png"]
+    }
+  }
+  { LabelCompras Label
+    MoveScaled(8,47,10,4)
+    Font = Font["Bold"]
+    AutoResize = True
+    Text = ("COMPRAS")
+  }
+  { LabelStock Label
+    MoveScaled(23,47,10,4)
+    Font = Font["Bold"]
+    AutoResize = True
+    Text = ("STOCK")
+  }
+  { FrameLotes Frame
+    MoveScaled(38,30,34,22)
+    Background = Color.Background
+    Text = ("Modulo de Lotes")
+    { ButtonLotes Button
+      MoveScaled(2,8,9,9)
+      ToolTip = ("Gestion de lotes")
+      Picture = Picture["imagenes/64x64/lotes.png"]
+    }
+    { ButtonTrazabilidad Button
+      MoveScaled(16,8,9,9)
+      ToolTip = ("Trazabilidad")
+      Picture = Picture["imagenes/64x64/trazabilidad.png"]
+    }
+  }
+  { LabelLotes Label
+    MoveScaled(41,47,6,4)
+    Font = Font["Bold"]
+    AutoResize = True
+    Text = ("LOTES")
+  }
+  { LabelTrazabilidad Label
+    MoveScaled(51,47,15,4)
+    Font = Font["Bold"]
+    AutoResize = True
+    Text = ("TRAZABILIDAD")
+  }
+  { FrameUtilidades Frame
+    MoveScaled(76,30,39,22)
+    Background = Color.Background
+    Text = ("Modulo de Utilidades")
+    { ButtonCopias Button
+      MoveScaled(2,8,9,9)
+      ToolTip = ("Copias de seguridad")
+      Picture = Picture["imagenes/64x64/copia-de-seguridad.png"]
+    }
+    { ButtonInformes Button
+      MoveScaled(17,8,9,9)
+      ToolTip = ("Generacion de Informes")
+      Picture = Picture["imagenes/64x64/informes.png"]
+    }
+    { LabelInformes Label
+      MoveScaled(17,17,12,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("INFORMES")
+    }
+    { ButtonuUtilidades Button
+      MoveScaled(29,8,9,9)
+      ToolTip = ("Tipos de Iva, Cuentas contablidad")
+      AutoResize = True
+      Picture = Picture["imagenes/64x64/utilidades.png"]
+    }
+    { LabelUtilidades Label
+      MoveScaled(28,17,12,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("UTILIDADES")
+    }
+  }
+  { LabelCopias Label
+    MoveScaled(76,47,16,4)
+    Font = Font["Bold,-2"]
+    AutoResize = True
+    Text = ("COPIAS SEGURIDAD")
+  }
+}

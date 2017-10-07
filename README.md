@@ -1,2 +1,2 @@
 # carneaerp
-Erp para indisutrias carnicas. Proyecto fin de Grado Ingenieria Informatica
+Erp para industrias carnicas. Proyecto fin de Grado Ingenieria Informatica

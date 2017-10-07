@@ -1,0 +1,952 @@
+' Gambas class file
+
+Public Accion_Visualizar_Tarifa As Boolean
+
+Public Sub Form_Open()
+
+  Me.Title = "GESTION DE ARTICULOS"
+  
+  Configurar_Tab_Articulos("TODO")
+  Configurar_Tab_Familias()
+  Configurar_Tab_MateriaPrima()
+  Configurar_tab_Tarifa()
+  TxtNombreFamilia.SetFocus
+  Accion_Visualizar_Tarifa = False
+  
+End
+'' Configurarion Tab Tarifas y sus Objetos
+  Private Sub Configurar_tab_Tarifa()
+    Dim Cabeceras As New String[]
+    Dim Sql As String
+    Cabeceras.Add("Tarifa")
+    Cabeceras.Add("Articulo")
+    Cabeceras.Add("Precio")
+    If Utilidades.Tabla_Vacia("select * from articulo") = 0 Then
+      TxtlerrorTarifas.visible = True
+      TxtlerrorTarifas.Text = "Debe ir a la Tab Articulos y crear los Articulos antes de poder Crear Tarifas."
+    Else
+      TxtlerrorTarifas.Visible = False
+      TxtlerrorTarifas.Text = ""
+    Endif
+    Utilidades.Llenar_Combobox("select * from articulo", CmbTArticulos, "nombre")  
+    Utilidades.Llenar_Combobox("select * from tarifa", CmbTarifaEditar, "nombretarifa")  
+    DtsTarifa.Connection = FMain.Conexion_Base_Datos
+    'DtsTarifa.table = "tarifaarticulo" 
+    sql = "select T.tarifa,A.nombre,T.precio from articulo A, tarifaarticulo T where A.codigoarticulo=T.articulo order by T.tarifa" 
+    DtsTarifa.table = sql 
+    DtBTarifa.Labels = Cabeceras
+    DtBTarifa.View.Columns[0].width = 200
+    DtBTarifa.View.Columns[1].width = 100
+    DtBTarifa.View.Columns[2].width = 100
+  
+End
+
+
+'' Configuramos Tab Articulos y sus objetos <br>
+'' Parametros:<br>
+''    Accion:<br>
+''      COMBOBOX --> Llenamos el Combobox de las Familias<br>
+''      LISTBOX --> Llenamos el ListBox de la Materia Prima<br>
+''      TODO --> Configuracion inicial, llenamos Combobox y Listobox<br>
+Private Sub Configurar_Tab_Articulos(Accion As String)
+  Dim Cabeceras As New String[]
+  Dim Error_Tablas_Vacias As String
+  Cabeceras.Add("Codigo")
+  Cabeceras.Add("Nombre")
+  Cabeceras.Add("Familia")
+  Error_Tablas_Vacias = ""
+  If Utilidades.Tabla_Vacia("select * from familiaarticulo") = 0 Then
+       Error_Tablas_Vacias = " Debe crear Familias"  
+  Endif
+  If Utilidades.Tabla_Vacia("select * from materiaprima") = 0 Then
+    If Error_Tablas_Vacias = "" Then
+       Error_Tablas_Vacias = " Debe crear materiaprima"  
+     Else
+       Error_Tablas_Vacias = Error_Tablas_Vacias & " y agregar Materia Primas"  
+    Endif
+  Endif
+  If Error_Tablas_Vacias = "" Then
+    TxtlerrorArticulos.Visible = False
+    TxtlerrorArticulos.Text = ""    
+  Else
+    TxtlerrorArticulos.Visible = True
+    Error_Tablas_Vacias = Error_Tablas_Vacias & " antes de poder Crear Articulos."
+    TxtlerrorArticulos.Text = Error_Tablas_Vacias 
+  Endif
+  
+  If Accion = "COMBOBOX" Then
+    Utilidades.Llenar_Combobox("select * from familiaarticulo", CmbFamiliaArticulo, "nombrefamilia")  
+  Else If Accion = "LISTBOX"
+    Utilidades.Llenar_Listbox("select * from materiaprima", LtBKMP, "nombre")
+  Else If Accion = "TODO"
+    Utilidades.Llenar_Combobox("select * from familiaarticulo", CmbFamiliaArticulo, "nombrefamilia")  
+    Utilidades.Llenar_Listbox("select * from materiaprima", LtBKMP, "nombre")
+    DtsArticulos.Connection = FMain.Conexion_Base_Datos
+    DtsArticulos.table = "articulo"  
+    DtbArticulos.Labels = Cabeceras
+    DtbArticulos.View.Columns[0].width = 100
+    DtbArticulos.View.Columns[1].width = 150
+    DtbArticulos.View.Columns[2].width = 200
+  Endif
+  
+  
+End 
+'' Configuracion Tab Familias y sus  objetos
+Private Sub Configurar_Tab_Familias()
+  Dim Cabeceras As New String[]
+  
+  Cabeceras.Add("Nombre")
+  Cabeceras.Add("Recargo")
+  DtsFamilia.Connection = FMain.Conexion_Base_Datos
+  DtsFamilia.table = "familiaarticulo"  
+  DtbFamilia.Labels = Cabeceras
+  DtbFamilia.View.Columns[0].width = 220
+  DtbFamilia.View.Columns[1].width = 20
+  LCDNumeroFamilias.Text = CStr(DtbFamilia.View.Rows.Count)
+    
+End
+
+'' Configuracion Tab Materia Prima y sus Objetos
+Private Sub Configurar_Tab_MateriaPrima()
+  Dim Cabeceras As New String[]
+  
+  Cabeceras.Add("Codigo")
+  Cabeceras.Add("Nombre")
+  DtsMateriaPrima.Connection = FMain.Conexion_Base_Datos
+  DtsMateriaPrima.table = "materiaprima"  
+  DtbMateriaPrima.Labels = Cabeceras
+  DtbMateriaPrima.View.Columns[0].width = 100
+  DtbMateriaPrima.View.Columns[1].width = 150
+  LCDNumeroMP.Text = CStr(DtbMateriaPrima.View.Rows.Count)
+  
+  
+End
+
+
+Public Sub BtnSalirT_Click()
+
+  Me.close
+
+End
+
+Public Sub BtnSalirA_Click()
+
+  Me.close
+
+End
+
+Public Sub BtnSalirMP_Click()
+
+  Me.close
+
+End
+
+Public Sub BtnSalirF_Click()
+
+  Me.close
+
+End
+
+
+Public Sub BtnAgregarFamilia_Click()
+
+ Dim Recargo As Float
+ Dim Sql As String
+ 
+   
+ If Comprobar_Campos_Familia("AGREGAR") Then
+  
+   Recargo = CFloat(TxtRecargoFamilia.text)
+   Sql = "insert into familiaarticulo (nombrefamilia,recargo) values ('" & UCase(TxtNombreFamilia.Text) & "'," & Recargo & ")"
+   Utilidades.In_Act_Bor(Sql)
+   DtsFamilia.Refresh
+   DtbFamilia.Refresh
+   TxtNombreFamilia.text = ""
+   TxtRecargoFamilia.Text = ""
+   Configurar_Tab_Articulos("COMBOBOX")
+   DtsFamilia.table = "familiaarticulo"  
+   LCDNumeroFamilias.Text = CStr(DtbFamilia.View.Rows.Count)
+ Endif
+
+End
+
+
+
+Public Sub BtnBorrarFamilia_Click()
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Dim Respuesta As Integer
+  Numero_fila = DtbFamilia.View.Row
+  If dtbFamilia.View.Rows.Count > 0 Then
+    Respuesta = Message.Delete("Desea Borrar Familia : " & DtbFamilia.View[Numero_fila, 0].Text, "Si", "No")
+    If respuesta = 1 Then
+      sql = "delete from familiaarticulo where nombrefamilia='" & DtbFamilia.View[Numero_fila, 0].Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      Configurar_Tab_Articulos("COMBOBOX")
+      DtsFamilia.table = "familiaarticulo"  
+      LCDNumeroFamilias.Text = CStr(DtbFamilia.View.Rows.Count)
+     Endif
+  Endif
+End
+
+
+
+Public Sub TxtNombreFamilia_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtRecargoFamilia.SetFocus()
+  Endif
+
+End
+
+
+
+Public Sub BtnModificarF_Click()
+  Dim Sql As String
+  Dim Numero_fila As Integer
+    
+  Numero_fila = DtbFamilia.View.Row
+  Numero_fila = DtbFamilia.View.Row
+  If LblModificarF.Text = "EDITAR" Then
+    LblModificarF.Text = "ACTUALIZAR"
+    TxtNombreFamilia.Text = DtbFamilia.View[Numero_fila, 0].Text
+    TxtRecargoFamilia.Text = DtbFamilia.View[Numero_fila, 1].Text
+    TxtNombreFamilia.Enabled = False
+    BtnAgregarFamilia.Enabled = False
+    BtnBorrarFamilia.Enabled = False
+    TxtRecargoFamilia.SetFocus
+   Else
+    If Comprobar_Campos_Familia("MODIFICAR") Then
+      sql = "update familiaarticulo set recargo=" & CFloat(TxtRecargoFamilia.Text) & " where nombrefamilia='" & UCase(TxtNombreFamilia.Text) & "'"
+      Utilidades.In_Act_Bor(sql)    
+      lblModificarF.Text = "EDITAR"
+      TxtNombreFamilia.Text = ""
+      TxtRecargoFamilia.Text = ""
+      BtnAgregarFamilia.Enabled = True
+      BtnBorrarFamilia.Enabled = True
+      TxtNombreFamilia.Enabled = True
+      DtsFamilia.table = "familiaarticulo"    
+    Endif
+    
+  Endif
+
+End
+
+'' Funcion para comprobar los campos del Tab familias<br>
+''  Parametros:<br>
+''      Accion - - > La accion desde la que comprobamos.Si es a ñadir tenermos que comprobar que el nombre de familia existe en caso contrario no.<br>
+''                   AGREGAR --> Para agregar datos.<br>
+''                   MODIFICAR --> Cuando estamos modificando un dato.<br> 
+''  Devuelve:<br>
+''    TRUE --> Si los valores son correctos.<br>
+''    FALSE --> valores erroneos.
+
+Private Function Comprobar_Campos_Familia(Accion As String) As Boolean
+  Dim Validar As Boolean
+  Dim Sql As String
+  Validar = True
+  Sql = "select * from familiaarticulo where nombrefamilia='" & UCase(TxtNombreFamilia.Text) & "'"
+  If TxtNombreFamilia.Text = "" Then
+   Balloon.Error("Debe introducir un nombre de Familia que va a crear", TxtNombreFamilia)
+   Validar = False
+   TxtNombreFamilia.SetFocus
+  Else If TxtRecargoFamilia.text = ""
+   Balloon.Error("Debe el recargo en € que lleva la Familia", TxtRecargoFamilia)
+   Validar = False
+   TxtRecargoFamilia.SetFocus
+  Else If Not IsFloat(TxtRecargoFamilia.Text)
+   Balloon.Error("El recargo debe ser un numero decimal", TxtRecargoFamilia)
+   Validar = False
+   TxtRecargoFamilia.SetFocus
+  Endif
+  If Accion = "AGREGAR" Then
+    If Utilidades.Comprobar_existe_dato(Sql) Then 
+    Balloon.Error("El nombre de la familia ya existe", TxtNombreFamilia)
+    Validar = False
+    TxtNombreFamilia.SetFocus  
+   Endif 
+  
+ Endif 
+  Return Validar
+End
+
+Public Sub BtnAgregarMP_Click()
+
+ Dim Sql As String
+ 
+   
+ If Comprobar_Campos_MateriaPrima("AGREGAR") Then
+      
+   Sql = "insert into materiaprima (codigomateriaprima,nombre) values ('" & UCase(TxtCodigoMateriaPrima.Text) & "','" & UCase(TxtNombreMateriaPrima.Text) & "')"
+   Utilidades.In_Act_Bor(Sql)
+   TxtNombreMateriaPrima.text = ""
+   TxtCodigoMateriaPrima.Text = ""
+   Configurar_Tab_Articulos("LISTBOX")
+   DtsMateriaPrima.table = "materiaprima"  
+   LCDNumeroMP.Text = CStr(DtbMateriaPrima.View.Rows.Count)
+ Endif
+
+End
+
+'' Funcion para comprobar los campos del Tab Materia Prima<br>
+''  Parametros:<br>
+''      Accion - - > La accion desde la que comprobamos.Si es a ñadir tenermos que comprobar que el nombre de familia existe en caso contrario no.<br>
+''                   AGREGAR --> Para agregar datos.<br>
+''                   MODIFICAR --> Cuando estamos modificando un dato.<br> 
+''  Devuelve:<br>
+''    TRUE --> Si los valores son correctos.<br>
+''    FALSE --> valores erroneos.
+
+Private Function Comprobar_Campos_MateriaPrima(Accion As String) As Boolean
+  Dim Validar As Boolean
+  Dim Sql As String
+  Validar = True
+  Sql = "select * from materiaprima where codigomateriaprima='" & UCase(TxtCodigoMateriaPrima.Text) & "'"
+  If TxtCodigoMateriaPrima.Text = "" Then
+   Balloon.Error("Debe introducir un Codigo de Materia Prima que va a crear", TxtCodigoMateriaPrima)
+   Validar = False
+   TxtCodigoMateriaPrima.SetFocus
+  Else If TxtNombreMateriaPrima.text = ""
+   Balloon.Error("Debe introducir el nombre de la Materia Prima", TxtNombreMateriaPrima)
+   Validar = False
+   TxtNombreMateriaPrima.SetFocus
+  Endif
+  If Accion = "AGREGAR" Then
+    If Utilidades.Comprobar_existe_dato(Sql) Then 
+    Balloon.Error("El codigo Materia Prima ya existe", TxtCodigoMateriaPrima)
+    Validar = False
+    TxtCodigoMateriaPrima.SetFocus  
+   Endif 
+  
+ Endif 
+  Return Validar
+  
+  
+End
+
+
+Public Sub BtnBorrarMP_Click()
+
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Dim Respuesta As Integer
+  Numero_fila = DtbMateriaPrima.View.Row
+  If DtbMateriaPrima.View.Rows.Count > 0 Then
+    Respuesta = Message.Delete("Desea Borrar la Materia Prima : " & DtbMateriaPrima.View[Numero_fila, 1].Text, "Si", "No")
+    If respuesta = 1 Then
+      sql = "delete from materiaprima where codigomateriaprima='" & DtbMateriaPrima.View[Numero_fila, 0].Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      Configurar_Tab_Articulos("LISTBOX")
+      DtsMateriaPrima.table = "materiaprima"  
+      LCDNumeroMP.Text = CStr(DtbMateriaPrima.View.Rows.Count)
+     Endif
+  Endif
+  
+End
+
+Public Sub BtnModificarMP_Click()
+
+  Dim Sql As String
+  Dim Numero_fila As Integer
+   
+    
+  Numero_fila = DtbMateriaPrima.View.Row
+  If LblModificarMP.Text = "EDITAR" Then
+    LblModificarMP.Text = "ACTUALIZAR"
+    TxtCodigoMateriaPrima.Text = DtbMateriaPrima.View[Numero_fila, 0].Text
+    TxtNombreMateriaPrima.Text = DtbMateriaPrima.View[Numero_fila, 1].Text
+    TxtCodigoMateriaPrima.Enabled = False
+    BtnAgregarMP.Enabled = False
+    BtnBorrarMP.Enabled = False
+    TxtNombreMateriaPrima.SetFocus
+   Else
+    If Comprobar_Campos_MateriaPrima("MODIFICAR") Then
+      sql = "update materiaprima set nombre='" & UCase(TxtNombreMateriaPrima.Text) & "' where codigomateriaprima='" & UCase(TxtCodigoMateriaPrima.Text) & "'"
+      Utilidades.In_Act_Bor(sql)    
+      LblModificarMP.Text = "EDITAR"
+      TxtCodigoMateriaPrima.Text = ""
+      TxtNombreMateriaPrima.Text = ""
+      TxtCodigoMateriaPrima.Enabled = True
+      BtnAgregarMP.Enabled = True
+      BtnBorrarMP.Enabled = True
+      Configurar_Tab_Articulos("LISTBOX")
+      DtsMateriaPrima.table = "materiaprima"    
+    Endif
+  Endif
+
+End
+
+Public Sub TxtCodigoMateriaPrima_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtNombreMateriaPrima.SetFocus()
+  Endif
+
+End
+
+Public Sub TxtRecargoFamilia_KeyRelease()
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    BtnAgregarFamilia_Click()
+    TxtNombreFamilia.SetFocus
+  Endif
+  
+
+End
+
+Public Sub TxtNombreMateriaPrima_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    BtnAgregarMP_Click()
+    TxtCodigoMateriaPrima.SetFocus()
+  Endif
+
+End
+
+Public Sub BtnAAgregarMP_Click()
+  Dim Contador As Integer
+  Dim i As Integer
+  Dim Lista_Seleccionados As New String[]
+  Dim Lista_NoSeleccionados As New String[]
+  Contador = LtBKMP.Count
+  For i = 0 To Contador - 1 
+    If LtBKMP[i].Selected Then
+      Lista_Seleccionados.Add(LtBKMP[i].Text)
+    Else
+      Lista_NoSeleccionados.Add(LtBKMP[i].Text)
+    
+    Endif
+  Next
+  ' Añádimos a LtBKMPComposicion los seleccionados
+  contador = Lista_Seleccionados.Count
+  For i = 0 To contador - 1
+    LtBKMPComposicion.Add(Lista_Seleccionados[i])
+  Next
+' Borramos ltBKMP y agregamos los que no hemos seleccionado.
+    contador = Lista_NoSeleccionados.Count
+    LtBKMP.Clear
+    For i = 0 To contador - 1
+      LtBKMP.Add(Lista_NoSeleccionados[i])
+    Next
+    LtBKMP.UnselectAll
+End
+
+Public Sub BtnABorrarMP_Click()
+
+  Dim Contador As Integer
+  Dim i As Integer
+  Dim Lista_Seleccionados As New String[]
+  Dim Lista_NoSeleccionados As New String[]
+  Contador = LtBKMPComposicion.Count
+  For i = 0 To Contador - 1 
+    If LtBKMPComposicion[i].Selected Then
+      Lista_Seleccionados.Add(LtBKMPComposicion[i].Text)
+    Else
+      Lista_NoSeleccionados.Add(LtBKMPComposicion[i].Text)
+    
+    Endif
+  Next
+  ' Añádimos a LtBKMP los seleccionados
+  contador = Lista_Seleccionados.Count
+  For i = 0 To contador - 1
+    LtBKMP.Add(Lista_Seleccionados[i])
+  Next
+' Borramos ltBKMPComposicion y agregamos los que no hemos seleccionado.
+    contador = Lista_NoSeleccionados.Count
+    LtBKMPComposicion.Clear
+  For i = 0 To contador - 1
+    LtBKMPComposicion.Add(Lista_NoSeleccionados[i]) 
+  Next
+' Deseleccionamos todos ya que se quedan seleccionados
+  LtBKMPComposicion.UnselectAll
+End
+
+Public Sub TxtCodigoArticulo_KeyRelease()
+
+   If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtNombreArticulo.SetFocus
+   Endif
+
+End
+
+Public Sub TxtNombreArticulo_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    CmbFamiliaArticulo.SetFocus
+  Endif
+ End 
+
+Public Sub BtnAgregarArticulo_Click()
+
+  Dim Sql As String
+  Dim Contador As Integer
+  Dim i As Integer
+  
+  Dim C_MateriaPrima As String
+  If Comprobar_Campos_Articulos("AGREGAR") Then
+    ' Insertamos el articulo en la tabla Articulo
+      Sql = "insert into articulo (codigoarticulo,nombre,familia) values('" & UCase(TxtCodigoArticulo.Text) & "','" & UCase(TxtNombreArticulo.text) & "','" & UCase(CmbFamiliaArticulo.Text) & "')"
+      Utilidades.In_Act_Bor(Sql)
+      ' Insertamos en ArticuloMateriaPrima la composicion del articulo. 
+      Contador = LtBKMPComposicion.Count
+  
+      For i = 0 To Contador - 1
+        sql = "select * from materiaprima where nombre='" & LtBKMPComposicion[i].Text & "'"
+        C_Materiaprima = Utilidades.Obtener_Campo_Tabla(sql, "codigomateriaprima")
+        sql = "insert into articulomateriaprima (articulo,materiaprima) values('" & UCase(TxtCodigoArticulo.Text) & "','" & UCase(C_Materiaprima) & "')"
+        Utilidades.In_Act_Bor(Sql)
+      Next
+      LtBKMPComposicion.Clear
+      TxtCodigoArticulo.Text = ""
+      TxtNombreArticulo.Text = ""
+      Configurar_Tab_Articulos("TODO")
+      TxtCodigoArticulo.SetFocus
+      Configurar_tab_Tarifa()
+  Endif
+End
+
+Public Sub BtnBorrarArticulo_Click()
+
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Dim Respuesta As Integer
+  Numero_fila = DtbArticulos.View.Row
+  If DtbArticulos.View.Rows.Count > 0 Then
+    Respuesta = Message.Delete("Desea Borrar el Articulo : " & DtbArticulos.View[Numero_fila, 1].Text, "Si", "No")
+    If respuesta = 1 Then
+      sql = "delete from articulo where codigoarticulo='" & DtbArticulos.View[Numero_fila, 0].Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      sql = "delete from articulomateriaprima where articulo='" & DtbArticulos.View[Numero_fila, 0].Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      DtsArticulos.table = "articulo"  
+      Configurar_tab_Tarifa()
+     Endif
+  Endif
+
+End
+
+
+
+
+'' Funcion para comprobar los Objetos del Tab Articulos<br>
+''  Parametros:<br>
+''      Accion - - > La accion desde la que comprobamos.Si es a ñadir tenermos que comprobar que el nombre de familia existe en caso contrario no.<br>
+''                   AGREGAR --> Para agregar datos.<br>
+''                   MODIFICAR --> Cuando estamos modificando un dato.<br> 
+''  Devuelve:<br>
+''    TRUE --> Si los valores son correctos.<br>
+''    FALSE --> valores erroneos.
+Private Function Comprobar_Campos_Articulos(Accion As String) As Boolean
+  Dim Sql As String
+  Dim Validar As Boolean
+  Validar = True
+  
+  Sql = "select * from articulo where codigoarticulo='" & UCase(TxtCodigoArticulo.Text) & "'"
+  If TxtCodigoArticulo.Text = "" Then
+   Balloon.Error("Debe introducir un Codigo de Articulo que va a crear", TxtCodigoArticulo)
+   Validar = False
+   TxtCodigoArticulo.SetFocus
+  Else If TxtNombreArticulo.text = ""
+   Balloon.Error("Debe introducir el nombre del Articulo", TxtNombreArticulo)
+   Validar = False
+   TxtNombreArticulo.SetFocus
+  Else If LtBKMPComposicion.Count = 0
+    Balloon.Error("Debe añadir las materias primas que componen el articulo", LtBKMPComposicion)
+    Validar = False
+  Endif
+  If Accion = "AGREGAR" Then
+    If Utilidades.Comprobar_existe_dato(Sql) Then 
+    Balloon.Error("El codigo Articulo ya existe", TxtCodigoArticulo)
+    Validar = False
+    TxtCodigoArticulo.SetFocus  
+   Endif 
+  
+ Endif 
+ Return Validar
+  
+End
+
+
+
+Public Sub BtnEditarArticulo_Click()
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Dim Contador As Integer
+  Dim C_MateriaPrima As String
+  Dim i As Integer
+  Numero_fila = DtbArticulos.View.Row ' Posicion del DtbArticulos
+  If BtnEditarArticulo.Text = "EDITAR" Then
+    BtnEditarArticulo.Text = "ACTUALIZAR"
+    TxtCodigoArticulo.Text = DtbArticulos.View[Numero_fila, 0].Text
+    TxtNombreArticulo.Text = DtbArticulos.View[Numero_fila, 1].Text
+    CmbFamiliaArticulo.Text = DtbArticulos.View[Numero_fila, 2].Text
+    BtnAgregarArticulo.Enabled = False
+    BtnBorrarArticulo.Enabled = False
+    TxtCodigoArticulo.Enabled = False
+    TxtNombreArticulo.SetFocus
+    ' Llenamos el Listbox con las materias primas.
+    sql = "select * from articulomateriaprima where articulo='" & TxtCodigoArticulo.text & "'"
+    Llenar_Composicion_Articulo_MateriaPrima(sql)
+    Eliminar_Materia_Prima_Listboxmp()
+    DtsArticulos.table = "articulo"  
+    DtbArticulos.View.Columns[0].width = 100
+    DtbArticulos.View.Columns[1].width = 150
+    DtbArticulos.View.Columns[2].width = 200
+  Else
+    ' Comprobamos que los datos son correctos
+    If Comprobar_Campos_Articulos("MODIFICAR") Then
+      ' Actualizamos los campos del Articulo
+      sql = "update articulo set nombre='" & UCase(TxtNombreArticulo.text) & "',familia='" & UCase(CmbFamiliaArticulo.Text) & "' where codigoarticulo='" & UCase(TxtCodigoArticulo.Text) & "'"
+      Utilidades.In_Act_Bor(sql)    
+      ' Borramos Las materias primas que componen este articulo y añadimos las que tengamos en el ListBox de composicion
+      sql = "delete from articulomateriaprima where articulo='" & TxtCodigoArticulo.text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      Contador = LtBKMPComposicion.Count
+  
+      For i = 0 To Contador - 1
+        sql = "select * from materiaprima where nombre='" & LtBKMPComposicion[i].Text & "'"
+        C_Materiaprima = Utilidades.Obtener_Campo_Tabla(sql, "codigomateriaprima")
+        sql = "insert into articulomateriaprima (articulo,materiaprima) values('" & UCase(TxtCodigoArticulo.Text) & "','" & UCase(C_Materiaprima) & "')"
+        Utilidades.In_Act_Bor(Sql)
+      Next
+    Endif
+    BtnAgregarArticulo.Enabled = True
+    BtnBorrarArticulo.Enabled = True
+    TxtCodigoArticulo.Enabled = True
+    BtnEditarArticulo.Text = "EDITAR"
+    TxtCodigoArticulo.Text = ""
+    TxtNombreArticulo.Text = ""
+    CmbFamiliaArticulo.text = ""
+    DtbArticulos.Enabled = True
+    LtBKMPComposicion.clear
+    Configurar_Tab_Articulos("TODO")
+  Endif
+
+End
+
+
+'' Procedimiento que elimina los elementos que estan en el Listbox de la composicion de los elementos del listbos de materia prima.<br>
+
+Private Sub Eliminar_Materia_Prima_Listboxmp()
+  Dim i As Integer
+  Dim j As Integer
+  Dim Lista_Materia_Prima As New String[]
+  Dim Contador_Listobox_MP As Integer
+  Dim Contador_Listobox_Composicion As Integer
+  Dim Salida As Integer
+  salida = 0
+  j = 0
+  Contador_Listobox_Composicion = LtBKMPComposicion.Count
+  Contador_Listobox_MP = LtBKMP.Count 
+  For i = 0 To Contador_Listobox_Composicion - 1
+    While salida = 0
+      If LtBKMP[j].Text = LtBKMPComposicion[i].Text Then
+        salida = 1
+        LtBKMP.Remove(j)
+      Endif
+      j = j + 1
+    Wend
+    salida = 0
+    j = 0
+  Next
+End
+
+'' Procedimiento que nos llena el listbox de la composicion del articulo con el articulo seleccionado.<br>
+'' Recibe como parametro la sentencia SQL
+Private Sub Llenar_Composicion_Articulo_MateriaPrima(Sql As String)
+  Dim Result_Trabajo As Result
+  Dim Materia_Prima As New String[]
+  Dim Materia_Prima_Nombre As String
+  Dim Sql_Trabajo As String
+  Dim i As Integer
+  Dim Contador As Integer
+  LtBKMPComposicion.Clear
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
+  Result_Trabajo.MoveFirst
+  ' Obtenemos los identifiacores de la materia prima
+  While Result_Trabajo.Available
+    Materia_Prima.Add(Result_Trabajo["materiaprima"])
+    Result_Trabajo.MoveNext
+  Wend
+    FMain.Conexion_Base_Datos.Close
+    contador = Materia_Prima.Count
+    LtBKMPComposicion.Clear
+    ' Llenamos con el nombre el Listbox.
+    For i = 0 To contador - 1
+      Sql_Trabajo = "select * from materiaprima where codigomateriaprima='" & Materia_Prima[i] & "'"
+      Materia_Prima_Nombre = Utilidades.Obtener_Campo_Tabla(Sql_Trabajo, "nombre")
+      LtBKMPComposicion.Add(Materia_Prima_Nombre)
+    Next
+    LtBKMPComposicion.UnselectAll
+ 
+End
+
+
+
+
+'' Funcion para comprobar los Objetos del Tab Tarifas<br>
+''  Parametros:<br>
+''      Accion - - > La accion desde la que comprobamos.Si es a ñadir tenermos que comprobar que el nombre de familia existe en caso contrario no.<br>
+''                   AGREGAR --> Para agregar datos.<br>
+''                   PRECIO --> Cuando estamos añadiendo precios a los articulos.<br> 
+''                   EDITAR --> Para editar las tarifas.<br>
+''                   GUARDAR --> Para guardar las tarifas.<br>
+''                   BORRAR --> Para borrar las tarifas.<br>
+''  Devuelve:<br>
+''    TRUE --> Si los valores son correctos.<br>
+''    FALSE --> valores erroneos.
+Private Function Comprobar_Campos_Tarifas(Accion As String) As Boolean
+  Dim Sql As String
+  Dim Validar As Boolean
+  Validar = True
+  
+  If Accion = "GUARDAR" Then
+    If DtsTarifa.Count = 0 Then
+      Balloon.Error("Debe añadir al menos un articulo a la tarifa.", CmbTArticulos)
+      Validar = False
+    Endif
+  Endif
+  If Accion = "PRECIO" Then
+    If CmbTArticulos.text = ""
+      Balloon.Error("Debe elegir un Articulo para asignarle precio.", CmbTArticulos)
+      Validar = False
+      CmbTArticulos.SetFocus
+    Else If Val(VlBPrecioArticulo.text) = 0
+      Balloon.Error("El valor del articulo debe ser mayor que 0", VlBPrecioArticulo)
+      Validar = False
+      VlBPrecioArticulo.SetFocus
+    Endif  
+  Endif
+  If Accion = "AGREGAR" Then
+    Sql = "select * from tarifaarticulo where tarifa='" & UCase(TxtNombreTarifa.Text) & "'"
+    If TxtNombreTarifa.Text = "" Then
+      Balloon.Error("Debe introducir un Nombre para la Tarifa ", TxtNombreTarifa)
+      Validar = False
+      TxtNombreTarifa.SetFocus
+    Else If Utilidades.Comprobar_existe_dato(Sql) Then 
+      Balloon.Error("Nombre de Tarifa duplicado.", TxtNombreTarifa)
+      Validar = False
+      TxtNombreTarifa.SetFocus  
+   Endif 
+ Endif 
+ If Accion = "EDITAR" Then
+   If CmbTarifaEditar.text = "" Then
+      Balloon.Error("Elija Tarifa a Editar.", CmbTarifaEditar)
+      Validar = False
+   Endif
+ Endif
+ If Accion = "BORRAR" Then
+   If CmbTarifaEditar.text = "" Then
+      Balloon.Error("Elija Tarifa a Borrar.", CmbTarifaEditar)
+      Validar = False
+   Endif
+ Endif
+ Return Validar
+  
+End
+
+Public Sub BtnAgregarTarifa_Click()
+  Dim sql As String
+  If Comprobar_Campos_Tarifas("AGREGAR") Then
+    FrameTarifas.Enabled = True
+    FrameTTarifas.Enabled = False
+    TxtNombreTarifa.Enabled = False
+    sql = "select T.tarifa,A.nombre,T.precio from articulo A, tarifaarticulo T where A.codigoarticulo=T.articulo and T.tarifa='" & TxtNombreTarifa.Text & "'"  
+    DtsTarifa.table = sql 
+    DtBTarifa.View.Columns[0].width = 200
+    DtBTarifa.View.Columns[1].width = 100
+    DtBTarifa.View.Columns[2].width = 100
+    
+  Endif
+
+End
+
+Public Sub BtnGuardarAT_Click()
+  Dim Sql As String
+  
+  If Comprobar_Campos_Tarifas("GUARDAR") Then
+  
+    Sql = "select * from tarifa where nombretarifa='" & UCase(TxtNombreTarifa.Text) & "'"
+  
+   If Utilidades.Comprobar_existe_dato(sql) Then
+      Else
+      Sql = "insert into tarifa(nombretarifa) values('" & UCase(TxtNombreTarifa.Text) & "')"
+      Utilidades.In_Act_Bor(Sql)
+    Endif
+    Utilidades.Llenar_Combobox("select * from tarifa", CmbTarifaEditar, "nombretarifa")  
+    TxtNombreTarifa.text = ""
+    VlBPrecioArticulo.Text = ""
+    CmbTArticulos.Text = ""
+    TxtNombreTarifa.Enabled = True
+    FrameTarifas.Enabled = False
+    FrameTTarifas.Enabled = True
+    CmbTarifaEditar.enabled = True
+    sql = "select T.tarifa,A.nombre,T.precio from articulo A, tarifaarticulo T where A.codigoarticulo=T.articulo order by T.tarifa" 
+    DtsTarifa.table = sql 
+    DtBTarifa.View.Columns[0].width = 200
+    DtBTarifa.View.Columns[1].width = 100
+    DtBTarifa.View.Columns[2].width = 100
+  Endif
+End
+Public Sub BtnAgregarAT_Click()
+  Dim Sql As String
+  Dim Codigo_Articulo As String
+  Dim Articulo_Eliminar As String
+  If Comprobar_Campos_Tarifas("PRECIO") Then
+    Codigo_Articulo = Utilidades.Obtener_Campo_Tabla("select * from articulo where nombre='" & CmbTArticulos.Text & "'", "codigoarticulo")
+    sql = "insert into  tarifaarticulo(articulo,tarifa,precio) values('" & UCase(Codigo_Articulo) & "','" & UCase(TxtNombreTarifa.text) & "'," & CFloat(VlBPrecioArticulo.text) & ")"
+    Utilidades.In_Act_Bor(Sql)
+    VlBPrecioArticulo.text = ""
+    Articulo_Eliminar = CmbTArticulos.Text
+    Utilidades.Elimirar_Elemento_ComboBox(CmbTArticulos, Articulo_Eliminar)
+    sql = "select T.tarifa,A.nombre,T.precio from articulo A, tarifaarticulo T where A.codigoarticulo=T.articulo and T.tarifa='" & TxtNombreTarifa.Text & "'"
+    DtsTarifa.table = sql 
+    DtBTarifa.View.Columns[0].width = 200
+    DtBTarifa.View.Columns[1].width = 100
+    DtBTarifa.View.Columns[2].width = 100
+  Endif
+
+End
+
+Public Sub BtnEditarTarifa_Click()
+  Dim Sql As String
+  Dim Numero_Elementos_Dts As Integer
+  Dim i As Integer
+  If Comprobar_Campos_Tarifas("EDITAR") Then
+    FrameTarifas.Enabled = True
+    FrameTTarifas.Enabled = False
+    TxtNombreTarifa.text = CmbTarifaEditar.Text
+    CmbTarifaEditar.Enabled = False
+    TxtNombreTarifa.Enabled = False
+    Utilidades.Llenar_Combobox("select * from articulo", CmbTArticulos, "nombre")  
+     sql = "select T.tarifa,A.nombre,T.precio from articulo A, tarifaarticulo T where A.codigoarticulo=T.articulo and T.tarifa='" & CmbTarifaEditar.Text & "'"
+    DtsTarifa.table = sql 
+    DtBTarifa.View.Columns[0].width = 200
+    DtBTarifa.View.Columns[1].width = 100
+    DtBTarifa.View.Columns[2].width = 100
+    Numero_Elementos_Dts = DtsTarifa.Count
+    For i = 0 To Numero_Elementos_Dts - 1
+      Utilidades.Elimirar_Elemento_ComboBox(CmbTArticulos, DtBTarifa.View[i, 1].Text)  
+    Next
+  Endif
+  
+
+End
+
+Public Sub BtnBorrarTarifa_Click()
+  Dim Respuesta As Integer
+  Dim Sql As String
+  If Comprobar_Campos_Tarifas("BORRAR") Then
+      Respuesta = Message.Delete("Desea Borrar la Tarifa : " & CmbTarifaEditar.Text, "Si", "No")
+    If respuesta = 1 Then
+      sql = "delete from tarifa where nombretarifa='" & CmbTarifaEditar.Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      sql = "delete from tarifaarticulo where tarifa='" & CmbTarifaEditar.Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      Utilidades.Elimirar_Elemento_ComboBox(CmbTarifaEditar, CmbTarifaEditar.Text)
+      CmbTarifaEditar.Text = ""
+      sql = "select T.tarifa,A.nombre,T.precio from articulo A, tarifaarticulo T where A.codigoarticulo=T.articulo order by T.tarifa" 
+      DtsTarifa.table = sql 
+      DtBTarifa.View.Columns[0].width = 200
+      DtBTarifa.View.Columns[1].width = 100
+      DtBTarifa.View.Columns[2].width = 100
+     Endif
+  Endif
+
+End
+
+Public Sub BtnBorrarAT_Click()
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Dim Respuesta As Integer
+  Dim Nombre_Articulo As String
+  Dim Codigo_Articulo As String
+  Numero_fila = DtBTarifa.View.Row
+  If DtBTarifa.View.Rows.Count > 0 Then
+    Codigo_Articulo = DtBTarifa.View[Numero_fila, 0].Text
+    
+    Nombre_articulo = DtBTarifa.View[Numero_fila, 1].Text
+    sql = "select * from articulo where nombre='" & Nombre_articulo & "'"
+    Codigo_Articulo = Utilidades.Obtener_Campo_Tabla(sql, "codigoarticulo")
+    Respuesta = Message.Delete("Desea Borrar el  Articulo : " & Nombre_Articulo, "Si", "No")
+    If respuesta = 1 Then
+      sql = "delete from tarifaarticulo where articulo='" & codigo_Articulo & "' and tarifa='" & TxtNombreTarifa.Text & "'"
+      CmbTArticulos.Add(Nombre_Articulo)
+      Utilidades.In_Act_Bor(Sql)
+      sql = "select T.tarifa,A.nombre,T.precio from articulo A, tarifaarticulo T where A.codigoarticulo=T.articulo and T.tarifa='" & TxtNombreTarifa.Text & "'"
+      DtsTarifa.table = sql 
+      DtBTarifa.View.Columns[0].width = 200
+      DtBTarifa.View.Columns[1].width = 100
+      DtBTarifa.View.Columns[2].width = 100
+    Else
+      sql = "select T.tarifa,A.nombre,T.precio from articulo A, tarifaarticulo T where A.codigoarticulo=T.articulo and T.tarifa='" & TxtNombreTarifa.Text & "'"
+      DtsTarifa.table = sql 
+      DtBTarifa.View.Columns[0].width = 200
+      DtBTarifa.View.Columns[1].width = 100
+      DtBTarifa.View.Columns[2].width = 100
+     Endif
+  Endif
+  
+
+End
+
+Public Sub BtnVisualizarTarifa_Click()
+  Dim Sql As String
+  If CmbTarifaEditar.text = "" Then
+    Balloon.Error("Debe elegir tarifa a visualizar.", CmbTarifaEditar)
+  Else
+    FrameTarifas.Enabled = True 
+    FrameTTarifas.Enabled = False
+    BtnSalirVisualizar.visible = True
+    LbLSalirVisualizar.visible = True
+    Accion_Visualizar_Tarifa = True
+    BtnAgregarAT.Enabled = False
+    BtnBorrarAT.Enabled = False
+    BtnGuardarAT.Enabled = False
+    CmbTArticulos.Enabled = False
+    VlBPrecioArticulo.Enabled = False
+    sql = "select T.tarifa,A.nombre,T.precio from articulo A, tarifaarticulo T where A.codigoarticulo=T.articulo and T.tarifa='" & CmbTarifaEditar.Text & "'"
+    DtsTarifa.table = sql 
+    DtBTarifa.View.Columns[0].width = 200
+    DtBTarifa.View.Columns[1].width = 100
+    DtBTarifa.View.Columns[2].width = 100
+  Endif
+
+End
+
+
+
+Public Sub CmbTarifaEditar_Click()
+  Dim Sql As String
+  
+  If Accion_Visualizar_Tarifa Then
+    sql = "select T.tarifa,A.nombre,T.precio from articulo A, tarifaarticulo T where A.codigoarticulo=T.articulo and T.tarifa='" & CmbTarifaEditar.Text & "'"
+    DtsTarifa.table = sql 
+    DtBTarifa.View.Columns[0].width = 200
+    DtBTarifa.View.Columns[1].width = 100
+    DtBTarifa.View.Columns[2].width = 100  
+
+  Endif
+  
+End
+
+Public Sub BtnSalirVisualizar_Click()
+  Dim Sql As String
+    FrameTarifas.Enabled = False
+    FrameTTarifas.Enabled = True
+    BtnSalirVisualizar.visible = False
+    LbLSalirVisualizar.visible = False 
+    Accion_Visualizar_Tarifa = False
+    CmbTarifaEditar.Text = ""
+    BtnAgregarAT.Enabled = True
+    BtnBorrarAT.Enabled = True
+    BtnGuardarAT.Enabled = True
+    CmbTArticulos.Enabled = True
+    VlBPrecioArticulo.Enabled = True
+    sql = "select T.tarifa,A.nombre,T.precio from articulo A, tarifaarticulo T where A.codigoarticulo=T.articulo order by T.tarifa" 
+    DtsTarifa.table = sql 
+    DtBTarifa.View.Columns[0].width = 200
+    DtBTarifa.View.Columns[1].width = 100
+    DtBTarifa.View.Columns[2].width = 100
+End

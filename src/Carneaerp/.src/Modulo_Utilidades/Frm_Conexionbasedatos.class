@@ -1,0 +1,84 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+  Me.Center
+  Me.title = "Conexion a la base de datos"
+  TxtHost.Text = "localhost"
+  TxtPuerto.text = "3306"
+    If Exist(fmain.DirConexion & "/conexion.conf") Then
+  '  Message.Info(fMain.DirConexion)
+    CargarDatosConexion()    
+  Endif
+End
+Private Sub CargarDatosConexion()
+
+
+  
+  TxtHost.text = FMain.FicheroConexionBD["ConexionBD/Host"]
+  TxtPuerto.text = FMain.FicheroConexionBD["ConexionBD/Puerto"]
+  TxtUsuario.text = FMain.FicheroConexionBD["ConexionBD/Usuario"]
+  TxtPassword.Text = FMain.FicheroConexionBD["ConexionBD/Password"]
+  TxtBaseDatos.text = FMain.FicheroConexionBD["ConexionBD/BaseDatos"]
+   
+End
+
+Public Sub BtnSalir_Click()
+  Me.Close
+End
+
+Public Sub BtnAceptar_Click()
+  Dim Cadena As String
+  Dim Fichero As File
+  Dim Validar As Boolean = True
+  Dim FicheroConexionBD As Settings
+  FicheroConexionBD = New Settings(User.home & "/carnea/conexion/conexion.conf")
+  If TxtHost.text = "" Then
+    Balloon.Error("Debe introducir direccion IP, si es el mismo equipo LOCALHOST", TxtHost)
+    validar = False
+  Else
+    Balloon.Hide(TxtHost)
+  Endif
+  
+  If TxtPuerto.text = "" Then
+    Balloon.Error("Debe introducir puerto normalmente es 3306", TxtPuerto)
+    validar = False
+  Else
+    Balloon.Hide(TxtPuerto)
+  Endif
+  
+   If TxtUsuario.text = "" Then
+    Balloon.Error("Debe introducir usuario de acceso a la base de datos", TxtUsuario)
+    validar = False
+  Else
+    Balloon.Hide(TxtUsuario)
+  Endif
+  
+  If TxtPassword.text = "" Then
+    Balloon.Error("Debe introducir contraseña de usuario", TxtPassword)
+    validar = False
+  Else
+    Balloon.Hide(TxtPassword)
+  Endif
+  
+  If TxtBaseDatos.text = "" Then
+    Balloon.Error("Debe introducir nombre de la base de datos", TxtBaseDatos)
+    validar = False
+  Else
+    Balloon.Hide(TxtBaseDatos)
+  Endif
+  
+  If validar Then
+    LblDatosActualizados.Visible = True
+    FicheroConexionBD["ConexionBD/Host"] = TxtHost.Text
+    FicheroConexionBD["ConexionBD/Puerto"] = TxtPuerto.text
+    FicheroConexionBD["ConexionBD/Usuario"] = TxtUsuario.text
+    FicheroConexionBD["ConexionBD/Password"] = TxtPassword.text
+    FicheroConexionBD["ConexionBD/BaseDatos"] = TxtBaseDatos.text
+    FicheroConexionBD.Save
+  Endif
+  
+  
+ 
+End

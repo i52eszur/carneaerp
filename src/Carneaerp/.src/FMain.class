@@ -1,0 +1,117 @@
+' Gambas class file
+
+' Gambas class 
+' Ruta de los directorios de trabajo
+Public CarpetaCarnea As String = User.home & "/carnea"
+Public DirConexion As String = CarpetaCarnea & "/conexion"
+Public FicheroConexionBD As Settings
+
+Public Conexion_Base_Datos As New Connection
+   ' Variables para la conexion a la base de datos
+Public ConexionBD_Host As String
+Public ConcexionBD_Usuario As String
+Public ConexionBD_Password As String
+Public ConexionBD_BaseDatos As String
+Public ConexionBD_Tipo As String = "mysql"
+Public ConexionBD_Puerto As String = "3306"
+
+
+Public Sub Form_Open()
+  Me.Center
+  Me.Title = "CARNEA ERP. Version : " & Application.Version
+  FicheroConexionBD = New Settings(User.home & "/carnea/conexion/conexion.conf")
+  CrearDirectorios()
+  Comprobarficheros()
+  CargarDatosConexion()
+End
+Private Sub CargarDatosConexion()
+  
+  Dim FicheroConexionBD As Settings
+  FicheroConexionBD = New Settings(User.home & "/carnea/conexion/conexion.conf")
+  ConexionBD_Host = FicheroConexionBD["ConexionBD/Host"]
+  ConexionBD_Puerto = FicheroConexionBD["ConexionBD/Puerto"]
+  ConcexionBD_Usuario = FicheroConexionBD["ConexionBD/Usuario"]
+  ConexionBD_Password = FicheroConexionBD["ConexionBD/Password"]
+  ConexionBD_BaseDatos = FicheroConexionBD["ConexionBD/BaseDatos"]
+  Conexion_Base_Datos.Close
+  Conexion_Base_Datos.Type = ConexionBD_Tipo
+  Conexion_Base_Datos.Host = ConexionBD_Host
+  Conexion_Base_Datos.Port = ConexionBD_Puerto
+  Conexion_Base_Datos.User = ConcexionBD_Usuario
+  Conexion_Base_Datos.Password = ConexionBD_Password
+  Conexion_Base_Datos.Name = ConexionBD_BaseDatos
+  
+    
+End
+
+
+Private Sub CrearDirectorios()
+  'Message.Info(CarpetaCarnea)
+  ' Si no existe el directorio de trabajo es la primera ejecucion del programa.
+  If Not Exist(CarpetaCarnea) Then Mkdir CarpetaCarnea 
+  If Not Exist(DirConexion) Then Mkdir DirConexion
+  Wait 0.5
+End
+Private Sub Comprobarficheros()
+  
+  If Not Exist(DirConexion & "/conexion.conf") Then
+    Frm_Conexionbasedatos.ShowModal()  
+  Endif
+  
+  
+  
+    
+End
+
+
+Public Sub MenuSalir_Click()
+
+  Me.Close
+
+End
+
+Public Sub ButtonSalir_Click()
+
+  Me.close
+
+End
+
+
+
+Public Sub ButtonArticulos_Click()
+
+  Frm_Articulos.ShowModal()
+
+End
+
+
+
+Public Sub ButtonuUtilidades_Click()
+
+
+
+End
+
+Public Sub MenuConexionBd_Click()
+
+  Frm_Conexionbasedatos.ShowModal()
+
+End
+
+Public Sub MenuArticulos_Click()
+
+    Frm_Articulos.ShowModal()
+
+End
+
+Public Sub ButtonClientes_Click()
+
+  Frm_Clientes.ShowModal()
+
+End
+
+Public Sub MenuClientes_Click()
+
+  Frm_Clientes.ShowModal()
+
+End

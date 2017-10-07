@@ -1,0 +1,10 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+ Me.Title = "GESTION DE CLIENTES"
+
+End
+
+
+

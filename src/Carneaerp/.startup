@@ -1,0 +1,22 @@
+FMain
+Carnea ERP
+0
+0
+0.0.1
+
+gb.image
+gb.gui
+gb.form
+gb.chart
+gb.data
+gb.db
+gb.db.form
+gb.db.mysql
+gb.desktop.x11
+gb.desktop
+gb.settings
+gb.form.mdi
+gb.form.stock
+gb.report2
+gb.util
+

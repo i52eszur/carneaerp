@@ -1,0 +1,393 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,128,73)
+  { TabPanelArticulos TabPanel
+    MoveScaled(1,1,126,70)
+    Background = Color.Background
+    Count = 4
+    Index = 0
+    Text = ("FAMILIAS")
+    { LbLNombreFamilia Label
+      MoveScaled(2,2,22,4)
+      Font = Font["Bold,+3"]
+      Text = ("Nombre Familia :")
+    }
+    { LblFamiliaRecargo Label
+      MoveScaled(2,8,29,4)
+      Font = Font["Bold,+3"]
+      Text = ("Recargo de la Familia : ")
+    }
+    { TxtRecargoFamilia TextBox
+      MoveScaled(31,8,24,4)
+    }
+    { TxtNombreFamilia TextBox
+      MoveScaled(24,2,34,4)
+    }
+    { LblNumeroFamilias Label
+      MoveScaled(64,5,21,4)
+      Font = Font["Bold,+1"]
+      Text = ("Numero de Familias : ")
+    }
+    { LCDNumeroFamilias LCDLabel
+      MoveScaled(86,5,11,4)
+      Foreground = Color.Blue
+    }
+    { DtsFamilia DataSource
+      MoveScaled(7,16,71,42)
+      { DtbFamilia DataBrowser
+        MoveScaled(2,7,66,32)
+        Font = Font["Bold,+1"]
+        CanCreate = False
+        CanDelete = False
+      }
+    }
+    { LblAgregarF Label
+      MoveScaled(86,25,24,4)
+      Font = Font["Bold,+2"]
+      Text = ("AGREGAR")
+    }
+    { BtnAgregarFamilia Button
+      MoveScaled(79,24,5,5)
+      ToolTip = ("Añade la familia")
+      Picture = Picture["icon:/32/add"]
+    }
+    { BtnBorrarFamilia Button
+      MoveScaled(79,32,5,5)
+      ToolTip = ("Borra la familia seleccionada")
+      Picture = Picture["icon:/32/remove"]
+    }
+    { LblBorrarF Label
+      MoveScaled(86,33,24,4)
+      Font = Font["Bold,+2"]
+      Text = ("BORRAR")
+    }
+    { BtnSalirF Button
+      MoveScaled(90,51,16,5)
+      Foreground = Color.Red
+      Text = ("SALIR")
+      Picture = Picture["imagenes/32x32/salida.png"]
+    }
+    { BtnModificarF Button
+      MoveScaled(79,40,5,5)
+      ToolTip = ("Modificamos el valor del recargo de la familia seleccionanada")
+      Picture = Picture["imagenes/32x32/cambiar.png"]
+    }
+    { LblModificarF Label
+      MoveScaled(86,41,24,4)
+      Font = Font["Bold,+2"]
+      Text = ("EDITAR")
+    }
+    Index = 1
+    Text = ("MATERIA PRIMA")
+    { LblCodigoMateriaPrima Label
+      MoveScaled(2,3,30,4)
+      Font = Font["Bold,+3"]
+      Text = ("Codigo Materia Prima :")
+    }
+    { BtnSalirMP Button
+      MoveScaled(92,52,16,5)
+      Foreground = Color.Red
+      Text = ("SALIR")
+      Picture = Picture["imagenes/32x32/salida.png"]
+    }
+    { TxtCodigoMateriaPrima TextBox
+      MoveScaled(32,3,24,4)
+    }
+    { LblNombreMateriaPrima Label
+      MoveScaled(2,8,30,4)
+      Font = Font["Bold,+3"]
+      Text = ("Nombre Materia Prima :")
+    }
+    { TxtNombreMateriaPrima TextBox
+      MoveScaled(33,8,24,4)
+    }
+    { LblNumeroMP Label
+      MoveScaled(64,5,27,4)
+      Font = Font["Bold,+1"]
+      Text = ("Numero de Materia Prima : ")
+    }
+    { LCDNumeroMP LCDLabel
+      MoveScaled(92,5,11,4)
+      Foreground = Color.Blue
+    }
+    { LblAgregarMP Label
+      MoveScaled(88,24,24,4)
+      Font = Font["Bold,+2"]
+      Text = ("AGREGAR")
+    }
+    { LblBorrarMP Label
+      MoveScaled(88,32,24,4)
+      Font = Font["Bold,+2"]
+      Text = ("BORRAR")
+    }
+    { BtnBorrarMP Button
+      MoveScaled(82,31,5,5)
+      ToolTip = ("Borra Materia Prima")
+      Picture = Picture["icon:/32/remove"]
+    }
+    { BtnAgregarMP Button
+      MoveScaled(82,23,5,5)
+      ToolTip = ("Añade Materia Prima")
+      Picture = Picture["icon:/32/add"]
+    }
+    { LblModificarMP Label
+      MoveScaled(89,40,24,4)
+      Font = Font["Bold,+2"]
+      Text = ("EDITAR")
+    }
+    { BtnModificarMP Button
+      MoveScaled(82,39,5,5)
+      ToolTip = ("Modificamos el valor del recargo de la familia seleccionanada")
+      Picture = Picture["imagenes/32x32/cambiar.png"]
+    }
+    { DtsMateriaPrima DataSource
+      MoveScaled(6,14,66,45)
+      { DtbMateriaPrima DataBrowser
+        MoveScaled(5,6,55,30)
+        Font = Font["Bold,+1"]
+        CanCreate = False
+        CanDelete = False
+      }
+    }
+    Index = 2
+    Text = ("ARTICULOS")
+    { LblCodigoArticulo Label
+      MoveScaled(2,2,22,4)
+      Font = Font["Bold,+3"]
+      Text = ("Codigo Articulo : ")
+    }
+    { BtnSalirA Button
+      MoveScaled(19,59,16,5)
+      Foreground = Color.Red
+      Text = ("SALIR")
+      Picture = Picture["imagenes/32x32/salida.png"]
+    }
+    { LblNombreArticulo Label
+      MoveScaled(50,2,23,4)
+      Font = Font["Bold,+3"]
+      Text = ("Nombre Articulo : ")
+    }
+    { LblFamiliaArticluo Label
+      MoveScaled(2,7,22,4)
+      Font = Font["Bold,+3"]
+      Text = ("Familia Articulo : ")
+    }
+    { TxtCodigoArticulo TextBox
+      MoveScaled(25,2,24,4)
+    }
+    { TxtNombreArticulo TextBox
+      MoveScaled(74,2,24,4)
+    }
+    { CmbFamiliaArticulo ComboBox
+      MoveScaled(25,7,29,4)
+      ReadOnly = True
+    }
+    { FrameAMP Frame
+      MoveScaled(3,13,55,38)
+      Text = ("Composicion del Articulo")
+      { LtBKMP ListBox
+        MoveScaled(1,4,22,27)
+        ToolTip = ("Materia Prima")
+        Mode = Select.Multiple
+        Sorted = True
+      }
+      { LtBKMPComposicion ListBox
+        MoveScaled(32,4,22,27)
+        Mode = Select.Multiple
+        Sorted = True
+      }
+      { BtnAAgregarMP Button
+        MoveScaled(25,9,5,5)
+        ToolTip = ("Añade Materia Prima a la Composicion")
+        Picture = Picture["icon:/32/next"]
+      }
+      { BtnABorrarMP Button
+        MoveScaled(25,18,5,5)
+        ToolTip = ("Borra Materia Prima")
+        Picture = Picture["icon:/32/previous"]
+      }
+      { LblComposicion Label
+        MoveScaled(31,32,24,4)
+        Font = Font["Bold"]
+        Text = ("COMPOSICON ARTICULO")
+      }
+    }
+    { BtnAgregarArticulo Button
+      MoveScaled(1,53,16,4)
+      Font = Font["Bold,+1"]
+      ToolTip = ("Agragar Articulo Nuevo")
+      Text = ("AGREGAR")
+    }
+    { BtnEditarArticulo Button
+      MoveScaled(19,53,16,4)
+      Font = Font["Bold,+1"]
+      ToolTip = ("Editamos un articulo")
+      Text = ("EDITAR")
+    }
+    { BtnBorrarArticulo Button
+      MoveScaled(37,53,16,4)
+      Font = Font["Bold,+1"]
+      ToolTip = ("Borramos un Articulo")
+      Text = ("BORRAR")
+    }
+    { DtsArticulos DataSource
+      MoveScaled(60,8,66,49)
+      { DtbArticulos DataBrowser
+        MoveScaled(1,5,64,41)
+        Font = Font["Bold,+1"]
+        CanCreate = False
+        CanDelete = False
+      }
+    }
+    { TxtlerrorArticulos TextLabel
+      MoveScaled(42,60,80,4)
+      Visible = False
+      Font = Font["Bold,+1"]
+      Foreground = Color.Red
+      Border = Border.Raised
+    }
+    { LblMateriaPrima Label
+      MoveScaled(6,45,18,4)
+      Font = Font["Bold"]
+      Text = ("MATERIAS PRIMAS")
+    }
+    Index = 3
+    Text = ("TARIFAS")
+    { LblTarifa Label
+      MoveScaled(3,3,22,4)
+      Font = Font["Bold,+3"]
+      Text = ("Nombre Tarifa : ")
+    }
+    { TxtNombreTarifa TextBox
+      MoveScaled(25,3,24,4)
+    }
+    { FrameTarifas Frame
+      MoveScaled(6,11,89,48)
+      Enabled = False
+      Text = ("Articulos de la Tarifa")
+      { LblTPrecio Label
+        MoveScaled(2,9,11,4)
+        Font = Font["Bold,+3"]
+        Text = ("Precio : ")
+      }
+      { CmbTArticulos ComboBox
+        MoveScaled(17,4,24,4)
+        ReadOnly = True
+        Sorted = True
+      }
+      { LblTArticulo Label
+        MoveScaled(2,4,13,4)
+        Font = Font["Bold,+3"]
+        Text = ("Articulo : ")
+      }
+      { BtnAgregarAT Button
+        MoveScaled(67,17,5,5)
+        ToolTip = ("Añade Articulo a Tarifa")
+        Picture = Picture["icon:/32/add"]
+      }
+      { LblAgregarAT Label
+        MoveScaled(73,18,24,4)
+        Font = Font["Bold,+2"]
+        Text = ("AGREGAR")
+      }
+      { BtnBorrarAT Button
+        MoveScaled(67,25,5,5)
+        ToolTip = ("Borra Articulo de Tarifa")
+        Picture = Picture["icon:/32/remove"]
+      }
+      { LblBorrarAT Label
+        MoveScaled(73,26,24,4)
+        Font = Font["Bold,+2"]
+        Text = ("BORRAR")
+      }
+      { DtsTarifa DataSource
+        MoveScaled(1,15,65,32)
+        { DtBTarifa DataBrowser
+          MoveScaled(1,2,63,27)
+          Font = Font["Bold,+1"]
+          CanCreate = False
+          CanDelete = False
+        }
+      }
+      { VlBPrecioArticulo ValueBox
+        MoveScaled(17,9,24,4)
+        Text = ("\"\"")
+      }
+      { BtnGuardarAT Button
+        MoveScaled(67,33,5,5)
+        ToolTip = ("Guardamos Tarifa en Base de Datos")
+        Picture = Picture["icon:/32/floppy"]
+      }
+      { LblGuardarAT Label
+        MoveScaled(73,34,24,4)
+        Font = Font["Bold,+2"]
+        Text = ("GUARDAR")
+      }
+      { LbLSalirVisualizar Label
+        MoveScaled(73,42,24,4)
+        Visible = False
+        Font = Font["Bold,+2"]
+        Text = ("SALIR")
+      }
+      { BtnSalirVisualizar Button
+        MoveScaled(67,41,5,5)
+        Visible = False
+        ToolTip = ("Guardamos Tarifa en Base de Datos")
+        Picture = Picture["icon:/32/quit"]
+      }
+    }
+    { TxtlerrorTarifas TextLabel
+      MoveScaled(8,60,74,4)
+      Visible = False
+      Font = Font["Bold,+1"]
+      Foreground = Color.Red
+      Border = Border.Raised
+    }
+    { FrameTTarifas Frame
+      MoveScaled(100,3,24,58)
+      Text = ("Tarifas")
+      { BtnEditarTarifa Button
+        MoveScaled(6,18,16,4)
+        Font = Font["Bold,+1"]
+        ToolTip = ("Editamos una tarifa")
+        Text = ("EDITAR")
+      }
+      { BtnBorrarTarifa Button
+        MoveScaled(6,27,16,4)
+        Font = Font["Bold,+1"]
+        ToolTip = ("Borramos una Tarifa")
+        Text = ("BORRAR")
+      }
+      { BtnAgregarTarifa Button
+        MoveScaled(6,9,16,4)
+        Font = Font["Bold,+1"]
+        ToolTip = ("Agragar Tarifa")
+        Text = ("NUEVA")
+      }
+      { BtnSalirT Button
+        MoveScaled(6,46,16,5)
+        Foreground = Color.Red
+        Text = ("SALIR")
+        Picture = Picture["imagenes/32x32/salida.png"]
+      }
+      { BtnVisualizarTarifa Button
+        MoveScaled(6,36,16,4)
+        Font = Font["Bold,+1"]
+        ToolTip = ("Visualizamos los articulso de la Tarifa")
+        Text = ("VISUALIZAR")
+      }
+    }
+    { CmbTarifaEditar ComboBox
+      MoveScaled(69,3,24,4)
+      ReadOnly = True
+      Sorted = True
+    }
+    { LabelTarifaEditarBorrar Label
+      MoveScaled(51,3,16,4)
+      Font = Font["Bold,+1"]
+      Text = ("Tarifas Creadas")
+    }
+    Index = 0
+  }
+}
