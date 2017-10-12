@@ -10,7 +10,7 @@ Public Sub In_Act_Bor(Sql As String)
   Try FMain.Conexion_Base_Datos.Open
   FMain.Conexion_Base_Datos.Exec(Sql)
   Catch
-    Message.Error( Error )
+    Message.Error(sql)
     
 End
 
@@ -49,12 +49,11 @@ Public Sub Llenar_Combobox(Sql As String, ByRef Combobox_Trabajo As ComboBox, Ca
   Dim Result_Trabajo As Result
   
   Combobox_Trabajo.Clear
-  
   FMain.Conexion_Base_Datos.Close
   FMain.Conexion_Base_Datos.Open
-  
   Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
   Result_Trabajo.MoveFirst
+  Combobox_Trabajo.Add("")
   While Result_Trabajo.Available
     Combobox_Trabajo.Add(Result_Trabajo[Campo])
     Result_Trabajo.MoveNext
@@ -92,6 +91,7 @@ End
 '' Funcion para otener un dato de una tabla, devuelve el dato en un String.<br>
 '' Parametros:<br>
 ''  Sql --> Sentencia select para comprobar la existencia del dato.<br>
+''  Campo --> Campo para extraer su valor.<br>
 '' Devuelve:<br>
 ''  El valor del campo<br>
 ''  
@@ -152,3 +152,21 @@ Public Sub Elimirar_Elemento_ComboBox(ByRef Combobox_Trabajo As ComboBox, Valor_
   Next
 End
 
+'' Funcion que nos devuelve el vamor maximo de un campo en una tabla.<br>
+'' Parametros_<br>
+''  Sql --> Sentencia select que ordena la tabla por el un campo.<br>
+''  Campo --> Campo que se desea el valor maximo.<br>
+'' Devuelve:<br>
+''  El valor maximo en formato String.
+Public Function Valor_Maximo(Sql As String, Campo As String) As String
+  Dim Valor_A_Devolver As String
+  Dim Result_Trabajo As Result
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
+  Result_Trabajo.MoveLast
+  Valor_A_Devolver = Result_Trabajo[Campo]
+  FMain.Conexion_Base_Datos.Close
+  Return Valor_A_Devolver
+  
+End

@@ -1,2 +1,636 @@
 ' Gambas class file
 
+
+Public Sub Form_Open()
+
+  Me.Title = "MODULO DE UTILIDADES"
+  ' Configuramos IconPanel de Configuracion de base de datos
+  TxtHost.Text = "localhost"
+  TxtPuerto.text = "3306"
+    If Exist(fmain.DirConexion & "/conexion.conf") Then
+  '  Message.Info(fMain.DirConexion)
+    CargarDatosConexion()    
+  Endif
+  TxtNombreFormaPago.SetFocus
+  Configurar_Tipos_Iva()
+  Configurar_Cuentas_Contabilidad()
+  Configurar_Forma_Pago()
+  Configurar_Dispositivo_Movil()
+End
+
+
+
+Public Sub BtnSalirUtilidades_Click()
+
+  Me.Close
+
+End
+
+'' *****************************************************************************************
+''                INICIO CODIGO  CONFIGURACION BASE DE DATOS                               *
+'' *****************************************************************************************
+Private Sub CargarDatosConexion()
+
+  TxtHost.text = FMain.FicheroConexionBD["ConexionBD/Host"]
+  TxtPuerto.text = FMain.FicheroConexionBD["ConexionBD/Puerto"]
+  TxtUsuario.text = FMain.FicheroConexionBD["ConexionBD/Usuario"]
+  TxtPassword.Text = FMain.FicheroConexionBD["ConexionBD/Password"]
+  TxtBaseDatos.text = FMain.FicheroConexionBD["ConexionBD/BaseDatos"]
+   
+End
+
+
+Public Sub BtnAceptar_Click()
+  Dim Cadena As String
+  Dim Fichero As File
+  Dim Validar As Boolean = True
+  Dim FicheroConexionBD As Settings
+  FicheroConexionBD = New Settings(User.home & "/carnea/conexion/conexion.conf")
+  If TxtHost.text = "" Then
+    Balloon.Error("Debe introducir direccion IP, si es el mismo equipo LOCALHOST", TxtHost)
+    validar = False
+  Else
+    Balloon.Hide(TxtHost)
+  Endif
+  
+  If TxtPuerto.text = "" Then
+    Balloon.Error("Debe introducir puerto normalmente es 3306", TxtPuerto)
+    validar = False
+  Else
+    Balloon.Hide(TxtPuerto)
+  Endif
+  
+   If TxtUsuario.text = "" Then
+    Balloon.Error("Debe introducir usuario de acceso a la base de datos", TxtUsuario)
+    validar = False
+  Else
+    Balloon.Hide(TxtUsuario)
+  Endif
+  
+  If TxtPassword.text = "" Then
+    Balloon.Error("Debe introducir contraseña de usuario", TxtPassword)
+    validar = False
+  Else
+    Balloon.Hide(TxtPassword)
+  Endif
+  
+  If TxtBaseDatos.text = "" Then
+    Balloon.Error("Debe introducir nombre de la base de datos", TxtBaseDatos)
+    validar = False
+  Else
+    Balloon.Hide(TxtBaseDatos)
+  Endif
+  
+  If validar Then
+    LblDatosActualizados.Visible = True
+    FicheroConexionBD["ConexionBD/Host"] = TxtHost.Text
+    FicheroConexionBD["ConexionBD/Puerto"] = TxtPuerto.text
+    FicheroConexionBD["ConexionBD/Usuario"] = TxtUsuario.text
+    FicheroConexionBD["ConexionBD/Password"] = TxtPassword.text
+    FicheroConexionBD["ConexionBD/BaseDatos"] = TxtBaseDatos.text
+    FicheroConexionBD.Save
+  Endif
+
+End
+
+'' *****************************************************************************************
+''                FIN    CODIGO  CONFIGURACION BASE DE DATOS                               *
+'' *****************************************************************************************
+
+
+
+'' *****************************************************************************************
+''                INICIO CODIGO  CONFIGURACION FORMA DE PAGO                               *
+'' *****************************************************************************************
+
+Private Sub Configurar_Forma_Pago()
+  Dim Cabeceras As New String[]
+  Dim Sql As String
+  
+  Cabeceras.Add("Nombre")
+  Cabeceras.Add("Dias")
+  Cabeceras.Add("Porcentaje")
+  
+  DtsFormaPago.Connection = FMain.Conexion_Base_Datos
+  sql = "select * from formapago order by nombreformapago"
+  DtsFormaPago.Table = sql
+  DtbFormaPago.Labels = Cabeceras
+  DtbFormaPago.view.Columns[0].Width = 200
+  DtbFormaPago.view.Columns[1].Width = 100
+  DtbFormaPago.view.Columns[2].Width = 100
+  
+  
+End
+
+Public Sub BtnAgregarFormaPago_Click()
+  Dim Sql As String
+  
+  If Comprobar_Datos_Forma_Pago("AGREGAR") Then
+    Sql = "insert into formapago (nombreformapago,dias,porcentaje) values ('" & UCase(TxtNombreFormaPago.Text) & "'," & Val(VlBDias.Text) & "," & Val(vLBPorcentaje.Text) & ")"
+    Utilidades.In_Act_Bor(Sql)
+    TxtNombreFormaPago.Text = ""
+    VlBDias.text = ""
+    vLBPorcentaje.text = ""
+    Configurar_Forma_Pago()
+   
+  Endif
+
+End
+
+'' Funcion que comprueba que los datos introducidos son correctos de las Formas de Pago.<br>
+'' Parametros:<br>
+''  Accion --> Accion que vamos a realizar puede tomar los siguientes Valores:<br>
+''    AGREGAR --> Cuando estamos agregando Forma de Pago.<br>
+''  Devuelve:<br>
+''    TRUE --> Datos son correctos<br>
+''    FALSE --> Datos erroeneos.
+Private Function Comprobar_Datos_Forma_Pago(Accion As String) As Boolean
+  Dim Validar As Boolean
+  Dim Sql As String
+  Validar = True
+  
+  If TxtNombreFormaPago.text = "" Then
+    Balloon.Error("Debe introducir un Nombre para la Forma de Pago.", TxtNombreFormaPago)
+    Validar = False
+    TxtNombreFormaPago.SetFocus
+  Endif
+
+  If Accion = "AGREGAR" Then
+    sql = "select * from formapago where nombreformapago='" & UCase(TxtNombreFormaPago.text) & "'"
+    If Utilidades.Comprobar_existe_dato(Sql) Then 
+    Balloon.Error("La Forma de Pago ya existe", TxtNombreFormaPago)
+    Validar = False
+    TxtNombreFormaPago.SetFocus  
+   Endif 
+  Endif
+  Return Validar
+End
+
+Public Sub BtnBorrarFormaPago_Click()
+
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Dim Respuesta As Integer
+  Numero_fila = DtbFormaPago.View.Row
+  If DtbFormaPago.View.Rows.Count > 0 Then
+    Respuesta = Message.Delete("Desea Borrar la Forma de Pago : " & DtbFormaPago.View[Numero_fila, 0].Text, "Si", "No")
+    If respuesta = 1 Then
+      sql = "delete from formapago where nombreformapago='" & DtbFormaPago.View[Numero_fila, 0].Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      Configurar_Forma_Pago()
+     Endif
+  Endif
+  
+
+End
+
+Public Sub BtnModificarFormaPago_Click()
+
+  Dim Sql As String
+  Dim Numero_fila As Integer
+       
+  Numero_fila = DtbFormaPago.View.Row
+  If LblModificarFormaPago.Text = "EDITAR" Then
+    LblModificarFormaPago.Text = "ACTUALIZAR"
+    TxtNombreFormaPago.Text = DtbFormaPago.View[Numero_fila, 0].Text
+    VlBDias.Text = DtbFormaPago.View[Numero_fila, 1].Text
+    vLBPorcentaje.Text = DtbFormaPago.View[Numero_fila, 2].Text
+    TxtNombreFormaPago.Enabled = False
+    BtnAgregarFormaPago.Enabled = False
+    BtnBorrarFormaPago.Enabled = False
+    VlBDias.SetFocus
+   Else
+    sql = "update formapago set dias=" & Val(VlBDias.Text) & ",porcentaje=" & Val(vLBPorcentaje.text) & " where nombreformapago='" & UCase(TxtNombreFormaPago.Text) & "'"
+    Utilidades.In_Act_Bor(sql)    
+    LblModificarFormaPago.Text = "EDITAR"
+    TxtNombreFormaPago.Text = ""
+    VlBDias.Text = ""
+    vLBPorcentaje.Text = ""
+    TxtNombreFormaPago.Enabled = True
+    BtnAgregarFormaPago.Enabled = True 
+    BtnBorrarFormaPago.Enabled = True
+    TxtNombreFormaPago.SetFocus
+    Configurar_Forma_Pago()
+  Endif
+
+End
+
+
+Public Sub TxtNombreFormaPago_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    VlBDias.SetFocus
+  Endif  
+
+End
+Public Sub VlBDias_KeyPress()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    vLBPorcentaje.SetFocus
+  Endif  
+
+End
+
+'' *****************************************************************************************
+''                FIN CODIGO  CONFIGURACION FORMA DE PAGO                                  *
+'' *****************************************************************************************
+
+
+'' *****************************************************************************************
+''                INICIO CODIGO  CONFIGURACION DISPOSITIVO MOVIL                           *
+'' *****************************************************************************************
+Private Sub Configurar_Dispositivo_Movil()
+  Dim Cabeceras As New String[]
+  Dim Sql As String
+  
+  Cabeceras.Add("Codigo")
+  Cabeceras.Add("Nombre")
+  Cabeceras.Add("Especificaciones")
+  
+  DtsDispositivoMovil.Connection = FMain.Conexion_Base_Datos
+  sql = "select * from dispositivomovil order by codigodispositivomovil"
+  DtsDispositivoMovil.Table = sql
+  DtbDispositvoMovil.Labels = Cabeceras
+  DtbDispositvoMovil.view.Columns[0].Width = 100
+  DtbDispositvoMovil.view.Columns[1].Width = 200
+  DtbDispositvoMovil.view.Columns[2].Width = 500
+  
+End
+
+
+
+Public Sub BtnAgregarDM_Click()
+  Dim Sql As String
+ 
+  If Comprobar_Datos_Dispositivo_Movil("AGREGAR") Then
+    Sql = "insert into dispositivomovil (codigodispositivomovil,nombre,especificaciones) values ('" & UCase(TxtCodigoDM.Text) & "','" & UCase(TxtNombreDM.Text) & "','" & TxtEspecificacionesDM.Text & "')"
+    Utilidades.In_Act_Bor(Sql)
+    TxtCodigoDM.Text = ""
+    TxtNombreDM.text = ""
+    TxtEspecificacionesDM.text = ""
+    Configurar_Dispositivo_Movil()
+  Endif
+
+End
+
+Public Sub BtnBorrarDM_Click()
+
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Dim Respuesta As Integer
+  Numero_fila = DtbDispositvoMovil.View.Row
+  If DtbDispositvoMovil.View.Rows.Count > 0 Then
+    Respuesta = Message.Delete("Desea Borrar el Dispositivo Movil (Si lo borra se eliminara del vendedor asociado) : " & DtbDispositvoMovil.View[Numero_fila, 0].Text, "Si", "No")
+    If respuesta = 1 Then
+      sql = "delete from dispositivomovil where codigodispositivomovil='" & DtbDispositvoMovil.View[Numero_fila, 0].Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      sql = "delete from dispositivomovilvendedor where dispositivomovil='" & DtbDispositvoMovil.View[Numero_fila, 0].Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      Configurar_Dispositivo_Movil()
+     Endif
+  Endif
+
+End
+
+Public Sub BtnModificarDM_Click()
+
+  Dim Sql As String
+  Dim Numero_fila As Integer
+       
+  Numero_fila = DtbDispositvoMovil.View.Row
+  If LblModificarDM.Text = "EDITAR" Then
+    LblModificarDM.Text = "ACTUALIZAR"
+    TxtCodigoDM.Text = DtbDispositvoMovil.View[Numero_fila, 0].Text
+    TxtNombreDM.Text = DtbDispositvoMovil.View[Numero_fila, 1].Text
+    TxtEspecificacionesDM.Text = DtbDispositvoMovil.View[Numero_fila, 2].Text
+    TxtCodigoDM.Enabled = False
+    BtnAgregarDM.Enabled = False
+    BtnBorrardm.Enabled = False
+    TxtNombreDM.SetFocus
+   Else
+    sql = "update dispositivomovil set nombre='" & UCase(TxtNombreDM.Text) & "',especificaciones='" & UCase(TxtEspecificacionesDM.text) & "' where codigodispositivomovil='" & UCase(TxtCodigoDM.Text) & "'"
+    Utilidades.In_Act_Bor(sql)    
+    LblModificarFormaPago.Text = "EDITAR"
+    TxtCodigoDM.Text = ""
+    TxtNombreDM.Text = ""
+    TxtEspecificacionesDM.Text = ""
+    TxtCodigoDM.Enabled = True
+    BtnAgregarDM.Enabled = True 
+    BtnBorrarDM.Enabled = True
+    TxtCodigoDM.SetFocus
+    Configurar_Dispositivo_Movil()
+  Endif
+
+End
+
+
+'' Funcion que comprueba que los datos introducidos son correctos de los Dispositivos Moviles.<br>
+'' Parametros:<br>
+''  Accion --> Accion que vamos a realizar puede tomar los siguientes Valores:<br>
+''    AGREGAR --> Cuando estamos agregando Forma de Pago.<br>
+''  Devuelve:<br>
+''    TRUE --> Datos son correctos<br>
+''    FALSE --> Datos erroeneos.
+Private Function Comprobar_Datos_Dispositivo_Movil(Accion As String) As Boolean
+  Dim Validar As Boolean
+  Dim Sql As String
+  Validar = True
+  
+  If TxtCodigoDM.text = "" Then
+    Balloon.Error("Debe introducir un Codigo para el Dispositivo Movil.", TxtCodigoDM)
+    Validar = False
+    TxtCodigoDM.SetFocus
+  Endif
+
+  If Accion = "AGREGAR" Then
+    sql = "select * from dispositivomovil  where codigodispositivomovil='" & UCase(TxtCodigoDM.text) & "'"
+    If Utilidades.Comprobar_existe_dato(Sql) Then 
+      Balloon.Error("Dispositivo Movil ya existe", TxtCodigoDM)
+      Validar = False
+      TxtCodigoDM.SetFocus  
+   Endif 
+  Endif
+  Return Validar
+End
+Public Sub TxtCodigoDM_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtNombreDM.SetFocus
+  Endif  
+
+End
+
+Public Sub TxtNombreDM_KeyRelease()
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtEspecificacionesDM.SetFocus
+  Endif  
+End
+
+'' *****************************************************************************************
+''                INIVIO CODIGO  CONFIGURACION DISPOSITIVO MOVIL                           *
+'' *****************************************************************************************
+
+
+
+'' *****************************************************************************************
+''                INICIO CODIGO  CONFIGURACION CUENTAS CONTABLIDIDAD                       *
+'' *****************************************************************************************
+
+
+Public Sub BtnActualizarCuentasContabilidad_Click()
+  Dim Sql As String
+  If Comprobar_Datos_Cuentas() Then
+    sql = "update cuentascontabilidad set venta='" & TxtVenta.Text & "',iva='" & Txtiva.text & "',ivare='" & Txtivare.Text & "',re='" & TxtRecargoE.text & "',cobro='" & TxtCobro.Text & "' where id='1'"
+    Utilidades.In_Act_Bor(sql)
+    LblInfo.Visible = True
+  Endif
+
+End
+
+'' Funcion que  comprueba que los datos son correctos antes de actualizar los datos.
+Private Function Comprobar_Datos_Cuentas() As Boolean
+  
+  Dim Validar As Boolean
+  validar = True
+  If TxtVenta.Text = "" Then
+    Balloon.Error("Debe introducir un Numero de Cuenta de Venta.", TxtVenta)
+    Validar = False
+    TxtVenta.SetFocus
+  Else If TxtVenta.Length < 7 Or (Not IsNumber(TxtVenta.Text))
+    Balloon.Error("Formato erroneo, debe ser un dato numerico y de 7 caracteres.", TxtVenta)
+    Validar = False
+    TxtVenta.SetFocus
+  Else If Txtiva.Text = "" Then
+    Balloon.Error("Debe introducir un Numero de Cuenta de Iva.", Txtiva)
+    Validar = False
+    Txtiva.SetFocus
+  Else If Txtiva.Length < 7 Or (Not IsNumber(Txtiva.Text))
+    Balloon.Error("Formato erroneo, debe ser un dato numerico y de 7 caracteres.", Txtiva)
+    Validar = False
+    Txtiva.SetFocus
+  Else If Txtivare.Text = "" Then
+    Balloon.Error("Debe introducir un Numero de Cuenta de Iva Repercutido.", Txtivare)
+    Validar = False
+    Txtiva.SetFocus
+  Else If Txtivare.Length < 7 Or (Not IsNumber(Txtivare.Text))
+    Balloon.Error("Formato erroneo, debe ser un dato numerico y de 7 caracteres.", Txtivare)
+    Validar = False
+    Txtivare.SetFocus
+  Else If TxtRecargoE.Text = "" Then
+    Balloon.Error("Debe introducir un Numero de Cuenta de Iva Recargo Equivalente.", TxtRecargoE)
+    Validar = False
+    TxtRecargoE.SetFocus
+  Else If TxtRecargoE.Length < 7 Or (Not IsNumber(TxtRecargoE.Text))
+    Balloon.Error("Formato erroneo, debe ser un dato numerico y de 7 caracteres.", TxtRecargoE)
+    Validar = False
+    TxtRecargoE.SetFocus
+  Else If TxtCobro.Text = "" Then
+    Balloon.Error("Debe introducir un Numero de Cuenta de Iva Repercutido.", TxtCobro)
+    Validar = False
+    TxtCobro.SetFocus
+  Else If TxtCobro.Length < 7 Or (Not IsNumber(TxtCobro.Text))
+    Balloon.Error("Formato erroneo, debe ser un dato numerico y de 7 caracteres.", TxtCobro)
+    Validar = False
+    Txtcobro.SetFocus
+  Endif
+  Return validar
+  
+End
+
+Private Sub Configurar_Cuentas_Contabilidad()
+  Dim Sql As String
+  
+  TxtVenta.Text = Utilidades.Obtener_Campo_Tabla("select * from cuentascontabilidad", "venta")
+  TxtIva.Text = Utilidades.Obtener_Campo_Tabla("select * from cuentascontabilidad", "iva")
+  TxtIvaRe.Text = Utilidades.Obtener_Campo_Tabla("select * from cuentascontabilidad", "ivare")
+  TxtRecargoE.Text = Utilidades.Obtener_Campo_Tabla("select * from cuentascontabilidad", "re")
+  TxtCobro.Text = Utilidades.Obtener_Campo_Tabla("select * from cuentascontabilidad", "cobro")
+End
+
+
+Public Sub TxtVenta_KeyRelease()
+
+    If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtIva.SetFocus
+  Endif  
+
+End
+
+Public Sub TxtIva_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtIvaRe.SetFocus
+  Endif  
+  
+
+End
+
+Public Sub TxtIvaRe_KeyRelease()
+
+   If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtRecargoE.SetFocus
+  Endif   
+
+End
+
+Public Sub TxtRecargoE_KeyRelease()
+
+    If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtCobro.SetFocus
+  Endif  
+
+End
+
+
+'' *****************************************************************************************
+''                FIN CODIGO  CONFIGURACION CUENTAS CONTABILIDAD                           *
+'' *****************************************************************************************
+
+'' *****************************************************************************************
+''                INICIO CODIGO  CONFIGURACION TIPOS DE IVA                                *
+'' *****************************************************************************************
+
+
+
+Public Sub BtnAgregarTipoIva_Click()
+  Dim Sql As String
+  If Comprobar_Datos_Tipo_Iva("AGREGAR") Then
+    Sql = "insert into tipoiva (nombretipoiva,iva,recargo) values ('" & UCase(TxtNombreTipoIva.Text) & "'," & Val(VlBTIiva.Text) & "," & Val(vLbTIRecargo.Text) & ")"
+    Utilidades.In_Act_Bor(Sql)
+    TxtNombreTipoIva.Text = ""
+    VlBTIiva.text = ""
+    vLbTIRecargo.text = ""
+    Configurar_Tipos_Iva()
+  Endif
+
+End
+
+Public Sub BtnBorrarTipoIva_Click()
+
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Dim Respuesta As Integer
+  Numero_fila = DtbTipoIva.View.Row
+  If DtbTipoIva.View.Rows.Count > 0 Then
+    Respuesta = Message.Delete("Desea Borrar la Forma de Pago : " & DtbTipoIva.View[Numero_fila, 0].Text, "Si", "No")
+    If respuesta = 1 Then
+      sql = "delete from tipoiva where nombretipoiva='" & DtbTipoIva.View[Numero_fila, 0].Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      Configurar_Tipos_Iva()
+     Endif
+  Endif
+
+End
+
+Public Sub BtnModificarTipoIva_Click()
+
+  Dim Sql As String
+  Dim Numero_fila As Integer
+       
+  Numero_fila = DtbTipoIva.View.Row
+  If LblModificarTipoIva.Text = "EDITAR" Then
+    LblModificarTipoIva.Text = "ACTUALIZAR"
+    TxtNombreTipoIva.Text = DtbTipoIva.View[Numero_fila, 0].Text
+    VlBTIiva.Text = DtbTipoIva.View[Numero_fila, 1].Text
+    vLbTIRecargo.Text = DtbTipoIva.View[Numero_fila, 2].Text
+    TxtNombreTipoIva.Enabled = False
+    BtnAgregarTipoIva.Enabled = False
+    BtnBorrarTipoIva.Enabled = False
+    VlBTIiva.SetFocus
+   Else
+    sql = "update tipoiva set iva=" & Val(VlBTIiva.Text) & ",recargo=" & Val(vLbTIRecargo.text) & " where nombretipoiva='" & UCase(TxtNombreTipoIva.Text) & "'"
+    Utilidades.In_Act_Bor(sql)    
+    LblModificarTipoIva.Text = "EDITAR"
+    TxtNombreTipoIva.Text = ""
+    VlBTIiva.Text = ""
+    vLbTIRecargo.Text = ""
+    TxtNombreTipoIva.Enabled = True
+    BtnAgregarTipoIva.Enabled = True 
+    BtnBorrarTipoIva.Enabled = True
+    TxtNombreTipoIva.SetFocus
+    Configurar_Tipos_Iva()
+  Endif  
+
+End
+
+
+
+Private Sub Configurar_Tipos_Iva()
+  
+  Dim Cabeceras As New String[]
+  Dim Sql As String
+  
+  Cabeceras.Add("Nombre")
+  Cabeceras.Add("Iva")
+  Cabeceras.Add("Recargo")
+   DtsTipoIva.Connection = FMain.Conexion_Base_Datos
+  sql = "select * from tipoiva"
+  DtsTipoIva.Table = sql
+  DtbTipoIva.Labels = Cabeceras
+  DtbTipoIva.view.Columns[0].Width = 200
+  DtbTipoIva.view.Columns[1].Width = 100
+  DtbTipoIva.view.Columns[2].Width = 100
+  
+  
+End
+
+
+'' Funcion que comprueba que los datos introducidos son correctos de las Tipos de Iva.<br>
+'' Parametros:<br>
+''  Accion --> Accion que vamos a realizar puede tomar los siguientes Valores:<br>
+''    AGREGAR --> Cuando estamos agregando Forma de Pago.<br>
+''  Devuelve:<br>
+''    TRUE --> Datos son correctos<br>
+''    FALSE --> Datos erroeneos.
+Private Function Comprobar_Datos_Tipo_Iva(Accion As String) As Boolean
+  Dim Validar As Boolean
+  Dim Sql As String
+  Validar = True
+  
+  If TxtNombreTipoIva.text = "" Then
+    Balloon.Error("Debe introducir un Nombre para el Tipo de Iva.", TxtNombreTipoIva)
+    Validar = False
+    TxtNombreTipoIva.SetFocus
+  Else If VlBTIiva.Text = 0 
+    Balloon.Error("Debe introducir un valor para el Iva no puede ser 0.", VlBTIiva)
+    Validar = False
+    VlBTIiva.SetFocus
+  Else If vLbTIRecargo.Text = 0 
+    Balloon.Error("Debe introducir un valor para el Recargo no puede ser 0.", vLbTIRecargo)
+    Validar = False
+    vLbTIRecargo.SetFocus
+  Endif
+
+  If Accion = "AGREGAR" Then
+    sql = "select * from tipoiva where nombretipoiva='" & UCase(TxtNombreTipoIva.text) & "'"
+    If Utilidades.Comprobar_existe_dato(Sql) Then 
+    Balloon.Error("El nombre de Tipo de Iva ya existe", TxtNombreTipoIva)
+    Validar = False
+    TxtNombreTipoIva.SetFocus  
+   Endif 
+  Endif
+  Return Validar
+End
+Public Sub TxtNombreTipoIva_KeyRelease()
+ If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    VlBTIiva.SetFocus
+  Endif  
+
+End
+
+Public Sub VlBTIiva_KeyRelease()
+
+   If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    vLbTIRecargo.SetFocus
+  Endif  
+
+End
+
+
+
+'' *****************************************************************************************
+''                FIN CODIGO  CONFIGURACION TIPOS DE IVA                                   *
+'' *****************************************************************************************
+
+
+

@@ -1,0 +1,149 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,106,77)
+  Icon = Picture["imagenes/32x32/vendedores.png"]
+  Resizable = False
+  { FrameVendedores Frame
+    MoveScaled(1,1,104,74)
+    Text = ("Datos de Vendedores")
+    { BtnSalirVendedores Button
+      MoveScaled(86,68,16,5)
+      Foreground = Color.Red
+      Text = ("SALIR")
+      Picture = Picture["imagenes/32x32/salida.png"]
+    }
+    { LblDireccion Label
+      MoveScaled(1,8,13,4)
+      Font = Font["Bold"]
+      Text = ("Direccion :")
+    }
+    { TxtNombre TextBox
+      MoveScaled(33,3,24,4)
+      MaxLength = 30
+    }
+    { TxtDireccion TextBox
+      MoveScaled(11,8,46,4)
+      MaxLength = 50
+    }
+    { LblNombre Label
+      MoveScaled(24,3,9,4)
+      Font = Font["Bold"]
+      Text = ("Nombre :")
+    }
+    { TxtLocalidad TextBox
+      MoveScaled(11,13,23,4)
+      MaxLength = 20
+    }
+    { LblLocalidad Label
+      MoveScaled(1,13,13,4)
+      Font = Font["Bold"]
+      Text = ("Localidad :")
+    }
+    { TxtNif TextBox
+      MoveScaled(40,13,17,4)
+      MaxLength = 10
+    }
+    { LblProvincia Label
+      MoveScaled(1,18,13,4)
+      Font = Font["Bold"]
+      Text = ("Provincia :")
+    }
+    { TxtProvincia TextBox
+      MoveScaled(11,18,23,4)
+      MaxLength = 20
+    }
+    { LblCodigoPostal Label
+      MoveScaled(35,18,14,4)
+      Font = Font["Bold"]
+      Text = ("Codigo Postal :")
+    }
+    { TxtCodigoPostal TextBox
+      MoveScaled(49,18,8,4)
+      MaxLength = 5
+    }
+    { LblNif Label
+      MoveScaled(35,13,7,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("NIF :")
+    }
+    { TxtCodigo TextBox
+      MoveScaled(12,3,12,4)
+      MaxLength = 10
+    }
+    { LblCodigo Label
+      MoveScaled(1,3,13,4)
+      Font = Font["Bold"]
+      Text = ("Codigo :")
+    }
+    { FrameTelefonos Frame
+      MoveScaled(62,2,34,31)
+      Text = ("Telefonos")
+      { TxtTelefono TextBox
+        MoveScaled(1,4,16,4)
+        Alignment = Align.Center
+        MaxLength = 9
+      }
+      { LtbTelefono ListBox
+        MoveScaled(1,9,16,19)
+      }
+      { LblAgregarTelefono Label
+        MoveScaled(24,9,19,4)
+        Font = Font["Bold,+1"]
+        Text = ("AGREGAR")
+      }
+      { BtnBorrarTelefono Button
+        MoveScaled(18,17,5,5)
+        ToolTip = ("Borra la familia seleccionada")
+        Picture = Picture["icon:/32/remove"]
+      }
+      { LblBorrarTelefono Label
+        MoveScaled(24,18,24,4)
+        Font = Font["Bold,+1"]
+        Text = ("BORRAR")
+      }
+      { BtnAgregarTelefono Button
+        MoveScaled(18,8,5,5)
+        ToolTip = ("Añade la familia")
+        Picture = Picture["icon:/32/add"]
+      }
+    }
+    { FrameDispositivoMovil Frame
+      MoveScaled(1,23,55,13)
+      Text = ("Dispositivo Movil")
+      { CmbDispositivoMovil ComboBox
+        MoveScaled(15.5,3,24,4)
+        ReadOnly = True
+      }
+      { LblInvoDP Label
+        MoveScaled(6,7,44,4)
+        Text = ("En Utilidades podemos añadir Dispositivos Moviles")
+      }
+    }
+    { DtsVendedor DataSource
+      MoveScaled(2,39,102,28)
+      { DtbVendedor DataBrowser
+        MoveScaled(2,2,99,24)
+        Font = Font["Bold,+1"]
+        CanCreate = False
+        CanDelete = False
+      }
+    }
+    { BtnBorrarVendedor Button
+      MoveScaled(35,69,16,4)
+      Font = Font["Bold,+1"]
+      Text = ("BORRAR")
+    }
+    { BtnEditarVendedor Button
+      MoveScaled(65,69,16,4)
+      Font = Font["Bold,+1"]
+      Text = ("EDITAR")
+    }
+    { BtnAgregarVendedor Button
+      MoveScaled(5,69,16,4)
+      Font = Font["Bold,+1"]
+      Text = ("AGREGAR")
+    }
+  }
+}

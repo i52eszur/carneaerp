@@ -1,0 +1,308 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+  
+  Me.Title = "GESTION DE VENDEDORES"
+  
+  ' Llenamos los Dispositivos moviles que no estan en uso.
+  Utilidades.Llenar_Combobox("select nombre from dispositivomovil where codigodispositivomovil not in (select dispositivomovil from dispositivomovilvendedor)", CmbDispositivoMovil, "nombre")
+  TxtCodigo.SetFocus
+   Configurar_Dataset_Vendedores()
+End
+
+'' Configuramos el dataset Vendedores
+Private Sub Configurar_Dataset_Vendedores()
+  Dim Cabeceras As New String[]
+  Dim Sql As String
+  
+  Cabeceras.Add("Codigo")
+  Cabeceras.Add("Nombre")
+  Cabeceras.Add("Nif")
+  Cabeceras.Add("Direccion")
+  Cabeceras.Add("Localidad")
+  Cabeceras.Add("Provincia")
+  Cabeceras.Add("Codigo Postal")
+  
+  DtsVendedor.Connection = FMain.Conexion_Base_Datos
+  sql = "select * from vendedor"
+  DtsVendedor.Table = sql
+  DtbVendedor.Labels = Cabeceras
+  DtbVendedor.view.Columns[0].Width = 100 
+  DtbVendedor.view.Columns[1].Width = 250
+  DtbVendedor.view.Columns[2].Width = 90
+  DtbVendedor.view.Columns[3].Width = 200
+  DtbVendedor.view.Columns[4].Width = 100
+  DtbVendedor.view.Columns[5].Width = 100 
+  DtbVendedor.view.Columns[6].Width = 110 
+  
+  
+End
+
+'' Funcion para comprobar los Campos de los Vendedoreses <br>
+''  Parametros:<br>
+''      Accion - - > La accion desde la que comprobamos.<br>
+''                   AGREGAR --> Para agregar datos.<br>
+''                   MODIFICAR --> Cuando estamos modificando un dato.<br> 
+''  Devuelve:<br>
+''    TRUE --> Si los valores son correctos.<br>
+''    FALSE --> valores erroneos.
+Private Function Comprobar_Datos_Vendedores(Accion As String) As Boolean
+  Dim Validar As Boolean
+  Dim Sql As String
+  Validar = True  
+  
+  If TxtCodigo.Text = "" Then
+   Balloon.Error("Debe introducir un Codigo de Vendedor que va a crear", TxtCodigo)
+   Validar = False
+   TxtCodigo.SetFocus
+  Else If TxtNombre.text = ""
+   Balloon.Error("Debe introducir el nombre de Vendedor", TxtNombre)
+   Validar = False
+   TxtNombre.SetFocus
+   Else If TxtCodigoPostal.Text <> "" And (Not IsNumber(TxtCodigoPostal.Text))
+    Balloon.Error("El codigo postal debe ser numerico ", TxtCodigoPostal)
+    Validar = False
+    TxtCodigoPostal.SetFocus
+  Else If TxtCodigoPostal.Length < 5 And TxtCodigoPostal.Length > 0
+    Balloon.Error("El codigo postal debe tener 5 digitos ", TxtCodigoPostal)
+    Validar = False
+    TxtCodigoPostal.SetFocus
+  Endif
+  'Si no seleccionamos ninguno borramos el asociado, si tenemmos asignado lo eliminamos y si no actualizamos.
+  If Accion = "AGREGAR" Then
+    Sql = "select * from vendedor where codigovendedor='" & UCase(TxtCodigo.Text) & "'"
+    If Utilidades.Comprobar_existe_dato(Sql) Then 
+      Balloon.Error("El codigo Vendedor ya existe", TxtCodigo)
+      Validar = False
+      TxtCodigo.SetFocus  
+   Endif 
+  Endif
+  Return Validar
+End
+
+
+Public Sub BtnSalirVendedores_Click()
+
+  Me.Close
+
+End
+
+Public Sub BtnAgregarVendedor_Click()
+  Dim Sql As String
+  Dim i As Integer
+  Dim Codigo_DM As String
+  If Comprobar_Datos_Vendedores("AGREGAR") Then
+    ' Insertamos datos en la tabla Vendedor
+    sql = "insert into  vendedor (codigovendedor,nombre,nif,direccion,localidad,provincia,codigopostal) values('" & UCase(TxtCodigo.Text) & "','" & UCase(TxtNombre.text) & "','" &
+    UCase(TxtNif.Text) & "','" & UCase(TxtDireccion.Text) & "','" & UCase(TxtLocalidad.text) & "','" & UCase(TxtProvincia.Text) & "','" & UCase(TxtCodigoPostal.Text) & "')"
+    Utilidades.In_Act_Bor(sql)
+    'Insertamos si hemos seleccionado Dispositivo Movil insertamos en la tabla DispositivomovilVendedor
+    If CmbDispositivoMovil.text <> "" Then
+      sql = "select * from dispositivomovil where nombre='" & CmbDispositivoMovil.Text & "'"
+      Codigo_DM = Utilidades.Obtener_Campo_Tabla(sql, "codigodispositivomovil")
+      sql = "insert into dispositivomovilvendedor(dispositivomovil,vendedor) values('" & UCase(Codigo_DM) & "','" & UCase(TxtCodigo.Text) & "')"  
+      Utilidades.In_Act_Bor(sql)
+    Endif
+    ' Insertamos los telefonos si hemos añadido en la tabla 
+    If LtbTelefono.Count > 0 Then
+      For i = 0 To LtbTelefono.Count - 1
+        sql = "insert into vendedortelefono (telefono,vendedor) values('" & LtbTelefono[i].Text & "','" & UCase(TxtCodigo.Text) & "')"
+        Utilidades.In_Act_Bor(sql)
+      Next
+    Endif
+    Borrar_Campos_Vendedor()
+    Configurar_Dataset_Vendedores()
+    
+  Endif
+
+End
+
+Public Sub BtnAgregarTelefono_Click()
+
+  If TxtTelefono.text = "" Then
+    Balloon.Error("Introduzca telefono antes de añadir", TxtTelefono)
+    TxtTelefono.SetFocus
+  Else If Not IsNumber(TxtTelefono.Text) 
+    Balloon.Error("El Telefono es un dato Numerico", TxtTelefono)
+    TxtTelefono.SetFocus
+  Else If TxtTelefono.Length < 9
+    Balloon.Error("Al Telefono le faltan digitos ", TxtTelefono)
+    TxtTelefono.SetFocus
+  Else
+      LtbTelefono.Add(TxtTelefono.Text)
+      TxtTelefono.Text = ""
+  Endif
+
+End
+
+Public Sub BtnBorrarTelefono_Click()
+  Dim Contar_Seleccionados As Integer
+  Dim Numero_Telefonos As Integer
+  Dim i As Integer
+  Numero_Telefonos = LtbTelefono.Count
+  Contar_Seleccionados = 0
+  For i = 0 To Numero_Telefonos - 1
+    If LtbTelefono[i].Selected Then
+      Contar_Seleccionados = Contar_Seleccionados + 1
+    Endif
+  Next
+  If Numero_Telefonos > 0 And Contar_Seleccionados > 0 Then
+    If LtbTelefono.Current.Selected Then
+      LtbTelefono.Remove(LtbTelefono.Index)
+    Endif
+  Endif
+
+End
+
+'' Limpiamos los campos del Vendedor.
+Private Sub Borrar_Campos_Vendedor() 
+  
+  TxtCodigo.text = ""
+  TxtCodigoPostal.text = ""
+  TxtDireccion.text = ""
+  TxtLocalidad.text = ""
+  TxtNif.text = ""
+  TxtNombre.text = ""
+  TxtProvincia.text = ""
+  LtbTelefono.Clear
+  CmbDispositivoMovil.Text = ""
+  TxtTelefono.Text = ""
+  
+End
+
+Public Sub BtnBorrarVendedor_Click()
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Dim Respuesta As Integer
+  Numero_fila = DtbVendedor.View.Row
+  If DtbVendedor.View.Rows.Count > 0 Then
+    Respuesta = Message.Delete("Desea Borrar el Vendedor y toda la informacion asociada : " & DtbVendedor.View[Numero_fila, 1].Text, "Si", "No")
+    If respuesta = 1 Then
+      sql = "delete from vendedor where codigovendedor='" & DtbVendedor.View[Numero_fila, 0].Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      sql = "delete from dispositivomovilvendedor where vendedor='" & DtbVendedor.View[Numero_fila, 0].Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      sql = "delete from vendedortelefono where vendedor='" & DtbVendedor.View[Numero_fila, 0].Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      Configurar_Dataset_Vendedores()
+     Endif
+  Endif
+  
+
+End
+
+Public Sub BtnEditarVendedor_Click()
+  Dim Sql As String
+  Dim Numero_fila As Integer 
+  Dim Codigo_DM As String
+  Dim i As Integer
+  Numero_fila = DtbVendedor.View.Row
+  If BtnEditarVendedor.Text = "EDITAR" Then
+    TxtCodigo.text = DtbVendedor.View[Numero_fila, 0].Text
+    TxtNombre.text = DtbVendedor.View[Numero_fila, 1].Text
+    TxtNif.text = DtbVendedor.View[Numero_fila, 2].Text
+    TxtDireccion.text = DtbVendedor.View[Numero_fila, 3].Text
+    TxtLocalidad.text = DtbVendedor.View[Numero_fila, 4].Text
+    TxtProvincia.text = DtbVendedor.View[Numero_fila, 5].Text
+    TxtCodigoPostal.text = DtbVendedor.View[Numero_fila, 6].Text
+    'Llenamos el Los telefonos del vendedor.
+    sql = "select * from vendedortelefono where vendedor='" & TxtCodigo.Text & "'"
+    Utilidades.Llenar_Listbox(sql, LtbTelefono, "telefono")
+    ' Cargamos los datos de los dispositivos moviles y seleccionamos el asociado al cliente
+    Utilidades.Llenar_Combobox("select nombre from dispositivomovil where codigodispositivomovil not in (select dispositivomovil from dispositivomovilvendedor)", CmbDispositivoMovil, "nombre")
+    sql = "select * from dispositivomovilvendedor where vendedor='" & TxtCodigo.Text & "'"
+    If Utilidades.Tabla_Vacia(sql) > 0 Then
+      Codigo_DM = Utilidades.Obtener_Campo_Tabla(sql, "dispositivomovil")
+      sql = "select * from dispositivomovil where codigodispositivomovil='" & Codigo_DM & "'"
+      CmbDispositivoMovil.Add(Utilidades.Obtener_Campo_Tabla(sql, "nombre"))
+      CmbDispositivoMovil.text = Utilidades.Obtener_Campo_Tabla(sql, "nombre")
+    Endif
+    BtnEditarVendedor.text = "ACTUALIZAR"
+    BtnAgregarVendedor.Enabled = False
+    BtnBorrarVendedor.Enabled = False
+    TxtCodigo.Enabled = False
+  Else
+    If Comprobar_Datos_Vendedores("MODIFICAR") Then
+      'Actualizamos la tabla Vendedor
+      sql = "update vendedor set nombre='" & UCase(TxtNombre.text) & "',nif='" & UCase(TxtNif.Text) & "',direccion='" & UCase(TxtDireccion.Text) &
+      "',localidad='" & UCase(TxtLocalidad.Text) & "',provincia='" & UCase(TxtProvincia.Text) & "',codigopostal='" & UCase(TxtCodigoPostal.Text) & "' where codigovendedor='" & UCase(TxtCodigo.Text) & "'"
+      Utilidades.In_Act_Bor(sql)    
+      ' Actualizamos Telefonos, borramos los telefonos, si el listbox de los telefonos esta vacio no hacemos nada.
+      ' Si tenemos datos en el listbox de telefono los añadimos.
+      sql = "delete from vendedortelefono where vendedor='" & TxtCodigo.Text & "'"
+      Utilidades.In_Act_Bor(sql)    
+      If LtbTelefono.Count > 0 Then 
+        For i = 0 To LtbTelefono.Count - 1
+          sql = "insert into vendedortelefono (telefono,vendedor) values('" & LtbTelefono[i].Text & "','" & UCase(TxtCodigo.Text) & "')"
+          Utilidades.In_Act_Bor(sql)
+        Next
+      Endif
+      ' Actualizamos lo referente al Dispositivo Movil Asignado. Borramos los dispositivos moviles, y si tenemos asignado lo añadimos
+      sql = "delete from dispositivomovilvendedor where vendedor='" & TxtCodigo.Text & "'"
+      Utilidades.In_Act_Bor(sql)    
+      If CmbDispositivoMovil.text <> "" Then ' Si no hemos seleccionado DM, si teniamos asignado borramos.
+        sql = "select * from dispositivomovil where nombre='" & CmbDispositivoMovil.Text & "'"
+        Codigo_DM = Utilidades.Obtener_Campo_Tabla(sql, "codigodispositivomovil")
+        sql = "insert into dispositivomovilvendedor(dispositivomovil,vendedor) values('" & UCase(Codigo_DM) & "','" & UCase(TxtCodigo.Text) & "')"  
+        Utilidades.In_Act_Bor(sql)
+      Endif
+      BtnEditarVendedor.text = "EDITAR"
+      BtnAgregarVendedor.Enabled = True
+      BtnBorrarVendedor.Enabled = True
+      TxtCodigo.Enabled = True
+      Borrar_Campos_Vendedor()
+    
+    Endif 
+    
+  Endif
+  Configurar_Dataset_Vendedores()
+End
+
+Public Sub TxtCodigo_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtNombre.SetFocus
+  Endif
+
+End
+
+Public Sub TxtNombre_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtDireccion.SetFocus
+  Endif
+
+End
+
+Public Sub TxtDireccion_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtLocalidad.SetFocus
+  Endif
+
+End
+
+Public Sub TxtLocalidad_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtProvincia.SetFocus
+  Endif
+
+End
+
+Public Sub TxtNif_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtCodigoPostal.SetFocus
+  Endif
+
+End
+
+Public Sub TxtProvincia_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtNif.SetFocus
+  Endif
+
+End

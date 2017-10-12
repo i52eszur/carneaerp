@@ -10,6 +10,7 @@
     Radio = True
     { MenuSalir Menu
       Text = ("Salir")
+      Picture = Picture["imagenes/32x32/salida.png"]
     }
   }
   { MenuGestion Menu
@@ -77,9 +78,6 @@
     { Menu1 Menu
       Text = ("Utilidades")
       Picture = Picture["imagenes/32x32/utilidades.png"]
-      { MenuConexionBd Menu
-        Text = ("Conexion Base Datos")
-      }
     }
   }
   { FrameGestion Frame

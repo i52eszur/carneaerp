@@ -14,113 +14,6 @@ Public Sub Form_Open()
   Accion_Visualizar_Tarifa = False
   
 End
-'' Configurarion Tab Tarifas y sus Objetos
-  Private Sub Configurar_tab_Tarifa()
-    Dim Cabeceras As New String[]
-    Dim Sql As String
-    Cabeceras.Add("Tarifa")
-    Cabeceras.Add("Articulo")
-    Cabeceras.Add("Precio")
-    If Utilidades.Tabla_Vacia("select * from articulo") = 0 Then
-      TxtlerrorTarifas.visible = True
-      TxtlerrorTarifas.Text = "Debe ir a la Tab Articulos y crear los Articulos antes de poder Crear Tarifas."
-    Else
-      TxtlerrorTarifas.Visible = False
-      TxtlerrorTarifas.Text = ""
-    Endif
-    Utilidades.Llenar_Combobox("select * from articulo", CmbTArticulos, "nombre")  
-    Utilidades.Llenar_Combobox("select * from tarifa", CmbTarifaEditar, "nombretarifa")  
-    DtsTarifa.Connection = FMain.Conexion_Base_Datos
-    'DtsTarifa.table = "tarifaarticulo" 
-    sql = "select T.tarifa,A.nombre,T.precio from articulo A, tarifaarticulo T where A.codigoarticulo=T.articulo order by T.tarifa" 
-    DtsTarifa.table = sql 
-    DtBTarifa.Labels = Cabeceras
-    DtBTarifa.View.Columns[0].width = 200
-    DtBTarifa.View.Columns[1].width = 100
-    DtBTarifa.View.Columns[2].width = 100
-  
-End
-
-
-'' Configuramos Tab Articulos y sus objetos <br>
-'' Parametros:<br>
-''    Accion:<br>
-''      COMBOBOX --> Llenamos el Combobox de las Familias<br>
-''      LISTBOX --> Llenamos el ListBox de la Materia Prima<br>
-''      TODO --> Configuracion inicial, llenamos Combobox y Listobox<br>
-Private Sub Configurar_Tab_Articulos(Accion As String)
-  Dim Cabeceras As New String[]
-  Dim Error_Tablas_Vacias As String
-  Cabeceras.Add("Codigo")
-  Cabeceras.Add("Nombre")
-  Cabeceras.Add("Familia")
-  Error_Tablas_Vacias = ""
-  If Utilidades.Tabla_Vacia("select * from familiaarticulo") = 0 Then
-       Error_Tablas_Vacias = " Debe crear Familias"  
-  Endif
-  If Utilidades.Tabla_Vacia("select * from materiaprima") = 0 Then
-    If Error_Tablas_Vacias = "" Then
-       Error_Tablas_Vacias = " Debe crear materiaprima"  
-     Else
-       Error_Tablas_Vacias = Error_Tablas_Vacias & " y agregar Materia Primas"  
-    Endif
-  Endif
-  If Error_Tablas_Vacias = "" Then
-    TxtlerrorArticulos.Visible = False
-    TxtlerrorArticulos.Text = ""    
-  Else
-    TxtlerrorArticulos.Visible = True
-    Error_Tablas_Vacias = Error_Tablas_Vacias & " antes de poder Crear Articulos."
-    TxtlerrorArticulos.Text = Error_Tablas_Vacias 
-  Endif
-  
-  If Accion = "COMBOBOX" Then
-    Utilidades.Llenar_Combobox("select * from familiaarticulo", CmbFamiliaArticulo, "nombrefamilia")  
-  Else If Accion = "LISTBOX"
-    Utilidades.Llenar_Listbox("select * from materiaprima", LtBKMP, "nombre")
-  Else If Accion = "TODO"
-    Utilidades.Llenar_Combobox("select * from familiaarticulo", CmbFamiliaArticulo, "nombrefamilia")  
-    Utilidades.Llenar_Listbox("select * from materiaprima", LtBKMP, "nombre")
-    DtsArticulos.Connection = FMain.Conexion_Base_Datos
-    DtsArticulos.table = "articulo"  
-    DtbArticulos.Labels = Cabeceras
-    DtbArticulos.View.Columns[0].width = 100
-    DtbArticulos.View.Columns[1].width = 150
-    DtbArticulos.View.Columns[2].width = 200
-  Endif
-  
-  
-End 
-'' Configuracion Tab Familias y sus  objetos
-Private Sub Configurar_Tab_Familias()
-  Dim Cabeceras As New String[]
-  
-  Cabeceras.Add("Nombre")
-  Cabeceras.Add("Recargo")
-  DtsFamilia.Connection = FMain.Conexion_Base_Datos
-  DtsFamilia.table = "familiaarticulo"  
-  DtbFamilia.Labels = Cabeceras
-  DtbFamilia.View.Columns[0].width = 220
-  DtbFamilia.View.Columns[1].width = 20
-  LCDNumeroFamilias.Text = CStr(DtbFamilia.View.Rows.Count)
-    
-End
-
-'' Configuracion Tab Materia Prima y sus Objetos
-Private Sub Configurar_Tab_MateriaPrima()
-  Dim Cabeceras As New String[]
-  
-  Cabeceras.Add("Codigo")
-  Cabeceras.Add("Nombre")
-  DtsMateriaPrima.Connection = FMain.Conexion_Base_Datos
-  DtsMateriaPrima.table = "materiaprima"  
-  DtbMateriaPrima.Labels = Cabeceras
-  DtbMateriaPrima.View.Columns[0].width = 100
-  DtbMateriaPrima.View.Columns[1].width = 150
-  LCDNumeroMP.Text = CStr(DtbMateriaPrima.View.Rows.Count)
-  
-  
-End
 
 
 Public Sub BtnSalirT_Click()
@@ -148,14 +41,36 @@ Public Sub BtnSalirF_Click()
 End
 
 
+
+
+
+
+
+
+
+'' *****************************************************************************************
+''                INICIO CODIGO CONFIGURACION FAMILIAS                                     *
+'' *****************************************************************************************
+'' Configuracion Tab Familias y sus  objetos
+Private Sub Configurar_Tab_Familias()
+  Dim Cabeceras As New String[]
+  
+  Cabeceras.Add("Nombre")
+  Cabeceras.Add("Recargo")
+  DtsFamilia.Connection = FMain.Conexion_Base_Datos
+  DtsFamilia.table = "familiaarticulo"  
+  DtbFamilia.Labels = Cabeceras
+  DtbFamilia.View.Columns[0].width = 220
+  DtbFamilia.View.Columns[1].width = 20
+  LCDNumeroFamilias.Text = CStr(DtbFamilia.View.Rows.Count)
+    
+End
 Public Sub BtnAgregarFamilia_Click()
 
  Dim Recargo As Float
  Dim Sql As String
  
-   
  If Comprobar_Campos_Familia("AGREGAR") Then
-  
    Recargo = CFloat(TxtRecargoFamilia.text)
    Sql = "insert into familiaarticulo (nombrefamilia,recargo) values ('" & UCase(TxtNombreFamilia.Text) & "'," & Recargo & ")"
    Utilidades.In_Act_Bor(Sql)
@@ -234,7 +149,7 @@ End
 
 '' Funcion para comprobar los campos del Tab familias<br>
 ''  Parametros:<br>
-''      Accion - - > La accion desde la que comprobamos.Si es a ñadir tenermos que comprobar que el nombre de familia existe en caso contrario no.<br>
+''      Accion - - > La accion desde la que comprobamos.<br>
 ''                   AGREGAR --> Para agregar datos.<br>
 ''                   MODIFICAR --> Cuando estamos modificando un dato.<br> 
 ''  Devuelve:<br>
@@ -270,10 +185,34 @@ Private Function Comprobar_Campos_Familia(Accion As String) As Boolean
   Return Validar
 End
 
+
+
+
+'' *****************************************************************************************
+''                FIN CODIGO CONFIGURACION  FAMILIAS                                       *
+'' *****************************************************************************************
+
+'' *****************************************************************************************
+''                INICIO CODIGO CONFIGURACION MATERIA PRIMA                                *
+'' *****************************************************************************************
+'' Configuracion Tab Materia Prima y sus Objetos
+Private Sub Configurar_Tab_MateriaPrima()
+  Dim Cabeceras As New String[]
+  
+  Cabeceras.Add("Codigo")
+  Cabeceras.Add("Nombre")
+  DtsMateriaPrima.Connection = FMain.Conexion_Base_Datos
+  DtsMateriaPrima.table = "materiaprima"  
+  DtbMateriaPrima.Labels = Cabeceras
+  DtbMateriaPrima.View.Columns[0].width = 100
+  DtbMateriaPrima.View.Columns[1].width = 150
+  LCDNumeroMP.Text = CStr(DtbMateriaPrima.View.Rows.Count)
+  
+End
+
 Public Sub BtnAgregarMP_Click()
 
  Dim Sql As String
- 
    
  If Comprobar_Campos_MateriaPrima("AGREGAR") Then
       
@@ -290,7 +229,7 @@ End
 
 '' Funcion para comprobar los campos del Tab Materia Prima<br>
 ''  Parametros:<br>
-''      Accion - - > La accion desde la que comprobamos.Si es a ñadir tenermos que comprobar que el nombre de familia existe en caso contrario no.<br>
+''      Accion - - > La accion desde la que comprobamos.<br>
 ''                   AGREGAR --> Para agregar datos.<br>
 ''                   MODIFICAR --> Cuando estamos modificando un dato.<br> 
 ''  Devuelve:<br>
@@ -321,7 +260,6 @@ Private Function Comprobar_Campos_MateriaPrima(Accion As String) As Boolean
  Endif 
   Return Validar
   
-  
 End
 
 
@@ -348,8 +286,7 @@ Public Sub BtnModificarMP_Click()
 
   Dim Sql As String
   Dim Numero_fila As Integer
-   
-    
+       
   Numero_fila = DtbMateriaPrima.View.Row
   If LblModificarMP.Text = "EDITAR" Then
     LblModificarMP.Text = "ACTUALIZAR"
@@ -460,6 +397,67 @@ Public Sub BtnABorrarMP_Click()
   LtBKMPComposicion.UnselectAll
 End
 
+
+
+'' *****************************************************************************************
+''                FIN CODIGO CONFIGURACION MATERIA PRIMA                                   *
+'' *****************************************************************************************
+
+
+
+'' *****************************************************************************************
+''                INICIO CODIGO CONFIGURACION ARTICULOS                                    *
+'' *****************************************************************************************
+'' Configuramos Tab Articulos y sus objetos <br>
+'' Parametros:<br>
+''    Accion:<br>
+''      COMBOBOX --> Llenamos el Combobox de las Familias<br>
+''      LISTBOX --> Llenamos el ListBox de la Materia Prima<br>
+''      TODO --> Configuracion inicial, llenamos Combobox y Listobox<br>
+Private Sub Configurar_Tab_Articulos(Accion As String)
+  Dim Cabeceras As New String[]
+  Dim Error_Tablas_Vacias As String
+  Cabeceras.Add("Codigo")
+  Cabeceras.Add("Nombre")
+  Cabeceras.Add("Familia")
+  Error_Tablas_Vacias = ""
+  If Utilidades.Tabla_Vacia("select * from familiaarticulo") = 0 Then
+       Error_Tablas_Vacias = " Debe crear Familias"  
+  Endif
+  If Utilidades.Tabla_Vacia("select * from materiaprima") = 0 Then
+    If Error_Tablas_Vacias = "" Then
+       Error_Tablas_Vacias = " Debe crear materiaprima"  
+     Else
+       Error_Tablas_Vacias = Error_Tablas_Vacias & " y agregar Materia Primas"  
+    Endif
+  Endif
+  If Error_Tablas_Vacias = "" Then
+    TxtlerrorArticulos.Visible = False
+    TxtlerrorArticulos.Text = ""    
+  Else
+    TxtlerrorArticulos.Visible = True
+    Error_Tablas_Vacias = Error_Tablas_Vacias & " antes de poder Crear Articulos."
+    TxtlerrorArticulos.Text = Error_Tablas_Vacias 
+  Endif
+  
+  If Accion = "COMBOBOX" Then
+    Utilidades.Llenar_Combobox("select * from familiaarticulo", CmbFamiliaArticulo, "nombrefamilia")  
+  Else If Accion = "LISTBOX"
+    Utilidades.Llenar_Listbox("select * from materiaprima", LtBKMP, "nombre")
+  Else If Accion = "TODO"
+    Utilidades.Llenar_Combobox("select * from familiaarticulo", CmbFamiliaArticulo, "nombrefamilia")  
+    Utilidades.Llenar_Listbox("select * from materiaprima", LtBKMP, "nombre")
+    DtsArticulos.Connection = FMain.Conexion_Base_Datos
+    DtsArticulos.table = "articulo"  
+    DtbArticulos.Labels = Cabeceras
+    DtbArticulos.View.Columns[0].width = 100
+    DtbArticulos.View.Columns[1].width = 150
+    DtbArticulos.View.Columns[2].width = 200
+  Endif
+  
+  
+End 
+
 Public Sub TxtCodigoArticulo_KeyRelease()
 
    If Key.Code = Key.Return Or Key.Code = Key.Enter Then
@@ -480,8 +478,8 @@ Public Sub BtnAgregarArticulo_Click()
   Dim Sql As String
   Dim Contador As Integer
   Dim i As Integer
-  
   Dim C_MateriaPrima As String
+  
   If Comprobar_Campos_Articulos("AGREGAR") Then
     ' Insertamos el articulo en la tabla Articulo
       Sql = "insert into articulo (codigoarticulo,nombre,familia) values('" & UCase(TxtCodigoArticulo.Text) & "','" & UCase(TxtNombreArticulo.text) & "','" & UCase(CmbFamiliaArticulo.Text) & "')"
@@ -527,9 +525,9 @@ End
 
 
 
-'' Funcion para comprobar los Objetos del Tab Articulos<br>
+'' Funcion para comprobar los Campos del Tab Articulos<br>
 ''  Parametros:<br>
-''      Accion - - > La accion desde la que comprobamos.Si es a ñadir tenermos que comprobar que el nombre de familia existe en caso contrario no.<br>
+''      Accion - - > La accion desde la que comprobamos.<br>
 ''                   AGREGAR --> Para agregar datos.<br>
 ''                   MODIFICAR --> Cuando estamos modificando un dato.<br> 
 ''  Devuelve:<br>
@@ -623,7 +621,6 @@ Public Sub BtnEditarArticulo_Click()
 
 End
 
-
 '' Procedimiento que elimina los elementos que estan en el Listbox de la composicion de los elementos del listbos de materia prima.<br>
 
 Private Sub Eliminar_Materia_Prima_Listboxmp()
@@ -684,6 +681,14 @@ End
 
 
 
+'' *****************************************************************************************
+''                FIN CODIGO CONFIGURACION ARTICULOS                                       *
+'' *****************************************************************************************
+
+
+'' *****************************************************************************************
+''                INICIO CODIGO CONFIGURACION TARIFAS                                      *
+'' *****************************************************************************************
 
 '' Funcion para comprobar los Objetos del Tab Tarifas<br>
 ''  Parametros:<br>
@@ -898,7 +903,7 @@ Public Sub BtnVisualizarTarifa_Click()
   Else
     FrameTarifas.Enabled = True 
     FrameTTarifas.Enabled = False
-    BtnSalirVisualizar.visible = True
+    BtnSalirVisualizarTarifas.visible = True
     LbLSalirVisualizar.visible = True
     Accion_Visualizar_Tarifa = True
     BtnAgregarAT.Enabled = False
@@ -931,11 +936,11 @@ Public Sub CmbTarifaEditar_Click()
   
 End
 
-Public Sub BtnSalirVisualizar_Click()
+Public Sub BtnSalirVisualizarTarifas_Click()
   Dim Sql As String
     FrameTarifas.Enabled = False
     FrameTTarifas.Enabled = True
-    BtnSalirVisualizar.visible = False
+    BtnSalirVisualizarTarifas.visible = False
     LbLSalirVisualizar.visible = False 
     Accion_Visualizar_Tarifa = False
     CmbTarifaEditar.Text = ""
@@ -950,3 +955,34 @@ Public Sub BtnSalirVisualizar_Click()
     DtBTarifa.View.Columns[1].width = 100
     DtBTarifa.View.Columns[2].width = 100
 End
+
+'' Configurarion Tab Tarifas y sus Objetos
+  Private Sub Configurar_tab_Tarifa()
+    Dim Cabeceras As New String[]
+    Dim Sql As String
+    Cabeceras.Add("Tarifa")
+    Cabeceras.Add("Articulo")
+    Cabeceras.Add("Precio")
+    If Utilidades.Tabla_Vacia("select * from articulo") = 0 Then
+      TxtlerrorTarifas.visible = True
+      TxtlerrorTarifas.Text = "Debe ir a la Tab Articulos y crear los Articulos antes de poder Crear Tarifas."
+    Else
+      TxtlerrorTarifas.Visible = False
+      TxtlerrorTarifas.Text = ""
+    Endif
+    Utilidades.Llenar_Combobox("select * from articulo", CmbTArticulos, "nombre")  
+    Utilidades.Llenar_Combobox("select * from tarifa", CmbTarifaEditar, "nombretarifa")  
+    DtsTarifa.Connection = FMain.Conexion_Base_Datos
+    sql = "select T.tarifa,A.nombre,T.precio from articulo A, tarifaarticulo T where A.codigoarticulo=T.articulo order by T.tarifa" 
+    DtsTarifa.table = sql 
+    DtBTarifa.Labels = Cabeceras
+    DtBTarifa.View.Columns[0].width = 200
+    DtBTarifa.View.Columns[1].width = 100
+    DtBTarifa.View.Columns[2].width = 100
+  
+End
+
+
+'' *****************************************************************************************
+''                FIN CODIGO CONFIGURACION  TARIFAS                                        *
+'' *****************************************************************************************

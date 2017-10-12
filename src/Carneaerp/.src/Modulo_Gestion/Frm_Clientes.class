@@ -3,8 +3,533 @@
 
 Public Sub Form_Open()
  Me.Title = "GESTION DE CLIENTES"
+ TxtRazonSocial.SetFocus
+ Configurar_Objetos_Clientes()
+ Configurar_DataSet_Clientes()
+End
+
+
+
+
+Public Sub Configurar_Objetos_Clientes()
+  Dim Error_Tablas_Vacias As String
+  Dim Error_V As Boolean
+  Dim Numero_Clientes As Integer
+  Dim Valor_Subcuenta_Iva As Integer
+  Error_V = False
+  
+  If Utilidades.Tabla_Vacia("select * from tarifa") = 0 Then
+     Error_Tablas_Vacias = "Deber Cear Tarifas"
+     Error_V = True
+    Else
+      Utilidades.Llenar_Combobox("select * from tarifa", CmbTarifa, "nombretarifa")  
+    Endif
+  
+  If Utilidades.Tabla_Vacia("select * from vendedor") = 0 Then
+        Error_V = True
+    If Error_Tablas_Vacias = "" Then
+        Error_Tablas_Vacias = "Deber Cear Vendedores"
+      Else
+        Error_Tablas_Vacias = Error_Tablas_Vacias & ", Vendedores"
+    Endif
+    Else
+      Utilidades.Llenar_Combobox("select * from vendedor", CmbVendedor, "nombre")  
+  Endif
+
+  If Utilidades.Tabla_Vacia("select * from formapago") = 0 Then
+   
+     Error_V = True
+    If Error_Tablas_Vacias = "" Then
+        Error_Tablas_Vacias = "Debe Cear Forma de Pago en Utilidades."
+      Else
+        Error_Tablas_Vacias = Error_Tablas_Vacias & " y Forma de pago en Utilidades."
+    Endif
+    Else
+      Utilidades.Llenar_Combobox("select * from formapago", CmbFormaPago, "nombreformapago")  
+  Endif
+  
+  If Error_V Then
+    TxtlerrorClientes.Visible = True
+    TxtlerrorClientes.text = Error_Tablas_Vacias
+  Endif
+  
+  TxtlerrorClientes.text = Error_Tablas_Vacias
+  If Utilidades.Tabla_Vacia("select * from clientes") = 0 Then
+    VlbSubcuentaIva.text = "43000001"
+    TxtCodigo.text = "1"
+    Else
+      Valor_Subcuenta_Iva = Val(utilidades.Valor_Maximo("select * from clientes order by subcuentaiva", "subcuentaiva")) + 1
+      VlbSubcuentaIva.text = Valor_Subcuenta_Iva
+  Endif
+  
+End
+
+
+'' Procedimiento para configurar el Dataset.
+Public Sub Configurar_DataSet_Clientes()
+  Dim Cabeceras As New String[]
+  Dim Sql As String
+  
+  Cabeceras.Add("Codigo")
+  Cabeceras.Add("Razon Social")
+  Cabeceras.Add("Direccion")
+  Cabeceras.Add("Localidad")
+  Cabeceras.Add("Provincia")
+  Cabeceras.Add("Codigo Postal")
+  Cabeceras.Add("Nif")
+  Cabeceras.Add("Subcuenta Iva")
+  Cabeceras.Add("Descuento PP")
+  Cabeceras.Add("Descuento ESP")
+  Cabeceras.Add("Recargo")
+  Cabeceras.Add("IVA")
+  Cabeceras.Add("Email")
+  Cabeceras.Add("Envio Email")
+  Cabeceras.Add("Forma Pago")
+  Cabeceras.Add("Tarifa")
+  Cabeceras.Add("Vendedor")
+  DtsClientes.Connection = FMain.Conexion_Base_Datos
+  sql = "select * from clientes"
+  DtsClientes.Table = sql
+  DtbClientes.Labels = Cabeceras
+  DtbClientes.view.Columns[0].Width = 100 'Codigo
+  DtbClientes.view.Columns[1].Width = 250
+  DtbClientes.view.Columns[2].Width = 250
+  DtbClientes.view.Columns[3].Width = 200
+  DtbClientes.view.Columns[4].Width = 200
+  DtbClientes.view.Columns[5].Width = 110 ' Codigo Postal
+  DtbClientes.view.Columns[6].Width = 90 ' Nif
+  DtbClientes.view.Columns[10].Width = 90 'Recargo
+  DtbClientes.view.Columns[11].Width = 90 'Iva
+  DtbClientes.view.Columns[12].Width = 100 'Email
+  DtbClientes.view.Columns[13].Width = 100 'Envio Email
+  DtbClientes.view.Columns[14].Width = 150 'Forma Pago
+  DtbClientes.view.Columns[15].Width = 150 'Tarifa
+  DtbClientes.view.Columns[16].Width = 150 'Vendedor
+End
+
+Public Sub BtnAgregarCliente_Click()
+
+  Dim Sql As String
+  Dim i As Integer
+  Dim Codigo_DM As String
+  Dim Tiene_Iva As String
+  Dim Tiene_re As String
+  Dim Email As String
+  Dim Envio_Email As String
+  If Comprobar_Datos_Clientes("AGREGAR") Then
+    If ChkIva.value = True Then
+      Tiene_Iva = "S"
+    Else
+      Tiene_Iva = "N"
+    Endif
+    If ChkRecargoEquivalente.Value = True Then
+      Tiene_re = "S"
+    Else
+      Tiene_re = "N"
+    Endif
+    If ChkEnvioFacturasCorreo.Value = True Then
+      Email = TxtEmail.Text
+      Envio_Email = "S"
+    Else
+        Email = ""
+        Envio_Email = "N"
+    Endif
+    sql = "insert into clientes (codigocliente,razonsocial,direccion,localidad,provincia,codigopostal,nif,subcuentaiva,descuentopp,descuentoesp,recargo,iva,email,enviofacturaemail,formapago,tarifa,vendedor)" &
+    " values('" & UCase(TxtCodigo.Text) & "','" & UCase(TxtRazonSocial.Text) & "','" & UCase(TxtDireccion.Text) & "','" & UCase(TxtLocalidad.Text) & "','" & UCase(TxtProvincia.Text) & 
+    "','" & UCase(TxtCodigoPostal.Text) & "','" & UCase(TxtNif.Text) & "'," & Val(VlbSubcuentaIva.Text) & "," & Val(VlbDescuentoPP.Text) & "," & Val(VlbDescuentoESP.Text) & ",'" & 
+    Tiene_re & "','" & Tiene_Iva & "','" & Email & "','" & Envio_Email & "','" & CmbFormaPago.Text & "','" & CmbTarifa.Text & "','" & CmbVendedor.Text & "')"
+    utilidades.In_Act_Bor(sql)   
+    If LtbTelefono.Count > 0 Then
+      For i = 0 To LtbTelefono.Count - 1
+        sql = "insert into clientetelefono (telefono,cliente) values('" & LtbTelefono[i].Text & "','" & UCase(TxtCodigo.Text) & "')"
+        Utilidades.In_Act_Bor(sql)
+      Next
+    Endif
+    If LtbFax.Count > 0 Then
+      For i = 0 To LtbFax.Count - 1
+        sql = "insert into clientefax (fax,cliente) values('" & LtbFax[i].Text & "','" & UCase(TxtCodigo.Text) & "')"
+        Utilidades.In_Act_Bor(sql)
+      Next
+    Endif
+    Borrar_Campos_Clientes()
+    Configurar_DataSet_Clientes()
+  Endif
 
 End
 
+
+Public Sub BtnBorrarCliente_Click()
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Dim Respuesta As Integer
+  Numero_fila = DtbClientes.View.Row
+  If DtbClientes.View.Rows.Count > 0 Then
+    Respuesta = Message.Delete("Desea Borrar el Cliente : " & DtbClientes.View[Numero_fila, 1].Text, "Si", "No")
+    If respuesta = 1 Then
+      sql = "delete from clientes where codigocliente='" & DtbClientes.View[Numero_fila, 0].Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      sql = "delete from clientetelefono where cliente='" & DtbClientes.View[Numero_fila, 0].Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      sql = "delete from clientefax where cliente='" & DtbClientes.View[Numero_fila, 0].Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      Configurar_DataSet_Clientes()
+     Endif
+  Endif
+
+End
+
+Public Sub BtnEditarCliente_Click()
+  Dim Sql As String
+  Dim Numero_fila As Integer 
+  Dim Codigo_DM As String
+  Dim Tiene_Iva As String
+  Dim Tiene_re As String
+  Dim Email As String
+  Dim Envio_Email As String
+  Dim i As Integer
+  Dim Valor_Subcuenta_Iva As Integer
+  Valor_Subcuenta_Iva = VlbSubcuentaIva.Text
+  Numero_fila = DtbClientes.View.Row
+  If BtnEditarCliente.text = "EDITAR" Then
+    TxtCodigo.Text = DtbClientes.View[Numero_fila, 0].Text
+    TxtRazonSocial.Text = DtbClientes.View[Numero_fila, 1].Text
+    TxtDireccion.Text = DtbClientes.View[Numero_fila, 2].Text
+    TxtLocalidad.Text = DtbClientes.View[Numero_fila, 3].Text
+    TxtProvincia.Text = DtbClientes.View[Numero_fila, 4].Text
+    TxtCodigoPostal.Text = DtbClientes.View[Numero_fila, 5].Text
+    TxtNif.Text = DtbClientes.View[Numero_fila, 6].Text
+    VlbSubcuentaIva.Text = Val(DtbClientes.View[Numero_fila, 7].Text)
+    VlbDescuentoPP.Text = Val(DtbClientes.View[Numero_fila, 8].Text)
+    VlbDescuentoESP.Text = Val(DtbClientes.View[Numero_fila, 9].Text)
+    If DtbClientes.View[Numero_fila, 10].Text = "S" Then
+      ChkRecargoEquivalente.Value = True
+    Else
+      ChkRecargoEquivalente.Value = False
+    Endif
+    If DtbClientes.View[Numero_fila, 11].Text = "S" Then
+      ChkIva.Value = True
+    Else  
+      ChkIva.Value = False
+    Endif
+    If DtbClientes.View[Numero_fila, 13].Text = "S" Then
+      ChkEnvioFacturasCorreo.Value = True
+      TxtEmail.Text = DtbClientes.View[Numero_fila, 12].Text
+    Else
+      ChkRecargoEquivalente.Value = False
+      TxtEmail.Text = ""
+    Endif
+    CmbFormaPago.Text = DtbClientes.View[Numero_fila, 14].Text
+    CmbTarifa.Text = DtbClientes.View[Numero_fila, 15].Text
+    CmbVendedor.Text = DtbClientes.View[Numero_fila, 16].Text
+    sql = "select * from clientetelefono where cliente='" & TxtCodigo.Text & "'"
+    utilidades.Llenar_Listbox(sql, LtbTelefono, "telefono")
+    sql = "select * from clientefax where cliente='" & TxtCodigo.Text & "'"
+    utilidades.Llenar_Listbox(sql, LtbFax, "fax")
+    BtnAgregarCliente.Enabled = False
+    BtnBorrarCliente.Enabled = False
+    TxtCodigo.Enabled = False
+    TxtRazonSocial.SetFocus
+    BtnEditarCliente.text = "ACTUALIZAR"
+  Else
+    If Comprobar_Datos_Clientes("MODIFICAR") Then
+      If ChkIva.value = True Then
+      Tiene_Iva = "S"
+    Else
+      Tiene_Iva = "N"
+    Endif
+    If ChkRecargoEquivalente.Value = True Then
+      Tiene_re = "S"
+    Else
+      Tiene_re = "N"
+    Endif
+    If ChkEnvioFacturasCorreo.Value = True Then
+      Email = TxtEmail.Text
+      Envio_Email = "S"
+    Else
+        Email = ""
+        Envio_Email = "N"
+    Endif
+    'Actualizamos los datos del Cliente.
+      sql = "update clientes set razonsocial='" & UCase(TxtRazonSocial.text) & "',direccion='" & UCase(TxtDireccion.Text) & "',localidad='" & UCase(TxtLocalidad.Text) & "',provincia='" & UCase(TxtProvincia.Text) & "',codigopostal='" & UCase(TxtCodigoPostal.Text) &
+      "',nif='" & UCase(TxtNif.Text) & "',subcuentaiva=" & Val(VlbSubcuentaIva.text) & ",descuentopp=" & Val(VlbDescuentoPP.Text) & ",descuentoesp=" & Val(VlbDescuentoESP.Text) &
+      ",recargo='" & Tiene_re & "',iva='" & Tiene_Iva & "',email='" & TxtEmail.Text & "',enviofacturaemail='" & Envio_Email & "',formapago='" & CmbFormaPago.Text & "',tarifa='" & CmbTarifa.text & 
+      "',vendedor='" & CmbVendedor.Text & "' where codigocliente='" & UCase(TxtCodigo.Text) & "'"
+    utilidades.In_Act_Bor(sql)
+    ' Actualizamos Telefonos, borramos los telefonos, si el listbox de los telefonos esta vacio no hacemos nada.
+    ' Si tenemos datos en el listbox de telefono los añadimos.
+     sql = "delete from clientetelefono where cliente='" & TxtCodigo.Text & "'"
+     utilidades.In_Act_Bor(sql)
+    If LtbTelefono.Count > 0 Then
+      For i = 0 To LtbTelefono.Count - 1
+        sql = "insert into clientetelefono (telefono,cliente) values('" & LtbTelefono[i].Text & "','" & UCase(TxtCodigo.Text) & "')"
+        Utilidades.In_Act_Bor(sql)
+      Next
+    Endif
+    
+    ' Actualizamos Fax, borramos los telefonos, si el listbox de los telefonos esta vacio no hacemos nada.
+    ' Si tenemos datos en el listbox de telefono los añadimos.
+    sql = "delete from clientefax where cliente='" & TxtCodigo.Text & "'"
+    Utilidades.In_Act_Bor(sql)    
+    If LtbFax.Count > 0 Then
+      For i = 0 To LtbFax.Count - 1
+        sql = "insert into clientefax (fax,cliente) values('" & LtbFax[i].Text & "','" & UCase(TxtCodigo.Text) & "')"
+        Utilidades.In_Act_Bor(sql)
+      Next
+    Endif
+      BtnAgregarCliente.Enabled = True
+      BtnBorrarCliente.Enabled = True
+      TxtCodigo.Enabled = True
+      BtnEditarCliente.text = "EDITAR"
+      Borrar_Campos_Clientes()
+      Valor_Subcuenta_Iva = Val(utilidades.Valor_Maximo("select * from clientes order by subcuentaiva", "subcuentaiva")) + 1
+      VlbSubcuentaIva.Text = Valor_Subcuenta_Iva
+    Endif
+  Endif
+Configurar_DataSet_Clientes()
+End
+
+'' Funcion para comprobar los Campos de los Vendedoreses <br>
+''  Parametros:<br>
+''      Accion - - > La accion desde la que comprobamos.<br>
+''                   AGREGAR --> Para agregar datos.<br>
+''                   MODIFICAR --> Cuando estamos modificando un dato.<br> 
+''  Devuelve:<br>
+''    TRUE --> Si los valores son correctos.<br>
+''    FALSE --> valores erroneos.
+Private Function Comprobar_Datos_Clientes(Accion As String) As Boolean
+  Dim Validar As Boolean
+  Dim Sql As String
+  Validar = True    
+  If TxtCodigo.Text = "" Then
+   Balloon.Error("Debe introducir un Codigo de Cliente que va a crear", TxtCodigo)
+   Validar = False
+   TxtCodigo.SetFocus
+  Else If TxtRazonSocial.Text = ""
+    Balloon.Error("Debe introducir una Razon Social de Cliente que va a crear", TxtRazonSocial)
+    Validar = False
+    TxtRazonSocial.SetFocus
+  Else If ChkEnvioFacturasCorreo.Value = True And TxtEmail.Text = ""
+    Balloon.Error("Debe introducir un Email Valido", TxtEmail)
+    Validar = False
+    TxtEmail.SetFocus
+  Else If TxtCodigoPostal.Text <> "" And (Not IsNumber(TxtCodigoPostal.Text))
+    Balloon.Error("El codigo postal debe ser numerico ", TxtCodigoPostal)
+    Validar = False
+    TxtCodigoPostal.SetFocus
+  Else If TxtCodigoPostal.Length < 5 And TxtCodigoPostal.Length > 0
+    Balloon.Error("El codigo postal debe tener 5 digitos ", TxtCodigoPostal)
+    Validar = False
+    TxtCodigoPostal.SetFocus
+  Else If CmbTarifa.text = ""
+    Balloon.Error("Debe elegir una Tarifa para el cliente.", CmbTarifa)
+    Validar = False
+  Else If CmbFormaPago.text = ""
+    Balloon.Error("Debe elegir una forma de pago para el cliente.", CmbFormaPago)
+    Validar = False
+  Endif
+  If Accion = "AGREGAR" Then
+    Sql = "select * from clientes where codigocliente='" & UCase(TxtCodigo.Text) & "'"
+    If Utilidades.Comprobar_existe_dato(Sql) Then 
+      Balloon.Error("El codigo Cliente ya existe", TxtCodigo)
+      Validar = False
+      TxtCodigo.SetFocus  
+   Endif 
+  Endif
+  Return Validar
+End
+
+Public Sub BtnAgregarTelefono_Click()
+
+  If TxtTelefono.text = "" Then
+    Balloon.Error("Introduzca telefono antes de añadir", TxtTelefono)
+    TxtTelefono.SetFocus
+  Else If Not IsNumber(TxtTelefono.Text) 
+    Balloon.Error("El Telefono es un dato Numerico", TxtTelefono)
+    TxtTelefono.SetFocus
+  Else If TxtTelefono.Length < 9
+    Balloon.Error("Al Telefono le faltan digitos ", TxtTelefono)
+    TxtTelefono.SetFocus
+  Else
+      LtbTelefono.Add(TxtTelefono.Text)
+      TxtTelefono.Text = ""
+  Endif
+
+End
+
+Public Sub BtnBorrarTelefono_Click()
+
+  Dim Contar_Seleccionados As Integer
+  Dim Numero_Telefonos As Integer
+  Dim i As Integer
+  Numero_Telefonos = LtbTelefono.Count
+  Contar_Seleccionados = 0
+  For i = 0 To Numero_Telefonos - 1
+    If LtbTelefono[i].Selected Then
+      Contar_Seleccionados = Contar_Seleccionados + 1
+    Endif
+  Next
+  If Numero_Telefonos > 0 And Contar_Seleccionados > 0 Then
+    If LtbTelefono.Current.Selected Then
+      LtbTelefono.Remove(LtbTelefono.Index)
+    Endif
+  Endif
+
+End
+
+Public Sub BtnAgregarFax_Click()
+
+  If TxtFax.text = "" Then
+    Balloon.Error("Introduzca Fax antes de añadir", TxtFax)
+    TxtFax.SetFocus
+  Else If Not IsNumber(TxtFax.Text) 
+    Balloon.Error("El Fax es un dato Numerico", TxtFax)
+    TxtFax.SetFocus
+  Else If TxtFax.Length < 9
+    Balloon.Error("Al Fax le faltan digitos ", TxtFax)
+    TxtFax.SetFocus
+  Else
+      LtbFax.Add(TxtFax.Text)
+      TxtFax.Text = ""
+  Endif
+
+End
+
+Public Sub BtnBorrarFax_Click()
+
+  Dim Contar_Seleccionados As Integer
+  Dim Numero_Fax As Integer
+  Dim i As Integer
+  Numero_Fax = LtbFax.Count
+  Contar_Seleccionados = 0
+  For i = 0 To Numero_Fax - 1
+    If LtbFax[i].Selected Then
+      Contar_Seleccionados = Contar_Seleccionados + 1
+    Endif
+  Next
+  If Numero_Fax > 0 And Contar_Seleccionados > 0 Then
+    If LtbFax.Current.Selected Then
+      LtbFax.Remove(LtbFax.Index)
+    Endif
+  Endif
+
+End
+Private Sub Borrar_Campos_Clientes()
+  
+  LtbFax.Clear
+  LtbTelefono.Clear  
+  ChkIva.Value = True
+  ChkEnvioFacturasCorreo.value = False
+  ChkRecargoEquivalente.value = False
+  TxtEmail.text = ""
+  TxtEmail.Enabled = False
+  TxtCodigo.text = ""
+  TxtCodigoPostal.Text = ""
+  TxtDireccion.Text = ""
+  TxtLocalidad.Text = ""
+  TxtNif.Text = ""
+  TxtProvincia.Text = ""
+  TxtRazonSocial.Text = ""
+  TxtFax.Text = ""
+  TxtTelefono.Text = ""
+  VlbDescuentoESP.Text = ""
+  VlbDescuentoPP.Text = ""
+  CmbFormaPago.Text = ""
+  CmbTarifa.Text = ""
+  CmbVendedor.Text = ""
+  VlbSubcuentaIva.text = Val(VlbSubcuentaIva.text) + 1
+End
+
+
+
+Public Sub BtnSalirClientes_Click()
+
+  Me.Close
+
+End
+
+Public Sub ChkEnvioFacturasCorreo_Click()
+
+  If ChkEnvioFacturasCorreo.Value = True Then
+    TxtEmail.Enabled = True
+    TxtEmail.SetFocus
+    Else
+      TxtEmail.Enabled = False
+  Endif
+  
+
+End
+
+
+Public Sub TxtRazonSocial_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtDireccion.SetFocus
+  Endif
+
+End
+
+Public Sub TxtDireccion_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtLocalidad.SetFocus
+  Endif
+
+End
+
+Public Sub TxtLocalidad_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtProvincia.SetFocus
+  Endif
+
+End
+
+Public Sub TxtProvincia_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtNif.SetFocus
+  Endif
+
+End
+
+Public Sub TxtNif_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtCodigoPostal.SetFocus
+  Endif
+
+End
+
+Public Sub TxtCodigoPostal_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtCodigo.SetFocus
+  Endif
+
+End
+
+Public Sub VlbSubcuentaIva_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    VlbDescuentoPP.SetFocus
+  Endif
+
+End
+
+Public Sub TxtCodigo_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    VlbSubcuentaIva.SetFocus
+  Endif
+
+End
+
+Public Sub VlbDescuentoPP_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    VlbDescuentoESP.SetFocus
+  Endif
+
+End
 
 

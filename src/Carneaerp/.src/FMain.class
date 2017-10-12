@@ -88,7 +88,7 @@ End
 
 Public Sub ButtonuUtilidades_Click()
 
-
+Frm_Utilidades.ShowModal()
 
 End
 
@@ -113,5 +113,47 @@ End
 Public Sub MenuClientes_Click()
 
   Frm_Clientes.ShowModal()
+
+End
+
+Public Sub Menu1_Click()
+
+  Frm_Utilidades.ShowModal()
+
+End
+
+Public Sub MenuVendedores_Click()
+
+  Frm_Vendedores.ShowModal()
+
+End
+
+Public Sub ButtonVendedores_Click()
+
+  Frm_Vendedores.ShowModal()
+
+End
+
+Public Sub ButtonProveedores_Click()
+
+  Frm_Proveedores.ShowModal()
+
+End
+
+Public Sub MenuProveedores_Click()
+
+  Frm_Proveedores.ShowModal()
+
+End
+
+Public Sub ButtonCompras_Click()
+
+  Frm_Compras.ShowModal()
+
+End
+
+Public Sub MenuCompras_Click()
+
+  Frm_Compras.ShowModal()
 
 End

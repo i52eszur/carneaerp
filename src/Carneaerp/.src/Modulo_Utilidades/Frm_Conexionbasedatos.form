@@ -2,6 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,85,48)
+  Arrangement = Arrange.Fill
   { FrameConexion Frame
     MoveScaled(4,4,74,38)
     Background = Color.Background

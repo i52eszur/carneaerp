@@ -1,5 +1,255 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,143,78)
+  MoveScaled(0,0,139,94)
+  Icon = Picture["imagenes/32x32/clientes.png"]
+  Resizable = False
+  { FrameDatosCliente Frame
+    MoveScaled(2,1,134,90)
+    Text = ("Datos de Clientes")
+    { LblRazonSocial Label
+      MoveScaled(2,3,13,4)
+      Font = Font["Bold"]
+      Text = ("Razon Social :")
+    }
+    { LblDireccion Label
+      MoveScaled(2,8,13,4)
+      Font = Font["Bold"]
+      Text = ("Direccion :")
+    }
+    { TxtDireccion TextBox
+      MoveScaled(15,8,46,4)
+      MaxLength = 50
+    }
+    { TxtProvincia TextBox
+      MoveScaled(15,18,23,4)
+      MaxLength = 20
+    }
+    { LblProvincia Label
+      MoveScaled(2,18,13,4)
+      Font = Font["Bold"]
+      Text = ("Provincia :")
+    }
+    { LblNif Label
+      MoveScaled(39,13,7,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("NIF :")
+    }
+    { LblCodigoPostal Label
+      MoveScaled(39,18,14,4)
+      Font = Font["Bold"]
+      Text = ("Codigo Postal :")
+    }
+    { TxtNif TextBox
+      MoveScaled(44,13,17,4)
+      MaxLength = 10
+    }
+    { TxtCodigoPostal TextBox
+      MoveScaled(53,18,8,4)
+      MaxLength = 5
+    }
+    { TxtCodigo TextBox
+      MoveScaled(15,23,12,4)
+      Alignment = Align.Right
+      MaxLength = 10
+    }
+    { LblCodigoCliente Label
+      MoveScaled(2,23,13,4)
+      Font = Font["Bold"]
+      Text = ("Codigo :")
+    }
+    { LblDescuentopp Label
+      MoveScaled(2,28,14,4)
+      Font = Font["Bold"]
+      Text = ("Descuento PP:")
+    }
+    { VlbDescuentoPP ValueBox
+      MoveScaled(16,28,6,4)
+      ToolTip = ("Despuento Pronto Pago.")
+    }
+    { VlbDescuentoESP ValueBox
+      MoveScaled(37,28,6,4)
+      ToolTip = ("Descuento Especial.")
+    }
+    { LblDescuentoesp Label
+      MoveScaled(23,28,14,4)
+      Font = Font["Bold"]
+      Text = ("Descuento ESP:")
+    }
+    { LblSubcuentaIva Label
+      MoveScaled(28,23,13,4)
+      Font = Font["Bold"]
+      Text = ("SubCuenta :")
+    }
+    { ChkIva CheckBox
+      MoveScaled(50,23,11,4)
+      Font = Font["Bold"]
+      ToolTip = ("Seleccionar si el Cliente posee IVA")
+      Text = ("I.V.A")
+      Value = CheckBox.True
+    }
+    { ChkRecargoEquivalente CheckBox
+      MoveScaled(44,28,17,4)
+      Font = Font["Bold"]
+      ToolTip = ("Seleccionar siel Cliente posee Recargo Equivalente.")
+      Text = ("Recargo Eq.")
+    }
+    { VlbSubcuentaIva ValueBox
+      MoveScaled(39,23,10,4)
+      ToolTip = ("Subcuenta del cliente para Contabilidad.")
+    }
+    { TxtRazonSocial TextBox
+      MoveScaled(15.125,2.75,46,4)
+      MaxLength = 50
+    }
+    { BtnSalirClientes Button
+      MoveScaled(116,83,16,5)
+      Foreground = Color.Red
+      Text = ("SALIR")
+      Picture = Picture["imagenes/32x32/salida.png"]
+    }
+    { ChkEnvioFacturasCorreo CheckBox
+      MoveScaled(2,33,26,4)
+      Font = Font["Bold"]
+      ToolTip = ("Seleccionar si queremos que se envien las facturas por Email.")
+      Text = ("Envio Facturas por Email")
+    }
+    { TxtEmail TextBox
+      MoveScaled(31,33,24,4)
+      Enabled = False
+      ToolTip = ("Direccion email para el envio de facturas.")
+    }
+    { FrameTelefonos Frame
+      MoveScaled(64,2,34,31)
+      Text = ("Telefonos")
+      { TxtTelefono TextBox
+        MoveScaled(1,4,16,4)
+        Alignment = Align.Center
+        MaxLength = 9
+      }
+      { LtbTelefono ListBox
+        MoveScaled(1,9,16,19)
+      }
+      { LblAgregarTelefono Label
+        MoveScaled(24,9,19,4)
+        Font = Font["Bold,+1"]
+        Text = ("AGREGAR")
+      }
+      { BtnBorrarTelefono Button
+        MoveScaled(18,17,5,5)
+        ToolTip = ("Borra la familia seleccionada")
+        Picture = Picture["icon:/32/remove"]
+      }
+      { LblBorrarTelefono Label
+        MoveScaled(24,18,24,4)
+        Font = Font["Bold,+1"]
+        Text = ("BORRAR")
+      }
+      { BtnAgregarTelefono Button
+        MoveScaled(18,8,5,5)
+        ToolTip = ("Añade la familia")
+        Picture = Picture["icon:/32/add"]
+      }
+    }
+    { FrameFax Frame
+      MoveScaled(99,2,34,31)
+      Text = ("Fax")
+      { TxtFax TextBox
+        MoveScaled(1,4,16,4)
+        Alignment = Align.Center
+        MaxLength = 9
+      }
+      { LtbFax ListBox
+        MoveScaled(1,9,16,19)
+      }
+      { LblAgregarFax Label
+        MoveScaled(24,9,24,4)
+        Font = Font["Bold,+1"]
+        Text = ("AGREGAR")
+      }
+      { BtnBorrarFax Button
+        MoveScaled(18,16,5,5)
+        ToolTip = ("Borra la familia seleccionada")
+        Picture = Picture["icon:/32/remove"]
+      }
+      { LblBorrarFax Label
+        MoveScaled(24,17,24,4)
+        Font = Font["Bold,+1"]
+        Text = ("BORRAR")
+      }
+      { BtnAgregarFax Button
+        MoveScaled(18,8,5,5)
+        ToolTip = ("Añade la familia")
+        Picture = Picture["icon:/32/add"]
+      }
+    }
+    { LblTarifa Label
+      MoveScaled(2,38,7,4)
+      Font = Font["Bold"]
+      Text = ("Tarifa :")
+    }
+    { CmbTarifa ComboBox
+      MoveScaled(10,38,24,4)
+      ReadOnly = True
+    }
+    { CmbFormaPago ComboBox
+      MoveScaled(51,38,24,4)
+      ReadOnly = True
+    }
+    { LblFormaPago Label
+      MoveScaled(38,38,13,4)
+      Font = Font["Bold"]
+      Text = ("Forma Pago :")
+    }
+    { CmbVendedor ComboBox
+      MoveScaled(92,38,24,4)
+      ReadOnly = True
+    }
+    { LblVendedor Label
+      MoveScaled(79,38,13,4)
+      Font = Font["Bold"]
+      Text = ("Vendedor :")
+    }
+    { DtsClientes DataSource
+      MoveScaled(2,44,128,38)
+      { DtbClientes DataBrowser
+        MoveScaled(2,1,125,36)
+        Font = Font["Bold,+1"]
+        CanCreate = False
+        CanDelete = False
+      }
+    }
+    { BtnAgregarCliente Button
+      MoveScaled(61,84,16,4)
+      Font = Font["Bold,+1"]
+      Text = ("AGREGAR")
+    }
+    { BtnBorrarCliente Button
+      MoveScaled(80,84,16,4)
+      Font = Font["Bold,+1"]
+      Text = ("BORRAR")
+    }
+    { BtnEditarCliente Button
+      MoveScaled(99,84,16,4)
+      Font = Font["Bold,+1"]
+      Text = ("EDITAR")
+    }
+    { TxtlerrorClientes TextLabel
+      MoveScaled(1,84,60,5)
+      Visible = False
+      Font = Font["Bold,+1"]
+      Foreground = Color.Red
+      Border = Border.Raised
+    }
+  }
+  { LblLocalidad Label
+    MoveScaled(4,14,13,4)
+    Font = Font["Bold"]
+    Text = ("Localidad :")
+  }
+  { TxtLocalidad TextBox
+    MoveScaled(17,14,23,4)
+    MaxLength = 20
+  }
 }

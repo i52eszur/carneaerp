@@ -1,5 +1,407 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,116,64)
+  MoveScaled(0,0,118,64)
+  Icon = Picture["imagenes/32x32/utilidades.png"]
+  Resizable = False
+  { IcPUtilidades IconPanel
+    MoveScaled(4,7,112,48)
+    AutoResize = True
+    Count = 5
+    Border = True
+    Index = 0
+    Text = ("Formas de pago")
+    Picture = Picture["imagenes/32x32/pago.png"]
+    { PanelFormaPago Panel
+      MoveScaled(0,0,81,48)
+      Border = Border.Plain
+      { LblNombreFormaPago Label
+        MoveScaled(3,7,12,4)
+        Font = Font["Bold,+1"]
+        Text = ("Nombre :")
+      }
+      { TxtNombreFormaPago TextBox
+        MoveScaled(13,7,24,4)
+        MaxLength = 20
+      }
+      { LblDias Label
+        MoveScaled(3,12,9,4)
+        Font = Font["Bold,+1"]
+        Text = ("Dias :")
+      }
+      { LblPorcentaje Label
+        MoveScaled(21,12,15,4)
+        Font = Font["Bold,+1"]
+        Text = ("Porcentaje (%) :")
+      }
+      { VlBDias ValueBox
+        MoveScaled(13,12,6,4)
+      }
+      { vLBPorcentaje ValueBox
+        MoveScaled(37,12,6,4)
+      }
+      { DtsFormaPago DataSource
+        MoveScaled(1,18,56,28)
+        { DtbFormaPago DataBrowser
+          MoveScaled(1,2,54,24)
+          Font = Font["Bold,+1"]
+          CanCreate = False
+          CanDelete = False
+        }
+      }
+      { BtnBorrarFormaPago Button
+        MoveScaled(58,24,5,5)
+        ToolTip = ("Borra la familia seleccionada")
+        Picture = Picture["icon:/32/remove"]
+      }
+      { BtnModificarFormaPago Button
+        MoveScaled(58,32,5,5)
+        ToolTip = ("Modificamos el valor del recargo de la familia seleccionanada")
+        Picture = Picture["imagenes/32x32/cambiar.png"]
+      }
+      { LblAgregarFormaPago Label
+        MoveScaled(65,17,24,4)
+        Font = Font["Bold,+2"]
+        Text = ("AGREGAR")
+      }
+      { LblBorrarFormaPago Label
+        MoveScaled(65,25,24,4)
+        Font = Font["Bold,+2"]
+        Text = ("BORRAR")
+      }
+      { LblModificarFormaPago Label
+        MoveScaled(65,33,24,4)
+        Font = Font["Bold,+2"]
+        Text = ("EDITAR")
+      }
+      { BtnAgregarFormaPago Button
+        MoveScaled(58,16,5,5)
+        ToolTip = ("Añade la familia")
+        Picture = Picture["icon:/32/add"]
+      }
+    }
+    { LblTituloFormasPago Label
+      MoveScaled(21,2,40,4)
+      Font = Font["Bold,+2"]
+      Text = ("Formas de Pago para los Clientes")
+      Alignment = Align.Center
+      Border = Border.Sunken
+    }
+    Index = 1
+    Text = ("Configurar conexion BD")
+    Picture = Picture["icon:/32/connect"]
+    { PanelConexion Panel
+      MoveScaled(0,0,79,48)
+      Border = Border.Plain
+    }
+    { FrameConexion Frame
+      MoveScaled(1,4,74,38)
+      Background = Color.Background
+      Text = ("Configuracion conexion Base de Datos")
+      { LblHost Label
+        MoveScaled(1,4,7,4)
+        Font = Font["+2,Bold"]
+        Text = ("Host : ")
+      }
+      { TxtHost TextBox
+        MoveScaled(10,4,24,4)
+      }
+      { LblPuertoConexion Label
+        MoveScaled(1,9,22,4)
+        Font = Font["+2,Bold"]
+        Text = ("Puerto Conexion  : ")
+      }
+      { TxtPuerto TextBox
+        MoveScaled(25,9,24,4)
+      }
+      { PictureBox1 PictureBox
+        MoveScaled(56,1,16,16)
+        Picture = Picture["imagenes/imagenes/basedatos.png"]
+        Stretch = True
+      }
+      { LblUsuario Label
+        MoveScaled(1,15,13,4)
+        Font = Font["Bold,+3"]
+        Text = ("Usuario :")
+      }
+      { TxtUsuario TextBox
+        MoveScaled(15,15,24,4)
+      }
+      { Lblpassword Label
+        MoveScaled(1,21,16,4)
+        Font = Font["Bold,+3"]
+        Text = ("Contraseña : ")
+      }
+      { LblBaseDatos Label
+        MoveScaled(1,27,28,4)
+        Font = Font["Bold,+3"]
+        Text = ("Nombre Base Datos : ")
+      }
+      { TxtPassword TextBox
+        MoveScaled(19,21,24,4)
+      }
+      { TxtBaseDatos TextBox
+        MoveScaled(30,27,24,4)
+      }
+      { BtnAceptar Button
+        MoveScaled(56,21,16,4)
+        Font = Font["Bold"]
+        ToolTip = ("Aceptar cambios")
+        Text = ("Actualizar")
+      }
+      { LblDatosActualizados Label
+        MoveScaled(19,33,24,4)
+        Visible = False
+        Font = Font["+3"]
+        Foreground = Color.Blue
+        Text = ("Datos Actualizados")
+      }
+    }
+    Index = 2
+    Text = ("Tipos de IVA")
+    Picture = Picture["imagenes/32x32/iva.png"]
+    { PanelTipoIva Panel
+      MoveScaled(1,1,79,47)
+      Border = Border.Plain
+      { LblTituloTipoIva Label
+        MoveScaled(26,1,27,4)
+        Font = Font["Bold,+2"]
+        Text = ("Tipos de Iva")
+        Alignment = Align.Center
+        Border = Border.Sunken
+      }
+      { LblNombreTipoIva Label
+        MoveScaled(4,6,12,4)
+        Font = Font["Bold,+1"]
+        Text = ("Nombre :")
+      }
+      { TxtNombreTipoIva TextBox
+        MoveScaled(14,6,24,4)
+        MaxLength = 20
+      }
+      { LblTIiva Label
+        MoveScaled(4,11,9,4)
+        Font = Font["Bold,+1"]
+        Text = ("Iva :")
+      }
+      { VlBTIiva ValueBox
+        MoveScaled(14,11,6,4)
+      }
+      { LblTIRecargo Label
+        MoveScaled(22,11,10,4)
+        Font = Font["Bold,+1"]
+        Text = ("Recargo :")
+      }
+      { vLbTIRecargo ValueBox
+        MoveScaled(32,11,6,4)
+      }
+      { DtsTipoIva DataSource
+        MoveScaled(2,17,56,28)
+        { DtbTipoIva DataBrowser
+          MoveScaled(1,2,54,24)
+          Font = Font["Bold,+1"]
+          CanCreate = False
+          CanDelete = False
+        }
+      }
+      { BtnAgregarTipoIva Button
+        MoveScaled(59,15,5,5)
+        ToolTip = ("Añade la familia")
+        Picture = Picture["icon:/32/add"]
+      }
+      { LblAgregarTipoIva Label
+        MoveScaled(66,16,24,4)
+        Font = Font["Bold,+2"]
+        Text = ("AGREGAR")
+      }
+      { BtnBorrarTipoIva Button
+        MoveScaled(59,23,5,5)
+        ToolTip = ("Borra la familia seleccionada")
+        Picture = Picture["icon:/32/remove"]
+      }
+      { LblBorrarTipoIva Label
+        MoveScaled(66,24,24,4)
+        Font = Font["Bold,+2"]
+        Text = ("BORRAR")
+      }
+      { BtnModificarTipoIva Button
+        MoveScaled(59,31,5,5)
+        ToolTip = ("Modificamos el valor del recargo de la familia seleccionanada")
+        Picture = Picture["imagenes/32x32/cambiar.png"]
+      }
+      { LblModificarTipoIva Label
+        MoveScaled(66,32,24,4)
+        Font = Font["Bold,+2"]
+        Text = ("EDITAR")
+      }
+    }
+    Index = 3
+    Text = ("Cuentas contabilidad")
+    Picture = Picture["imagenes/32x32/contabilidad.png"]
+    { PanelCuentasContabilidad Panel
+      MoveScaled(0,0,80,48)
+      Border = Border.Plain
+      { LblTituloCuentas Label
+        MoveScaled(20,2,40,4)
+        Font = Font["Bold,+2"]
+        Text = ("Cuentas Contabilidad")
+        Alignment = Align.Center
+        Border = Border.Sunken
+      }
+      { LblVenta Label
+        MoveScaled(3,10,10,4)
+        Font = Font["Bold,+2"]
+        Text = ("Venta :")
+      }
+      { BtnActualizarCuentasContabilidad Button
+        MoveScaled(58,22,16,4)
+        Font = Font["Bold"]
+        Text = ("ACTUALIZAR")
+      }
+      { TxtVenta TextBox
+        MoveScaled(13,10,15,4)
+        Text = ("1234567")
+        Alignment = Align.Center
+        MaxLength = 7
+      }
+      { TxtIva TextBox
+        MoveScaled(13,16,15,4)
+        Text = ("1234567")
+        Alignment = Align.Center
+        MaxLength = 7
+      }
+      { LblIva Label
+        MoveScaled(3,16,10,4)
+        Font = Font["Bold,+2"]
+        Text = ("Iva :")
+      }
+      { TxtIvaRe TextBox
+        MoveScaled(24,22,15,4)
+        Text = ("1234567")
+        Alignment = Align.Center
+        MaxLength = 7
+      }
+      { LblIvaRe Label
+        MoveScaled(3,22,19,4)
+        Font = Font["Bold,+2"]
+        Text = ("Iva Repercutido :")
+      }
+      { TxtRecargoE TextBox
+        MoveScaled(30,28,15,4)
+        Text = ("1234567")
+        Alignment = Align.Center
+        MaxLength = 7
+      }
+      { LblRecargoE Label
+        MoveScaled(3,28,26,4)
+        Font = Font["Bold,+2"]
+        Text = ("Recargo Equivalente :")
+      }
+      { TxtCobro TextBox
+        MoveScaled(13,34,15,4)
+        Text = ("1234567")
+        Alignment = Align.Center
+        MaxLength = 7
+      }
+      { LblCobro Label
+        MoveScaled(3,34,10,4)
+        Font = Font["Bold,+2"]
+        Text = ("Cobro:")
+      }
+      { LblInfo Label
+        MoveScaled(22,39,29,4)
+        Visible = False
+        Font = Font["Bold,+2"]
+        Foreground = Color.Red
+        Text = ("Cuentas Actualizadas")
+        Alignment = Align.Center
+      }
+    }
+    Index = 4
+    Text = ("Dispositivos Moviles")
+    Picture = Picture["imagenes/32x32/pda.png"]
+    { PanelDispositivoMovil Panel
+      MoveScaled(0,0,81,48)
+      Border = Border.Plain
+      { LblTituloDM Label
+        MoveScaled(20,1,40,4)
+        Font = Font["Bold,+2"]
+        Text = ("Dispositivos Moviles")
+        Alignment = Align.Center
+        Border = Border.Sunken
+      }
+      { TxtCodigoDM TextBox
+        MoveScaled(9,6,12,4)
+        MaxLength = 10
+      }
+      { LblCodigoDM Label
+        MoveScaled(1,6,13,4)
+        Font = Font["Bold"]
+        Text = ("Codigo :")
+      }
+      { TxtNombreDM TextBox
+        MoveScaled(31,6,24,4)
+        MaxLength = 30
+      }
+      { LblNombreDM Label
+        MoveScaled(22,6,9,4)
+        Font = Font["Bold"]
+        Text = ("Nombre :")
+      }
+      { LblEspecificacionesDM Label
+        MoveScaled(1,10,17,4)
+        Font = Font["Bold"]
+        Text = ("Especificaciones : ")
+      }
+      { TxtEspecificacionesDM TextBox
+        MoveScaled(18,10,60,4)
+      }
+      { LblAgregarDM Label
+        MoveScaled(8,42,13,4)
+        Font = Font["Bold,+2"]
+        Text = ("AGREGAR")
+      }
+      { BtnBorrarDM Button
+        MoveScaled(23,41,5,5)
+        ToolTip = ("Borra la familia seleccionada")
+        Picture = Picture["icon:/32/remove"]
+      }
+      { LblBorrarDM Label
+        MoveScaled(29,42,13,4)
+        Font = Font["Bold,+2"]
+        Text = ("BORRAR")
+      }
+      { BtnModificarDM Button
+        MoveScaled(43,41,5,5)
+        ToolTip = ("Modificamos el valor del recargo de la familia seleccionanada")
+        Picture = Picture["imagenes/32x32/cambiar.png"]
+      }
+      { LblModificarDM Label
+        MoveScaled(49,42,24,4)
+        Font = Font["Bold,+2"]
+        Text = ("EDITAR")
+      }
+      { BtnAgregarDM Button
+        MoveScaled(2,41,5,5)
+        ToolTip = ("Añade la familia")
+        Picture = Picture["icon:/32/add"]
+      }
+      { DtsDispositivoMovil DataSource
+        MoveScaled(2,15,77,25)
+        Font = Font["Bold,+1"]
+        { DtbDispositvoMovil DataBrowser
+          MoveScaled(0,2,74,21)
+          CanCreate = False
+          CanDelete = False
+        }
+      }
+    }
+    Index = 0
+  }
+  { BtnSalirUtilidades Button
+    MoveScaled(97,58,16,5)
+    Foreground = Color.Red
+    Text = ("SALIR")
+    Picture = Picture["imagenes/32x32/salida.png"]
+  }
 }

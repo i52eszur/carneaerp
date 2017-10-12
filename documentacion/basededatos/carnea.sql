@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: localhost
--- Tiempo de generación: 02-10-2017 a las 19:03:17
+-- Tiempo de generación: 12-10-2017 a las 20:49:41
 -- Versión del servidor: 5.7.19-0ubuntu0.16.04.1
 -- Versión de PHP: 7.0.22-0ubuntu0.16.04.1
 
@@ -81,6 +81,15 @@ CREATE TABLE `articulo` (
   `familia` varchar(25) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Almacenamos los articulos';
 
+--
+-- Volcado de datos para la tabla `articulo`
+--
+
+INSERT INTO `articulo` (`codigoarticulo`, `nombre`, `familia`) VALUES
+('001', 'CHISTORRA', 'AVE CANAL DESP Y ELABORA'),
+('002', 'PINCHITOS', 'PRODUCTOS ELABORADOS'),
+('003', 'BUTIFARRA', 'PRODUCTOS ELABORADOS');
+
 -- --------------------------------------------------------
 
 --
@@ -93,6 +102,21 @@ CREATE TABLE `articulomateriaprima` (
   `materiaprima` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Composicion de los articulos';
 
+--
+-- Volcado de datos para la tabla `articulomateriaprima`
+--
+
+INSERT INTO `articulomateriaprima` (`articulo`, `materiaprima`) VALUES
+('001', '004'),
+('001', '020'),
+('002', '001'),
+('002', '019'),
+('002', '021'),
+('003', '003'),
+('003', '004'),
+('003', '016'),
+('003', '017');
+
 -- --------------------------------------------------------
 
 --
@@ -104,6 +128,14 @@ CREATE TABLE `clientefax` (
   `fax` varchar(9) NOT NULL,
   `cliente` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `clientefax`
+--
+
+INSERT INTO `clientefax` (`fax`, `cliente`) VALUES
+('222222222', '1'),
+('957376739', '2');
 
 -- --------------------------------------------------------
 
@@ -128,9 +160,18 @@ CREATE TABLE `clientes` (
   `email` varchar(20) DEFAULT NULL,
   `enviofacturaemail` varchar(1) DEFAULT NULL,
   `formapago` varchar(20) NOT NULL,
-  `tarifa` varchar(20) NOT NULL,
+  `tarifa` varchar(25) NOT NULL,
   `vendedor` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Almacenamos los clientes';
+
+--
+-- Volcado de datos para la tabla `clientes`
+--
+
+INSERT INTO `clientes` (`codigocliente`, `razonsocial`, `direccion`, `localidad`, `provincia`, `codigopostal`, `nif`, `subcuentaiva`, `descuentopp`, `descuentoesp`, `recargo`, `iva`, `email`, `enviofacturaemail`, `formapago`, `tarifa`, `vendedor`) VALUES
+('1', '12345', '1', '1', '1', '12345', '111111', 43000001, 1.2, 20.1, 'N', 'S', '1sdafl@uco.es', 'S', 'CONTADO', 'TARIFA 1', 'CAJA'),
+('2', 'RAFAEL', 'RAMON Y CAJAL Nº 11', 'ESPEJO', 'CORDOBA', '14830', '30811829V', 43000002, 1.2, 0.3, 'N', 'S', 'i52eszur@uco.es', 'S', 'CONTADO', 'TARIFA 1', 'CAJA'),
+('3', 'E', '', '', '', '', '', 43000003, 0, 0, 'N', 'S', '', 'N', 'PAGARE', 'TARIFA 1', '');
 
 -- --------------------------------------------------------
 
@@ -143,6 +184,14 @@ CREATE TABLE `clientetelefono` (
   `telefono` varchar(9) NOT NULL,
   `cliente` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Almacenamos los telefonos del cliente';
+
+--
+-- Volcado de datos para la tabla `clientetelefono`
+--
+
+INSERT INTO `clientetelefono` (`telefono`, `cliente`) VALUES
+('111111111', '1'),
+('615013808', '2');
 
 -- --------------------------------------------------------
 
@@ -176,6 +225,7 @@ CREATE TABLE `compras` (
 
 DROP TABLE IF EXISTS `cuentascontabilidad`;
 CREATE TABLE `cuentascontabilidad` (
+  `id` varchar(1) NOT NULL,
   `venta` varchar(7) NOT NULL COMMENT 'Cuenta contabilidad de la venta',
   `iva` varchar(7) NOT NULL COMMENT 'Cuenta contablidad del iva',
   `ivare` varchar(7) NOT NULL COMMENT 'Cuenta contablidad iva repuercutido',
@@ -187,8 +237,8 @@ CREATE TABLE `cuentascontabilidad` (
 -- Volcado de datos para la tabla `cuentascontabilidad`
 --
 
-INSERT INTO `cuentascontabilidad` (`venta`, `iva`, `ivare`, `re`, `cobro`) VALUES
-('7010200', '4770010', '4770110', '4750014', '5700000');
+INSERT INTO `cuentascontabilidad` (`id`, `venta`, `iva`, `ivare`, `re`, `cobro`) VALUES
+('1', '7010200', '4770010', '4770110', '4750014', '5700000');
 
 -- --------------------------------------------------------
 
@@ -203,6 +253,15 @@ CREATE TABLE `dispositivomovil` (
   `especificaciones` varchar(500) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Almacenamos los dispositivos moviles adquiridos';
 
+--
+-- Volcado de datos para la tabla `dispositivomovil`
+--
+
+INSERT INTO `dispositivomovil` (`codigodispositivomovil`, `nombre`, `especificaciones`) VALUES
+('1', 'DATALOGIC', '1'),
+('2', 'MOTOROLA', ''),
+('3', 'DATALOGIC AC', '');
+
 -- --------------------------------------------------------
 
 --
@@ -214,6 +273,14 @@ CREATE TABLE `dispositivomovilvendedor` (
   `dispositivomovil` varchar(10) NOT NULL COMMENT 'Codigo dispositivo',
   `vendedor` varchar(10) NOT NULL COMMENT 'Codigo vendedor'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Dispositivos y  vendedores';
+
+--
+-- Volcado de datos para la tabla `dispositivomovilvendedor`
+--
+
+INSERT INTO `dispositivomovilvendedor` (`dispositivomovil`, `vendedor`) VALUES
+('2', '2'),
+('1', '1');
 
 -- --------------------------------------------------------
 
@@ -298,6 +365,14 @@ CREATE TABLE `formapago` (
   `dias` int(11) NOT NULL,
   `porcentaje` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Almacenamos las formas de pago con sus dias y el porcentaje';
+
+--
+-- Volcado de datos para la tabla `formapago`
+--
+
+INSERT INTO `formapago` (`nombreformapago`, `dias`, `porcentaje`) VALUES
+('CONTADO', 0, 100),
+('PAGARE', 45, 100);
 
 -- --------------------------------------------------------
 
@@ -396,6 +471,37 @@ CREATE TABLE `proveedor` (
   `email` varchar(20) DEFAULT NULL COMMENT 'Email del proveedor'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Proveedores.';
 
+--
+-- Volcado de datos para la tabla `proveedor`
+--
+
+INSERT INTO `proveedor` (`codigoproveedor`, `razonsocial`, `nif`, `direccion`, `localidad`, `provincia`, `codigopostal`, `web`, `email`) VALUES
+('0000000001', 'DIATESA', '11111111V', 'C MOLINOS N10', 'CORDOBA', 'CORDOBA', '12345', 'WWW.A.COM', 'ASDF@A.COM'),
+('1111111111', '111111111111', '', '', '', '', '', '', '');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `proveedorcomercial`
+--
+
+DROP TABLE IF EXISTS `proveedorcomercial`;
+CREATE TABLE `proveedorcomercial` (
+  `codigoproveedor` varchar(10) NOT NULL,
+  `nombre` varchar(50) NOT NULL,
+  `telefono` varchar(9) NOT NULL,
+  `email` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `proveedorcomercial`
+--
+
+INSERT INTO `proveedorcomercial` (`codigoproveedor`, `nombre`, `telefono`, `email`) VALUES
+('1', '111111111', '222222222', '11111111111111111111'),
+('1111111111', '111111111111111', '111111111', '11111111111'),
+('0000000001', 'PEPE', '111111111', 'PEPE@A.COM');
+
 -- --------------------------------------------------------
 
 --
@@ -407,6 +513,13 @@ CREATE TABLE `proveedorfax` (
   `fax` varchar(9) NOT NULL COMMENT 'Fax',
   `proveedor` varchar(10) NOT NULL COMMENT 'Codigo proveedor'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Fax de los proveedores';
+
+--
+-- Volcado de datos para la tabla `proveedorfax`
+--
+
+INSERT INTO `proveedorfax` (`fax`, `proveedor`) VALUES
+('222222222', '0000000001');
 
 -- --------------------------------------------------------
 
@@ -420,6 +533,16 @@ CREATE TABLE `proveedormateriaprima` (
   `materiaprima` varchar(10) NOT NULL COMMENT 'Materia prima que vende el proveedor'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Materias primas venden proveedores';
 
+--
+-- Volcado de datos para la tabla `proveedormateriaprima`
+--
+
+INSERT INTO `proveedormateriaprima` (`proveedor`, `materiaprima`) VALUES
+('0000000001', '009'),
+('0000000001', '021'),
+('0000000001', '023'),
+('1111111111', '021');
+
 -- --------------------------------------------------------
 
 --
@@ -432,6 +555,32 @@ CREATE TABLE `proveedortelefono` (
   `proveedor` varchar(10) NOT NULL COMMENT 'Codigo proveedor'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Telefonos del proveedor';
 
+--
+-- Volcado de datos para la tabla `proveedortelefono`
+--
+
+INSERT INTO `proveedortelefono` (`telefono`, `proveedor`) VALUES
+('111111111', '0000000001');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `stock`
+--
+
+DROP TABLE IF EXISTS `stock`;
+CREATE TABLE `stock` (
+  `codigostock` int(11) NOT NULL,
+  `materiaprima` varchar(10) NOT NULL,
+  `cantidad` float NOT NULL,
+  `lotecompra` varchar(20) NOT NULL,
+  `proveedor` varchar(10) NOT NULL,
+  `nfacturacompra` varchar(20) NOT NULL,
+  `ffacturacompra` varchar(10) NOT NULL,
+  `precio` float NOT NULL,
+  `usado` varchar(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- --------------------------------------------------------
 
 --
@@ -442,6 +591,17 @@ DROP TABLE IF EXISTS `tarifa`;
 CREATE TABLE `tarifa` (
   `nombretarifa` varchar(25) NOT NULL COMMENT 'Nombre de la familia'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Almacenamos las familias a los cuales pertenece los articulo';
+
+--
+-- Volcado de datos para la tabla `tarifa`
+--
+
+INSERT INTO `tarifa` (`nombretarifa`) VALUES
+('TARIFA 1'),
+('TARIFA 2'),
+('TARIFA 3'),
+('TARIFA 4'),
+('TARIFA 5');
 
 -- --------------------------------------------------------
 
@@ -455,6 +615,18 @@ CREATE TABLE `tarifaarticulo` (
   `tarifa` varchar(25) NOT NULL,
   `precio` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `tarifaarticulo`
+--
+
+INSERT INTO `tarifaarticulo` (`articulo`, `tarifa`, `precio`) VALUES
+('001', 'TARIFA 4', 1.23),
+('001', 'TARIFA 5', 1),
+('002', 'TARIFA 3', 1.2),
+('003', 'TARIFA 1', 1.2),
+('003', 'TARIFA 2', 1),
+('003', 'TARIFA 5', 2);
 
 -- --------------------------------------------------------
 
@@ -484,6 +656,13 @@ CREATE TABLE `tipoiva` (
   `recargo` int(11) NOT NULL COMMENT 'Almacena el recargo que se aplicara a factura y albaranes'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Almacena los tipos de iva que esistiran';
 
+--
+-- Volcado de datos para la tabla `tipoiva`
+--
+
+INSERT INTO `tipoiva` (`nombretipoiva`, `iva`, `recargo`) VALUES
+('TIPO 1', 10, 10);
+
 -- --------------------------------------------------------
 
 --
@@ -501,6 +680,15 @@ CREATE TABLE `vendedor` (
   `codigopostal` varchar(6) NOT NULL COMMENT 'Codigo postal de la localidad'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Almacenamos los vendedores de la empresa.';
 
+--
+-- Volcado de datos para la tabla `vendedor`
+--
+
+INSERT INTO `vendedor` (`codigovendedor`, `nombre`, `nif`, `direccion`, `localidad`, `provincia`, `codigopostal`) VALUES
+('1', 'NO', 'N', 'P', 'L', 'PR', '14200'),
+('2', '2', '2', '2', '2', '2', '22222'),
+('3', 'CAJA', '', '', '', '', '');
+
 -- --------------------------------------------------------
 
 --
@@ -512,6 +700,14 @@ CREATE TABLE `vendedortelefono` (
   `telefono` varchar(9) NOT NULL,
   `vendedor` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Almacenamos los telefonos de los vendedores';
+
+--
+-- Volcado de datos para la tabla `vendedortelefono`
+--
+
+INSERT INTO `vendedortelefono` (`telefono`, `vendedor`) VALUES
+('111111111', '1'),
+('222222222', '2');
 
 --
 -- Índices para tablas volcadas
@@ -558,6 +754,12 @@ ALTER TABLE `clientetelefono`
 --
 ALTER TABLE `compras`
   ADD PRIMARY KEY (`codigocompra`);
+
+--
+-- Indices de la tabla `cuentascontabilidad`
+--
+ALTER TABLE `cuentascontabilidad`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `dispositivomovil`
@@ -620,6 +822,12 @@ ALTER TABLE `proveedortelefono`
   ADD PRIMARY KEY (`telefono`);
 
 --
+-- Indices de la tabla `stock`
+--
+ALTER TABLE `stock`
+  ADD PRIMARY KEY (`codigostock`);
+
+--
 -- Indices de la tabla `tarifa`
 --
 ALTER TABLE `tarifa`
@@ -664,6 +872,11 @@ ALTER TABLE `vendedortelefono`
 --
 ALTER TABLE `compras`
   MODIFY `codigocompra` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Codigo de la compra auto incremental';
+--
+-- AUTO_INCREMENT de la tabla `stock`
+--
+ALTER TABLE `stock`
+  MODIFY `codigostock` int(11) NOT NULL AUTO_INCREMENT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
