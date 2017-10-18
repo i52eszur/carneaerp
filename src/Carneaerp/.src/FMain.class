@@ -3,43 +3,33 @@
 ' Gambas class 
 ' Ruta de los directorios de trabajo
 Public CarpetaCarnea As String = User.home & "/carnea"
-Public DirConexion As String = CarpetaCarnea & "/conexion"
-Public FicheroConexionBD As Settings
+Public DirConexion As String = User.home & "/.config/carnea/conexion"
+Public FicheroConexionBD As New Settings(DirConexion & "/conexion.conf")
 
 Public Conexion_Base_Datos As New Connection
    ' Variables para la conexion a la base de datos
-Public ConexionBD_Host As String
-Public ConcexionBD_Usuario As String
-Public ConexionBD_Password As String
-Public ConexionBD_BaseDatos As String
-Public ConexionBD_Tipo As String = "mysql"
-Public ConexionBD_Puerto As String = "3306"
+
+'Public ConexionBD_Tipo As String = "mysql"
+'Public ConexionBD_Puerto As String = "3306"
 
 
 Public Sub Form_Open()
-  Me.Center
+  'Me.Center
+  Settings.Read(Me)
   Me.Title = "CARNEA ERP. Version : " & Application.Version
-  FicheroConexionBD = New Settings(User.home & "/carnea/conexion/conexion.conf")
   CrearDirectorios()
   Comprobarficheros()
-  CargarDatosConexion()
+  
 End
 Private Sub CargarDatosConexion()
-  
-  Dim FicheroConexionBD As Settings
-  FicheroConexionBD = New Settings(User.home & "/carnea/conexion/conexion.conf")
-  ConexionBD_Host = FicheroConexionBD["ConexionBD/Host"]
-  ConexionBD_Puerto = FicheroConexionBD["ConexionBD/Puerto"]
-  ConcexionBD_Usuario = FicheroConexionBD["ConexionBD/Usuario"]
-  ConexionBD_Password = FicheroConexionBD["ConexionBD/Password"]
-  ConexionBD_BaseDatos = FicheroConexionBD["ConexionBD/BaseDatos"]
+   
   Conexion_Base_Datos.Close
-  Conexion_Base_Datos.Type = ConexionBD_Tipo
-  Conexion_Base_Datos.Host = ConexionBD_Host
-  Conexion_Base_Datos.Port = ConexionBD_Puerto
-  Conexion_Base_Datos.User = ConcexionBD_Usuario
-  Conexion_Base_Datos.Password = ConexionBD_Password
-  Conexion_Base_Datos.Name = ConexionBD_BaseDatos
+  Conexion_Base_Datos.Type = "mysql"
+  Conexion_Base_Datos.Host = FicheroConexionBD["ConexionBD/Host"]
+  Conexion_Base_Datos.Port = FicheroConexionBD["ConexionBD/Puerto"]
+  Conexion_Base_Datos.User = FicheroConexionBD["ConexionBD/Usuario"]
+  Conexion_Base_Datos.Password = Utilidades.cripto(2, FicheroConexionBD["ConexionBD/Password"])
+  Conexion_Base_Datos.Name = FicheroConexionBD["ConexionBD/BaseDatos"]
   
     
 End
@@ -49,16 +39,19 @@ Private Sub CrearDirectorios()
   'Message.Info(CarpetaCarnea)
   ' Si no existe el directorio de trabajo es la primera ejecucion del programa.
   If Not Exist(CarpetaCarnea) Then Mkdir CarpetaCarnea 
-  If Not Exist(DirConexion) Then Mkdir DirConexion
+  If Not Exist(DirConexion) Then 
+    Mkdir User.Home & "/.config/carnea"
+    Mkdir DirConexion
+  Endif
   Wait 0.5
 End
 Private Sub Comprobarficheros()
   
   If Not Exist(DirConexion & "/conexion.conf") Then
     Frm_Conexionbasedatos.ShowModal()  
+  Else
+    CargarDatosConexion()
   Endif
-  
-  
   
     
 End
@@ -71,7 +64,7 @@ Public Sub MenuSalir_Click()
 End
 
 Public Sub ButtonSalir_Click()
-
+ Settings.write(Me)
   Me.close
 
 End
@@ -155,5 +148,17 @@ End
 Public Sub MenuCompras_Click()
 
   Frm_Compras.ShowModal()
+
+End
+
+Public Sub ButtonStock_Click()
+
+  Frm_Stock.Show()
+
+End
+
+Public Sub MenuStock_Click()
+
+  Frm_Stock.Show()
 
 End

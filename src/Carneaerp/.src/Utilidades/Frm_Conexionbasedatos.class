@@ -8,18 +8,15 @@ Public Sub Form_Open()
   TxtHost.Text = "localhost"
   TxtPuerto.text = "3306"
     If Exist(fmain.DirConexion & "/conexion.conf") Then
-  '  Message.Info(fMain.DirConexion)
     CargarDatosConexion()    
   Endif
 End
 Private Sub CargarDatosConexion()
 
-
-  
   TxtHost.text = FMain.FicheroConexionBD["ConexionBD/Host"]
   TxtPuerto.text = FMain.FicheroConexionBD["ConexionBD/Puerto"]
   TxtUsuario.text = FMain.FicheroConexionBD["ConexionBD/Usuario"]
-  TxtPassword.Text = FMain.FicheroConexionBD["ConexionBD/Password"]
+  TxtPassword.Text = Utilidades.cripto(2, FMain.FicheroConexionBD["ConexionBD/Password"])
   TxtBaseDatos.text = FMain.FicheroConexionBD["ConexionBD/BaseDatos"]
    
 End
@@ -33,7 +30,7 @@ Public Sub BtnAceptar_Click()
   Dim Fichero As File
   Dim Validar As Boolean = True
   Dim FicheroConexionBD As Settings
-  FicheroConexionBD = New Settings(User.home & "/carnea/conexion/conexion.conf")
+  FicheroConexionBD = New Settings(fmain.DirConexion & "/conexion.conf")
   If TxtHost.text = "" Then
     Balloon.Error("Debe introducir direccion IP, si es el mismo equipo LOCALHOST", TxtHost)
     validar = False
@@ -74,11 +71,53 @@ Public Sub BtnAceptar_Click()
     FicheroConexionBD["ConexionBD/Host"] = TxtHost.Text
     FicheroConexionBD["ConexionBD/Puerto"] = TxtPuerto.text
     FicheroConexionBD["ConexionBD/Usuario"] = TxtUsuario.text
-    FicheroConexionBD["ConexionBD/Password"] = TxtPassword.text
+    FicheroConexionBD["ConexionBD/Password"] = Utilidades.cripto(1, TxtPassword.text)
     FicheroConexionBD["ConexionBD/BaseDatos"] = TxtBaseDatos.text
     FicheroConexionBD.Save
+    fmain.Conexion_Base_Datos.Type = "mysql"
+    fmain.Conexion_Base_Datos.Host = TxtHost.Text
+    fmain.Conexion_Base_Datos.Port = TxtPuerto.Text
+    fmain.Conexion_Base_Datos.User = TxtUsuario.Text
+    fmain.Conexion_Base_Datos.Password = TxtPassword.Text
+    fmain.Conexion_Base_Datos.Name = TxtBaseDatos.Text
+    Print fmain.Conexion_Base_Datos.Type
+    Print fmain.Conexion_Base_Datos.Host
+    Print fmain.Conexion_Base_Datos.Port
+    Print fmain.Conexion_Base_Datos.User
+    Print fmain.Conexion_Base_Datos.Password
+    Print fmain.Conexion_Base_Datos.Name
   Endif
-  
-  
- 
+   
+End
+
+Public Sub TxtHost_KeyPress()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+   TxtPuerto.SetFocus
+  Endif
+
+End
+
+Public Sub TxtPuerto_KeyPress()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+   TxtUsuario.SetFocus
+  Endif
+
+End
+
+Public Sub TxtUsuario_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+   TxtPassword.SetFocus
+  Endif
+
+End
+
+Public Sub TxtPassword_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+   TxtBaseDatos.SetFocus
+  Endif
+
 End

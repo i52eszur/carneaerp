@@ -10,7 +10,7 @@ Public Sub In_Act_Bor(Sql As String)
   Try FMain.Conexion_Base_Datos.Open
   FMain.Conexion_Base_Datos.Exec(Sql)
   Catch
-    Message.Error(sql)
+    Message.Error("Error en Sentencia: " & sql)
     
 End
 
@@ -169,4 +169,66 @@ Public Function Valor_Maximo(Sql As String, Campo As String) As String
   FMain.Conexion_Base_Datos.Close
   Return Valor_A_Devolver
   
+End
+
+'' Funcion para encriptar cadenas de caracteres:<br>
+''  Parametros:<br>
+''    modo --> Accion a realizar<br>
+''              1 Encripta.<br>
+''              2 Desencripta.<br>
+''    skey --> Cadena a encriptar<br>
+''  Devuelve : La cadena encriptado o desencriptada.
+Public Function cripto(modo As Integer, skey As String) As String
+    
+  Dim cad, cad2 As String
+  Dim $n, $i As Integer
+  Dim ar As Variant[]
+  Dim sus As String[]
+ 
+  ar = [["·", "w"], ["$", "s"], [">", "S"], ["*", "f"], ["[", "A"], ["-", "m"], ["]", "X"], ["<", "f"], ["¡", "0"]] 'sustituimos algunos caracteres por otros al azar...¿?
+  If modo = 1
+        cad = Base64(skey)
+        For $n = 0 To 3
+            cad2 = ""
+            For $i = Len(cad) To 1 Step -1
+                cad2 &= Mid(cad, $i, 1)
+            Next    
+            cad = Base64(cad2)
+        Next
+        For Each sus In ar 
+            cad = Replace(cad, sus[1], sus[0])
+        Next
+  Else If modo = 2
+        For Each sus In ar
+            skey = Replace(skey, sus[0], sus[1])
+        Next
+        cad = UnBase64(skey)
+        For $n = 0 To 3
+            cad2 = ""
+            For $i = Len(cad) To 1 Step -1
+                cad2 &= Mid(cad, $i, 1)
+            Next
+            cad = UnBase64(cad2)
+        Next
+   Endif
+  Return cad 
+    
+End
+
+'' Funcion para poner una fecha en formato DD/MM/AAAA <br>
+''  Parametros:<br>
+''    Fecha_Trabajo --> Fecha que devuelve un Datebox. La fecha la devuelve MM/DD/AAAA.<br>
+''  Devuelve:<br>
+''    Fecha en formato correcto DD/MM/AAAA
+
+Public Function Fecha_Correcta(Fecha_Trabajo As String) As String
+  Dim Fecha_Devuelta As String
+  Dim Dia As String
+  Dim Mes As String
+  Dim Ano As String
+  Dia = Mid(Fecha_Trabajo, 4, 2)
+  Mes = Mid(Fecha_Trabajo, 1, 2)
+  Ano = Mid(Fecha_Trabajo, 7, 4)
+  Fecha_Devuelta = Dia & "/" & Mes & "/" & Ano
+  Return Fecha_Devuelta
 End

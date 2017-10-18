@@ -6,7 +6,7 @@ Public Sub Form_Open()
 
   Me.Title = "GESTION DE ARTICULOS"
   
-  Configurar_Tab_Articulos("TODO")
+  'Configurar_Tab_Articulos("TODO")
   Configurar_Tab_Familias()
   Configurar_Tab_MateriaPrima()
   Configurar_tab_Tarifa()

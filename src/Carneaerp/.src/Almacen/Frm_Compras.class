@@ -1,0 +1,698 @@
+' Gambas class file
+
+Public Codigo_Stock_Para_Edicion As String
+Public Kilos_Stock_Para_Edicion As String
+Public Materia_Prima_Para_Edicion As String
+Public Proveedor_Stock_Para_Edicion As String
+
+Public Sub Form_Open()
+  Dim sql As String
+  Me.Title = "GESTION DE COMPRAS"
+  
+  Configurar_Objetos_Compras()
+  'Configurar_DataSet_Compras("select * from compras")
+  sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+  "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima"
+  Configurar_DataSet_Compras(sql)
+'  Message.Info(CStr(Day(Now) & Month(Now) & Year(Now)))
+
+End
+
+
+
+
+''*************************** Conmfiguracion Botones ***********************
+''
+''**************************************************************************
+
+
+Public Sub BtnAgregarCompra_Click()
+
+  Dim Sql As String
+  Dim Higiene As String
+  Dim Carolep As String
+  Dim Stock As String
+  Dim Fecha_Recepcion As String
+  Dim Fecha_Factura_Compra As String
+  Dim Aux As String
+  Dim Codigo_Proveedor As String
+  Dim Codigo_Materia_Prima As String
+  
+  If Comprobar_Campos_Compras() Then
+    Aux = DteFechaRecepcion.Value
+    Fecha_Recepcion = utilidades.Fecha_Correcta(Aux)
+    Aux = DteFFacturaCompra.Value
+    Fecha_Factura_Compra = utilidades.Fecha_Correcta(Aux)
+    If RdbHigieneAceptable.Value = True Then
+      Higiene = "ACEPTABLE"
+    Else
+       higiene = "NO ACEPTABLE"
+    Endif
+    If RdbCarolepAceptable.Value = True Then
+      Carolep = "ACEPTABLE"
+    Else
+       Carolep = "NO ACEPTABLE"
+    Endif
+    If ChkAgregarStock.Value = True Then
+      Stock = "S"
+    Else  
+      Stock = "N"
+    Endif
+    sql = "select * from proveedor where razonsocial='" & CmbProveedor.Text & "'"
+    Codigo_Proveedor = utilidades.Obtener_Campo_Tabla(sql, "codigoproveedor")
+    sql = "select * from materiaprima where nombre='" & CmbMateriaPrima.Text & "'"
+    Codigo_Materia_Prima = utilidades.Obtener_Campo_Tabla(sql, "codigomateriaprima")
+    'Insertamos en la tabla Vendedor
+    sql = "insert into compras (fecharecepcion,fechafacturacompra,cantidad,lotecompra,nfacturacompra,higiene,carolep,precio,firma,observaciones,transporte,stock,proveedor,materiaprima)" &
+    " values('" & Fecha_Recepcion & "','" & Fecha_Factura_Compra & "'," & CFloat(VlbCantidad.Text) & ",'" & TxtNLoteCompra.Text & "','" & UCase(TxtNFacturaCompra.text) & "','" & Higiene &
+    "','" & Carolep & "'," & CFloat(VlbPrecio.Text) & ",'" & TxtFirma.Text & "','" & TxtObservaciones.text & "'," & CInt(VlbTransporte.Text) & ",'" & Stock & "','" & Codigo_Proveedor &
+    "','" & Codigo_Materia_Prima & "')"
+    utilidades.In_Act_Bor(sql)   
+    ' Añadimos a Stock 
+    If ChkAgregarStock.Value = True Then
+      sql = "insert into stock (materiaprima,cantidad,lotecompra,proveedor,nfacturacompra,ffacturacompra,precio,usado)" &
+    " values('" & Codigo_Materia_Prima & "'," & CFloat(VlbCantidad.Text) & ",'" & TxtNLoteCompra.Text & "','" & Codigo_Proveedor & "','" & UCase(TxtNFacturaCompra.text) &
+    "','" & Fecha_Factura_Compra & "'," & CFloat(VlbPrecio.Text) & ",'N')"
+    utilidades.In_Act_Bor(sql)   
+    Endif
+    
+    Borrar_Campos_Compras()
+   sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+   "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima"
+   Configurar_DataSet_Compras(sql)
+  Endif
+  
+
+End
+
+Public Sub BtnBorrarCompra_Click()
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Dim Respuesta As Integer
+  Dim Texto As String
+  Dim Producto As String
+  Dim Proveedor As String
+  Dim Lote_Compra As String
+  Dim Numero_Factura_Compra As String
+  Dim Stock_Usado As String
+  Dim Stock_Kilos As String
+  Dim Codigo_Proveedor As String
+  Dim Codigo_Materia_Prima As String
+  Dim Pasado_Stock As Boolean
+  Dim Id_Stock As String
+  Dim Codigo_Compra As String
+  Pasado_Stock = False
+  Numero_fila = DtbCompras.View.Row
+  If DtbCompras.View.Rows.Count > 0 Then
+    
+    Codigo_Compra = DtbCompras.View[Numero_fila, 0].Text
+    Producto = DtbCompras.View[Numero_fila, 4].Text
+    Proveedor = DtbCompras.View[Numero_fila, 3].Text
+    Lote_Compra = DtbCompras.View[Numero_fila, 6].Text
+    Numero_Factura_Compra = DtbCompras.View[Numero_fila, 7].Text
+    Codigo_Proveedor = Utilidades.Obtener_Campo_Tabla("select * from proveedor where razonsocial = '" & Proveedor & "'", "codigoproveedor")
+    Codigo_Materia_Prima = Utilidades.Obtener_Campo_Tabla("select * from materiaprima where nombre='" & Producto & "'", "codigomateriaprima")
+    sql = "select * from stock where materiaprima='" & Codigo_Materia_Prima & "' and proveedor='" & Codigo_Proveedor & "' and lotecompra='" &
+    Lote_Compra & "' and nfacturacompra='" & Numero_Factura_Compra & "'"
+    Texto = "Desea Borrar la compra con Producto:<b> " & Producto & " </b>,Proveedor:<b>" & Proveedor &
+    "</b> ,Lote Compra:<b> " & Lote_Compra & " </b>,Nº Factura Compra:<b> " & Numero_Factura_Compra & " </b><br>"
+    If Utilidades.Tabla_Vacia(sql) > 0 Then
+      Pasado_Stock = True
+      Stock_Usado = Utilidades.Obtener_Campo_Tabla(sql, "usado")
+      Stock_Kilos = Utilidades.Obtener_Campo_Tabla(sql, "cantidad")
+      Texto = Texto & "La compra esta en Stock y "
+      If Stock_Usado = "N" Then
+        Texto = Texto & "<b>NO</b> ha sigo usada quedando <b>" & Stock_Kilos & "</b> Kilos en Stock"
+        Else
+          Texto = Texto & "<b>SI</b> ha sigo usada quedando <b>" & Stock_Kilos & "</b> Kilos en Stock"
+      Endif
+      Respuesta = Message.Delete(Texto, "Compras", "Compras y Stock", "Salir")
+    Else
+      Texto = Texto & "<b>La compra aun no se ha pasado a stock.</b>"
+      Respuesta = Message.Delete(Texto, "Si", "No")
+    End If 
+    
+   
+    If respuesta = 1 Then
+      ' Tabla Compras
+      sql = "delete from compras where codigocompra=" & Codigo_Compra & "" 
+      Utilidades.In_Act_Bor(Sql)
+     Else If respuesta = 2 And Pasado_Stock
+      ' Tabla Stock 
+      sql = "delete from compras where codigocompra=" & Codigo_Compra & "" 
+      Utilidades.In_Act_Bor(Sql)
+      sql = "select * from stock where materiaprima='" & Codigo_Materia_Prima & "' and proveedor='" & Codigo_Proveedor & "' and lotecompra='" &
+      Lote_Compra & "' and nfacturacompra='" & Numero_Factura_Compra & "'"
+      Id_Stock = utilidades.Obtener_Campo_Tabla(sql, "codigostock")
+      sql = "delete from stock where codigostock=" & Id_Stock & "" 
+      Utilidades.In_Act_Bor(Sql)
+    Endif
+    sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+    "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima"
+    Configurar_DataSet_Compras(sql)
+   Endif
+End
+
+Public Sub BtnEditarCompra_Click()
+  
+  Dim Sql As String
+  Dim Numero_fila As Integer 
+  Dim Respuesta As Integer
+  Dim Texto As String
+  Dim Dia As String
+  Dim Mes As String
+  Dim Ano As String
+  Dim Codigo_Compra As String
+  Dim Higiene As String
+  Dim Carolep As String
+  Dim Stock As String
+  Dim Fecha_Recepcion As String
+  Dim Fecha_Factura_Compra As String
+  Dim Aux As String
+  Dim Codigo_Proveedor As String
+  Dim Codigo_Materia_Prima As String
+  Dim Usado_stock As String
+  Dim Pasado_Stock As String
+  Numero_fila = DtbCompras.View.Row
+  Codigo_Compra = DtbCompras.View[Numero_fila, 0].Text
+  If BtnEditarCompra.text = "EDITAR" And DtbCompras.View.Rows.Count > 0 Then
+    Dia = Mid(DtbCompras.View[Numero_fila, 1].Text, 1, 2)
+    Mes = Mid(DtbCompras.View[Numero_fila, 1].Text, 4, 2)
+    Ano = Mid(DtbCompras.View[Numero_fila, 1].Text, 7, 4)
+    DteFechaRecepcion.Value = Date(ano, mes, dia)
+    Dia = Mid(DtbCompras.View[Numero_fila, 2].Text, 1, 2)
+    Mes = Mid(DtbCompras.View[Numero_fila, 2].Text, 4, 2)
+    Ano = Mid(DtbCompras.View[Numero_fila, 2].Text, 7, 4)
+    DteFFacturaCompra.Value = Date(ano, mes, dia)
+    CmbProveedor.Text = DtbCompras.View[Numero_fila, 3].Text
+    CmbMateriaPrima.Text = DtbCompras.View[Numero_fila, 4].Text
+    VlbCantidad.Value = DtbCompras.View[Numero_fila, 5].Text
+    TxtNLoteCompra.text = DtbCompras.View[Numero_fila, 6].Text
+    TxtNFacturaCompra.Text = DtbCompras.View[Numero_fila, 7].Text
+    If DtbCompras.View[Numero_fila, 8].Text = "ACEPTABLE" Then
+      RdbHigieneAceptable.Value = True
+    Else
+      RdbHigieneNoAceptable.value = True
+    Endif
+    If DtbCompras.View[Numero_fila, 9].Text = "ACEPTABLE" Then
+      RdbCarolepAceptable.Value = True
+    Else
+      RdbCarolepNoAceptable.value = True
+    Endif
+    VlbPrecio.Value = DtbCompras.View[Numero_fila, 10].Text
+    TxtFirma.text = DtbCompras.View[Numero_fila, 11].Text
+    TxtObservaciones.Text = DtbCompras.View[Numero_fila, 12].Text
+    VlbTransporte.Value = DtbCompras.View[Numero_fila, 13].Text
+    If DtbCompras.View[Numero_fila, 14].Text = "S" Then
+      ChkAgregarStock.Value = True
+      Pasado_Stock = "S"
+    Else
+      ChkAgregarStock.Value = False
+      Pasado_Stock = "N"
+    Endif
+    sql = "select * from proveedor where razonsocial='" & CmbProveedor.Text & "'"
+    Codigo_Proveedor = utilidades.Obtener_Campo_Tabla(sql, "codigoproveedor")
+    sql = "select * from materiaprima where nombre='" & CmbMateriaPrima.Text & "'"
+    Codigo_Materia_Prima = utilidades.Obtener_Campo_Tabla(sql, "codigomateriaprima")
+    sql = "select * from stock where materiaprima='" & Codigo_Materia_Prima & "' and proveedor='" & Codigo_Proveedor & "' and lotecompra='" &
+    TxtNLoteCompra.Text & "' and nfacturacompra='" & TxtNFacturaCompra.text & "'"
+    If Pasado_Stock = "S" Then
+      Usado_stock = utilidades.Obtener_Campo_Tabla(sql, "usado")
+      Codigo_Stock_Para_Edicion = utilidades.Obtener_Campo_Tabla(sql, "codigostock")
+      Kilos_Stock_Para_Edicion = utilidades.Obtener_Campo_Tabla(sql, "cantidad")
+      Materia_Prima_Para_Edicion = utilidades.Obtener_Campo_Tabla(sql, "materiaprima")
+      Proveedor_Stock_Para_Edicion = utilidades.Obtener_Campo_Tabla(sql, "proveedor")
+      If Usado_stock = "S" Then
+        TxtlerrorCompras.Visible = True
+        TxtlerrorCompras.Text = "La compra ha sido usada en Stock."
+      Endif
+    End If
+     
+    BtnBorrarCompra.Enabled = False
+    BtnAgregarCompra.Enabled = False
+    FrameFiltrar.Enabled = False
+    BtnEditarCompra.text = "ACTUALIZAR"
+  Else
+    If Comprobar_Campos_Compras() Then
+      Aux = DteFechaRecepcion.Value
+      Fecha_Recepcion = utilidades.Fecha_Correcta(Aux)
+      Aux = DteFFacturaCompra.Value
+      Fecha_Factura_Compra = utilidades.Fecha_Correcta(Aux)
+      If RdbHigieneAceptable.Value = True Then
+        Higiene = "ACEPTABLE"
+      Else
+         higiene = "NO ACEPTABLE"
+      Endif
+      If RdbCarolepAceptable.Value = True Then
+        Carolep = "ACEPTABLE"
+      Else
+         Carolep = "NO ACEPTABLE"
+      Endif
+      If ChkAgregarStock.Value = True Then
+        Stock = "S"
+      Else  
+        Stock = "N"
+      Endif
+      sql = "select * from proveedor where razonsocial='" & CmbProveedor.Text & "'"
+      Codigo_Proveedor = utilidades.Obtener_Campo_Tabla(sql, "codigoproveedor")
+      sql = "select * from materiaprima where nombre='" & CmbMateriaPrima.Text & "'"
+      Codigo_Materia_Prima = utilidades.Obtener_Campo_Tabla(sql, "codigomateriaprima")
+    'Actualizamos en la tabla Compras
+      sql = "update compras set fecharecepcion='" & Fecha_Recepcion & "',fechafacturacompra='" & Fecha_Factura_Compra & "',cantidad=" & CFloat(VlbCantidad.Text) &
+      ",lotecompra='" & TxtNLoteCompra.Text & "',nfacturacompra='" & UCase(TxtNFacturaCompra.text) & "',higiene='" & higiene & "',carolep='" & carolep & "',precio=" & CFloat(VlbPrecio.Text) &
+      ",firma='" & TxtFirma.Text & "',observaciones='" & TxtObservaciones.text & "',transporte=" & CInt(VlbTransporte.Text) & ",stock='" & Stock & "',proveedor='" &
+     Codigo_Proveedor & "',materiaprima='" & Codigo_Materia_Prima & "' where codigocompra=" & Codigo_Compra
+     utilidades.In_Act_Bor(sql)   
+      ' Añadimos a Stock si hemos marcado Y no esta aun en stock
+    sql = "select * from stock where materiaprima='" & Codigo_Materia_Prima & "' and proveedor='" & Codigo_Proveedor & "' and lotecompra='" &
+    TxtNLoteCompra.Text & "' and nfacturacompra='" & TxtNFacturaCompra.text & "'"
+      If Not utilidades.Comprobar_existe_dato(sql) Then
+        ' Si no existe en Stock pero hemos pulsado para añadir.
+        If ChkAgregarStock.Value = True Then
+          sql = "insert into stock (materiaprima,cantidad,lotecompra,proveedor,nfacturacompra,ffacturacompra,precio,usado)" &
+          " values('" & Codigo_Materia_Prima & "'," & CFloat(VlbCantidad.Text) & ",'" & TxtNLoteCompra.Text & "','" & Codigo_Proveedor & "','" & UCase(TxtNFacturaCompra.text) &
+          "','" & Fecha_Factura_Compra & "'," & CFloat(VlbPrecio.Text) & ",'N')"
+          utilidades.In_Act_Bor(sql)   
+        Endif
+      Else
+        ' Si ya estaba en Stock.
+        If ChkAgregarStock.Value = False Then
+          ' Lo queremos quitar del Stock
+          Texto = "La compra esta en Stock Materia Prima: <b>" & Materia_Prima_Para_Edicion & " </b>con la siguiente cantidad de Kilos: <b> " & Kilos_Stock_Para_Edicion & " </b> Proveedor: <b>" &
+          Proveedor_Stock_Para_Edicion & "</b> <br> ¿Desea Borrarla de Stock y Agregar la nueva?"
+          Respuesta = Message.Delete(Texto, "Si", "No")
+          If respuesta = 1 Then
+            sql = "delete from stock where codigostock=" & Codigo_Stock_Para_Edicion & "" 
+            utilidades.In_Act_Bor(sql) 
+            sql = "insert into stock (materiaprima,cantidad,lotecompra,proveedor,nfacturacompra,ffacturacompra,precio,usado)" &
+          " values('" & Codigo_Materia_Prima & "'," & CFloat(VlbCantidad.Text) & ",'" & TxtNLoteCompra.Text & "','" & Codigo_Proveedor & "','" & UCase(TxtNFacturaCompra.text) &
+          "','" & Fecha_Factura_Compra & "'," & CFloat(VlbPrecio.Text) & ",'N')"
+          utilidades.In_Act_Bor(sql)     
+          Endif
+        Endif
+      Endif
+      
+      BtnBorrarCompra.Enabled = True
+      BtnAgregarCompra.Enabled = True
+      FrameFiltrar.Enabled = True
+      Borrar_Campos_Compras()
+      BtnEditarCompra.text = "EDITAR"
+      TxtlerrorCompras.Visible = False
+      TxtlerrorCompras.text = ""
+      Borrar_Campos_Compras()
+      
+     Endif
+    
+  Endif
+  sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+      "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima"
+      Configurar_DataSet_Compras(sql)
+End
+
+Public Sub BtnSalirCompras_Click()
+
+  Me.Close
+
+End
+
+Public Sub ChkVariasCompras_Click()
+
+  If ChkVariasCompras.value = True Then
+    If Comprobar_Campos_Varias_Compras() Then
+      DteFechaRecepcion.Enabled = False
+      DteFFacturaCompra.Enabled = False
+      TxtNFacturaCompra.Enabled = False
+      TxtNLoteCompra.Enabled = False
+      CmbProveedor.Enabled = False
+    Else
+      ChkVariasCompras.Value = False
+
+    Endif
+  Else
+    CmbProveedor.Enabled = True
+    TxtNFacturaCompra.Enabled = True
+    TxtNLoteCompra.Enabled = True
+    DteFechaRecepcion.Enabled = True
+    DteFFacturaCompra.Enabled = True
+  Endif
+End
+
+''*************************** Fin Conmfiguracion Botones *******************
+''
+''**************************************************************************
+
+
+
+''*************************** FILTROS **************************************
+''
+''**************************************************************************
+
+
+Public Sub BtnFiltrar_Click()
+  Dim Validar As Boolean
+  Validar = True
+  If ChkFechaCompra.value = False And ChkFechaRecepcion.value = False And ChkMateriaPrima.Value = False And ChkProveedor.value = False And ChkPasadoAStock.value = False Then
+    validar = False
+    Balloon.Error("Debe elegir un filtro.", PanelFiltrar)
+  Else If ChkProveedor.value = True And CmbFProveedor.Text = ""
+    validar = False
+    Balloon.Error("Si activa el filtro de los Proveedores debe seleccionar el Proveedor para filtrar.", CmbFProveedor)
+  Else If ChkMateriaPrima.value = True And CmbfMateriaPrima.Text = ""
+    validar = False
+    Balloon.Error("Si activa el filtro de Materia Prima debe seleccionar la Materia Prima para filtrar.", CmbfMateriaPrima)
+  Endif
+  If validar Then
+    Ejecutar_Filtros()  
+  Endif
+  
+End
+Public Sub BtnQuitarFiltro_Click()
+
+  Quitar_Filtros()
+
+End
+
+Public Sub ChkFechaRecepcion_Click()
+
+  If ChkFechaRecepcion.value = True Then
+    PanelFRecepcion.Enabled = True
+  Else
+    PanelFRecepcion.Enabled = False
+  Endif
+
+End
+
+Public Sub ChkFechaCompra_Click()
+  
+  If ChkFechaCompra.value = True Then
+    PanelFCompra.Enabled = True
+    
+  Else
+    PanelFCompra.Enabled = False
+  Endif
+  
+End
+
+Public Sub ChkProveedor_Click()
+
+  If ChkProveedor.value = True Then
+    PanelProveedor.Enabled = True   
+  Else
+    PanelProveedor.Enabled = True
+  Endif
+
+End
+
+Public Sub ChkMateriaPrima_Click()
+
+  If ChkMateriaPrima.Value = True Then
+    PanelMatreriaprima.Enabled = True
+    Else
+      PanelMatreriaprima.Enabled = False
+  Endif
+
+End
+
+Public Sub ChkPasadoAStock_Click()
+
+  If ChkPasadoAStock.Value = True Then
+    PanelStock.Enabled = True
+    Else
+      PanelStock.Enabled = False
+  Endif
+
+End
+
+
+
+''*************************** FIN FILTROS *********************************+
+''
+''**************************************************************************
+
+
+
+
+''*************************** Funciones privadas****************************
+''
+''**************************************************************************
+
+
+
+'' Para quitar los filtros
+Private Sub Quitar_Filtros()
+  Dim Sql As String
+   ChkFechaCompra.value = False
+    ChkFechaRecepcion.value = False
+    ChkMateriaPrima.value = False
+    ChkProveedor.value = False
+    ChkPasadoAStock.value = False
+    CmbFMateriaPrima.Text = ""
+    CmbFProveedor.text = ""
+    PanelFRecepcion.Enabled = False
+    PanelFCompra.Enabled = False
+    PanelProveedor.Enabled = False
+    PanelMatreriaprima.Enabled = False
+    PanelStock.Enabled = False
+    sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+    "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima"
+    Configurar_DataSet_Compras(sql)
+  
+End
+
+'' Ejecutamos los filtros cuando se han configurado Correctamente.
+Private Sub Ejecutar_Filtros()
+  
+  Dim Sql As String
+  
+  
+    sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+    "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima"
+    ' Seleccion del filtro Fecha Recepcion
+    If ChkFechaRecepcion.value = True Then
+      If DteFIRecepcion.Value = DteFFRecepcion.value Then
+        sql &= " and C.fecharecepcion='" & Utilidades.Fecha_Correcta(DteFIRecepcion.value) & "'"
+      Else
+        sql &= " and C.fecharecepcion between '" & utilidades.Fecha_Correcta(DteFIRecepcion.value) & "' and '" & utilidades.Fecha_Correcta(DteFFRecepcion.value) & "'"
+      Endif
+    Endif
+   ' Seleccion del filtro Fecha Compra
+    If ChkFechaCompra.value = True Then
+      If DteFICompra.Value = DteFFCompra.value Then
+        sql &= " and C.fechafacturacompra='" & utilidades.Fecha_Correcta(DteFICompra.value) & "'"
+      Else
+        sql &= " and C.fechafacturacompra between '" & utilidades.Fecha_Correcta(DteFICompra.value) & "' and '" & utilidades.Fecha_Correcta(DteFFCompra.value) & "'"
+      Endif
+    Endif
+    ' Seleccion del filtro Proveedor
+    If ChkProveedor.value = True Then
+      sql &= " and P.razonsocial='" & CmbFProveedor.text & "'"
+    Endif
+    ' Seleccion del filtro Materia Prima
+    If ChkMateriaPrima.value = True Then
+      sql &= " and M.nombre='" & CmbfMateriaPrima.text & "'"
+    Endif
+    ' Seleccion del filtro Stock
+    If ChkPasadoAStock.value = True Then
+      If RdbEnStock.value = True
+        sql &= " and C.stock='S'"
+      Else
+        sql &= " and C.stock='N'"
+      Endif  
+    Endif
+
+  
+  Configurar_DataSet_Compras(sql)
+  
+End
+
+
+'' Configuracion del Datase de Comerciales<br>
+'' Parametros:<br>
+''    Sql --> Sentencia para cargar datos en el Dataset
+Private Sub Configurar_DataSet_Compras(Sql As String)
+  
+  Dim Cabeceras As New String[]
+  Cabeceras.Add("Codigo")
+  Cabeceras.Add("Fecha Recepcion")
+  Cabeceras.Add("Fecha F. Compra")
+  Cabeceras.Add("Proveedor")
+  Cabeceras.Add("Materia Prima")
+  Cabeceras.Add("Cantidad")
+  Cabeceras.Add("Lote Compra")
+  Cabeceras.Add("N. F. Compra")
+  Cabeceras.Add("Higiene")
+  Cabeceras.Add("C. O. Leptidos")
+  Cabeceras.Add("Precio")
+  Cabeceras.Add("Firma")
+  Cabeceras.Add("Observaciones")
+  Cabeceras.Add("Transporte")
+  Cabeceras.Add("Stock")
+  DtsCompras.Connection = FMain.Conexion_Base_Datos
+  DtsCompras.Table = sql
+  DtbCompras.Labels = Cabeceras
+  DtbCompras.view.Columns[0].Width = 90
+  DtbCompras.view.Columns[1].Width = 150
+  DtbCompras.view.Columns[2].Width = 150
+  DtbCompras.view.Columns[3].Width = 200  
+  DtbCompras.view.Columns[4].Width = 150  
+  DtbCompras.view.Columns[5].Width = 100  
+  DtbCompras.view.Columns[6].Width = 150
+  DtbCompras.view.Columns[7].Width = 150  
+  DtbCompras.view.Columns[8].Width = 90  
+  DtbCompras.view.Columns[9].Width = 120  
+  DtbCompras.view.Columns[10].Width = 100  
+  DtbCompras.view.Columns[11].Width = 150  
+  DtbCompras.view.Columns[12].Width = 150  
+  DtbCompras.view.Columns[13].Width = 150
+  DtbCompras.view.Columns[14].Width = 90
+End
+
+'' Configurarmos cuando abrimos el formulario.
+'' Llenamos los combobox de Proveedores y Materias Primas.
+'' Si las tablas estan vacias muestra un error.
+
+Private Sub Configurar_Objetos_Compras()
+  Dim Error_Tablas_Vacias As String
+  Dim Error_V As Boolean
+  Dim Numero_Clientes As Integer
+  Dim Valor_Subcuenta_Iva As Integer
+  Error_V = False
+  
+  If Utilidades.Tabla_Vacia("select * from proveedor") = 0 Then
+     Error_Tablas_Vacias = "Deber Cear Proveedores"
+     Error_V = True
+    Else
+      CmbProveedor.Clear
+      CmbFProveedor.clear
+      Utilidades.Llenar_Combobox("select * from proveedor", CmbProveedor, "razonsocial")  
+      Utilidades.Llenar_Combobox("select * from proveedor", CmbFProveedor, "razonsocial")  
+    Endif
+  
+  If Utilidades.Tabla_Vacia("select * from materiaprima") = 0 Then
+   
+     Error_V = True
+    If Error_Tablas_Vacias = "" Then
+        Error_Tablas_Vacias = "Debe Cear Materias Primas en Articulos."
+      Else
+        Error_Tablas_Vacias = Error_Tablas_Vacias & " y Materias Primas en Articulos."
+    Endif
+    Else
+      CmbFMateriaPrima.Clear
+      CmbMateriaPrima.Clear
+      Utilidades.Llenar_Combobox("select * from materiaprima", CmbMateriaPrima, "nombre")  
+      Utilidades.Llenar_Combobox("select * from materiaprima", CmbFMateriaPrima, "nombre")  
+  Endif
+  
+  If Error_V Then
+    TxtlerrorCompras.Visible = True
+    TxtlerrorCompras.text = Error_Tablas_Vacias
+  Endif
+  DteFechaRecepcion.Value = Date(Year(Now), Month(Now), Day(Now))
+  DteFFacturaCompra.Value = Date(Year(Now), Month(Now), Day(Now))
+  DteFFRecepcion.Value = Date(Year(Now), Month(Now), Day(Now))
+  DteFIRecepcion.Value = Date(Year(Now), Month(Now), Day(Now))
+  DteFFCompra.Value = Date(Year(Now), Month(Now), Day(Now))
+  DteFICompra.Value = Date(Year(Now), Month(Now), Day(Now))
+  TxtlerrorCompras.text = Error_Tablas_Vacias
+  
+End
+
+'' Procedimiento para borrar los campos del formulario
+Private Sub Borrar_Campos_Compras()
+  
+  If ChkVariasCompras.Value = True Then
+    TxtObservaciones.Text = ""
+    TxtFirma.Text = ""
+    RdbCarolepAceptable.Value = True
+    RdbHigieneAceptable.Value = True
+    CmbMateriaPrima.text = ""
+    VlbTransporte.text = ""
+    VlbCantidad.text = ""
+    VlbPrecio.text = ""
+    ChkAgregarStock.Value = False
+  Else
+    DteFechaRecepcion.Value = Date(Year(Now), Month(Now), Day(Now))
+    DteFFacturaCompra.Value = Date(Year(Now), Month(Now), Day(Now))
+    TxtObservaciones.Text = ""
+    TxtFirma.Text = ""
+    TxtNFacturaCompra.Text = ""
+    TxtNLoteCompra.Text = ""
+    RdbCarolepAceptable.Value = True
+    RdbHigieneAceptable.Value = True
+    CmbMateriaPrima.text = ""
+    CmbProveedor.Text = ""
+    VlbTransporte.text = ""
+    VlbCantidad.text = ""
+    VlbPrecio.text = ""
+    ChkAgregarStock.Value = False
+  Endif
+  
+End
+
+'' Funcion para comprobar los Campos de Compras <br>
+''  Parametros:<br>
+''  Devuelve:<br>
+''    TRUE --> Si los valores son correctos.<br>
+''    FALSE --> valores erroneos.
+Private Function Comprobar_Campos_Compras() As Boolean
+  Dim Sql As String
+  Dim Validar As Boolean
+  Validar = True
+  If TxtNFacturaCompra.Text = "" Then
+   Balloon.Error("Debe introducir Nº Facatura de la Compra", TxtNFacturaCompra)
+   Validar = False
+   TxtNFacturaCompra.SetFocus
+  Else If TxtNLoteCompra.text = ""
+   Balloon.Error("Debe introducir el Nº Lote de Compra", TxtNLoteCompra)
+   Validar = False
+   TxtNLoteCompra.SetFocus
+  Else If CmbMateriaPrima.Text = ""
+    Balloon.Error("Debe elegir la Materia Prima de la compra.", CmbMateriaPrima)
+    Validar = False
+  Else If CmbProveedor.Text = ""
+    Balloon.Error("Debe elegir un Proveedor de la compra.", CmbProveedor)
+    Validar = False
+  Else If VlbCantidad.Text = "0"
+    Balloon.Error("Debe añadir Cantidad en Kilos de la Materia Prima de la compra.", VlbCantidad)
+    Validar = False
+    VlbCantidad.SetFocus
+  Else If VlbPrecio.Text = "0"
+    Balloon.Error("Debe elegir Precio en Euros de la  Materia Prima de la compra.", VlbPrecio)
+    Validar = False
+    VlbPrecio.SetFocus
+  Endif
+  
+ Return Validar
+End
+
+'' Funcion para comprobar los Campos Varias Compras <br>
+''  Parametros:<br>
+''  Devuelve:<br>
+''    TRUE --> Si los valores son correctos.<br>
+''    FALSE --> valores erroneos.
+Private Function Comprobar_Campos_Varias_Compras() As Boolean
+  Dim Sql As String
+  Dim Validar As Boolean
+  Validar = True
+  If TxtNFacturaCompra.Text = "" Then
+   Balloon.Error("Debe introducir Nº Facatura de la Compra", TxtNFacturaCompra)
+   Validar = False
+   TxtNFacturaCompra.SetFocus
+  Else If TxtNLoteCompra.text = ""
+   Balloon.Error("Debe introducir el Nº Lote de Compra", TxtNLoteCompra)
+   Validar = False
+   TxtNLoteCompra.SetFocus
+  Else If CmbProveedor.Text = ""
+    Balloon.Error("Debe elegir un Proveedor de la compra.", CmbProveedor)
+    Validar = False
+   Endif
+  
+ Return Validar
+End
+
+
+
+
+
+
+

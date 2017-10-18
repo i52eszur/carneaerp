@@ -34,7 +34,7 @@ Private Sub CargarDatosConexion()
   TxtHost.text = FMain.FicheroConexionBD["ConexionBD/Host"]
   TxtPuerto.text = FMain.FicheroConexionBD["ConexionBD/Puerto"]
   TxtUsuario.text = FMain.FicheroConexionBD["ConexionBD/Usuario"]
-  TxtPassword.Text = FMain.FicheroConexionBD["ConexionBD/Password"]
+  TxtPassword.Text = Utilidades.cripto(2, FMain.FicheroConexionBD["ConexionBD/Password"])
   TxtBaseDatos.text = FMain.FicheroConexionBD["ConexionBD/BaseDatos"]
    
 End
@@ -44,8 +44,7 @@ Public Sub BtnAceptar_Click()
   Dim Cadena As String
   Dim Fichero As File
   Dim Validar As Boolean = True
-  Dim FicheroConexionBD As Settings
-  FicheroConexionBD = New Settings(User.home & "/carnea/conexion/conexion.conf")
+ 
   If TxtHost.text = "" Then
     Balloon.Error("Debe introducir direccion IP, si es el mismo equipo LOCALHOST", TxtHost)
     validar = False
@@ -83,12 +82,48 @@ Public Sub BtnAceptar_Click()
   
   If validar Then
     LblDatosActualizados.Visible = True
-    FicheroConexionBD["ConexionBD/Host"] = TxtHost.Text
-    FicheroConexionBD["ConexionBD/Puerto"] = TxtPuerto.text
-    FicheroConexionBD["ConexionBD/Usuario"] = TxtUsuario.text
-    FicheroConexionBD["ConexionBD/Password"] = TxtPassword.text
-    FicheroConexionBD["ConexionBD/BaseDatos"] = TxtBaseDatos.text
-    FicheroConexionBD.Save
+   fmain.FicheroConexionBD["ConexionBD/Host"] = TxtHost.Text
+    fmain.FicheroConexionBD["ConexionBD/Puerto"] = TxtPuerto.text
+    fmain.FicheroConexionBD["ConexionBD/Usuario"] = TxtUsuario.text
+    fmain.FicheroConexionBD["ConexionBD/Password"] = Utilidades.cripto(1, TxtPassword.text)
+    fmain.FicheroConexionBD["ConexionBD/BaseDatos"] = TxtBaseDatos.text
+    fmain.FicheroConexionBD.Save
+    fmain.Conexion_Base_Datos.Host = TxtHost.Text
+    fmain.Conexion_Base_Datos.Port = TxtPuerto.Text
+    fmain.Conexion_Base_Datos.User = TxtUsuario.Text
+    fmain.Conexion_Base_Datos.Password = TxtPassword.Text
+    fmain.Conexion_Base_Datos.Name = TxtBaseDatos.Text
+  Endif
+
+End
+Public Sub TxtHost_KeyPress()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+   TxtPuerto.SetFocus
+  Endif
+
+End
+
+Public Sub TxtPuerto_KeyPress()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+   TxtUsuario.SetFocus
+  Endif
+
+End
+
+Public Sub TxtUsuario_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+   TxtPassword.SetFocus
+  Endif
+
+End
+
+Public Sub TxtPassword_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+   TxtBaseDatos.SetFocus
   Endif
 
 End

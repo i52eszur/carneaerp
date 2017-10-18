@@ -5,17 +5,15 @@ Count=0
 Count=0
 
 [OpenFile]
-Active=1
+Active=4
 File[1]=".src/FMain.form"
-Count=9
-File[2]=".src/FMain.class:25.150"
-File[3]=".src/Modulo_Utilidades/Utilidades.module:21.12"
-File[4]=".src/Modulo_Gestion/Frm_Proveedores.form"
-File[5]=".src/Modulo_Gestion/Frm_Proveedores.class:34.319"
-File[6]=".src/Modulo_Almacen/Frm_Compras.form"
-File[7]=".src/Modulo_Almacen/Frm_Compras.class:2.94"
-File[8]=".src/Modulo_Gestion/Frm_Articulos.form"
-File[9]=".src/Modulo_Gestion/Frm_Articulos.class:25.512"
+Count=7
+File[2]=".src/FMain.class:18.161"
+File[3]=".src/Almacen/Frm_Compras.form"
+File[4]=".src/Almacen/Frm_Compras.class:6.274"
+File[5]=".src/Utilidades/Utilidades.module:42.105"
+File[6]=".src/Almacen/Frm_Stock.form"
+File[7]=".src/Almacen/Frm_Stock.class:3.19"
 
 [Watches]
 Count=0

@@ -1,0 +1,229 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+  Me.Title = "GESTION DE STOCK"
+  Configurar_Objetos_Stock()
+End
+
+Public Sub BtnSalirStock_Click()
+
+  Me.Close
+
+End
+
+Public Sub BtnBorrarStocCero_Click()
+
+  Dim Respuesta As Integer
+  Dim Sql As String
+  Respuesta = Message.Delete("Desea Borrar los Stock con Cantidad <b>0</b>", "Si", "No")
+  If Respuesta = 1 Then
+    utilidades.In_Act_Bor("delete from stock where cantidad=0")
+    sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
+    " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima"
+  Configurar_Dataset_Stock(sql)
+  Endif
+End
+Public Sub BtnBorrarLineaStock_Click()
+
+  Dim Respuesta As Integer
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Numero_fila = DtbStock.View.Row
+  If DtbStock.View.Rows.Count > 0 Then
+    Respuesta = Message.Delete("Desea Borrar linea Stock Materia Prima: <b>" & DtbStock.View[Numero_fila, 1].Text & " </b>", "Si", "No")
+    If Respuesta = 1 Then
+      utilidades.In_Act_Bor("delete from stock where codigostock=" & DtbStock.View[Numero_fila, 0].Text)
+      sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
+      " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima"
+       Configurar_Dataset_Stock(sql)
+  Endif
+    
+  Endif
+  
+
+End
+
+''*************************** FILTROS **************************************
+''
+''**************************************************************************
+Public Sub BtnFiltrar_Click()
+  Dim Validar As Boolean
+  Validar = True
+  If ChkFechaCompra.value = False And ChkMateriaPrima.Value = False And ChkProveedor.value = False And ChkUsado.value = False And ChkCantidad0.value = False Then
+    validar = False
+    Balloon.Error("Debe elegir un filtro.", PanelFiltrar)
+  Else If ChkProveedor.value = True And CmbProveedor.Text = ""
+    validar = False
+    Balloon.Error("Si activa el filtro de los Proveedores debe seleccionar el Proveedor para filtrar.", CmbProveedor)
+  Else If ChkMateriaPrima.value = True And CmbMateriaPrima.Text = ""
+    validar = False
+    Balloon.Error("Si activa el filtro de Materia Prima debe seleccionar la Materia Prima para filtrar.", CmbMateriaPrima)
+  Endif
+  If validar Then
+    Ejecutar_Filtros()  
+  Endif
+  
+End
+Public Sub BtnQuitarFiltro_Click()
+
+  Quitar_Filtros()
+
+End
+
+
+Public Sub ChkFechaCompra_Click()
+  
+  If ChkFechaCompra.value = True Then
+    PanelFCompra.Enabled = True
+    
+  Else
+    PanelFCompra.Enabled = False
+  Endif
+  
+End
+
+Public Sub ChkProveedor_Click()
+
+  If ChkProveedor.value = True Then
+    PanelProveedor.Enabled = True   
+  Else
+    PanelProveedor.Enabled = False
+  Endif
+
+End
+
+Public Sub ChkMateriaPrima_Click()
+
+  If ChkMateriaPrima.Value = True Then
+    PanelMatreriaprima.Enabled = True
+    Else
+      PanelMatreriaprima.Enabled = False
+  Endif
+
+End
+
+Public Sub ChkUsado_Click()
+
+  If ChkUsado.Value = True Then
+    PanelStock.Enabled = True
+    Else
+      PanelStock.Enabled = False
+  Endif
+
+End
+
+''*************************** FIN FILTROS *********************************+
+''
+''**************************************************************************
+
+
+''*************************** Funciones privadas****************************
+''
+''**************************************************************************
+
+
+
+'' Para quitar los filtros
+Private Sub Quitar_Filtros()
+  Dim Sql As String
+   ChkFechaCompra.value = False
+
+    ChkMateriaPrima.value = False
+    ChkProveedor.value = False
+    ChkUsado.value = False
+    CmbMateriaPrima.Text = ""
+    CmbProveedor.text = ""
+    PanelFCompra.Enabled = False
+    PanelProveedor.Enabled = False
+    PanelMatreriaprima.Enabled = False
+    PanelStock.Enabled = False
+    ChkCantidad0.value = False
+    sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
+    " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima"
+  Configurar_Dataset_Stock(sql)
+  
+End
+
+'' Ejecutamos los filtros cuando se han configurado Correctamente.
+Private Sub Ejecutar_Filtros()
+  
+  Dim Sql As String
+    
+    sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
+    " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima"
+
+   ' Seleccion del filtro Fecha Compra
+    If ChkFechaCompra.value = True Then
+      If DteFICompra.Value = DteFFCompra.value Then
+        sql &= " and S.ffacturacompra='" & utilidades.Fecha_Correcta(DteFICompra.value) & "'"
+      Else
+        sql &= " and S.ffacturacompra between '" & utilidades.Fecha_Correcta(DteFICompra.value) & "' and '" & utilidades.Fecha_Correcta(DteFFCompra.value) & "'"
+      Endif
+    Endif
+    ' Seleccion del filtro Proveedor
+    If ChkProveedor.value = True Then
+      sql &= " and P.razonsocial='" & CmbProveedor.text & "'"
+    Endif
+    ' Seleccion del filtro Materia Prima
+    If ChkMateriaPrima.value = True Then
+      sql &= " and M.nombre='" & CmbMateriaPrima.text & "'"
+    Endif
+    ' Seleccion del filtro Stock
+    If ChkUsado.value = True Then
+      If RdbUsado.value = True
+        sql &= " and S.usado='S'"
+      Else
+        sql &= " and S.usado='N'"
+      Endif  
+    Endif
+    If ChkCantidad0.value = True Then
+      sql &= " and S.cantidad = 0 " 
+    Endif
+  
+  Configurar_Dataset_Stock(sql)
+  
+End
+
+Private Sub Configurar_Objetos_Stock()
+  Dim Sql As String
+  CmbProveedor.Clear
+  Utilidades.Llenar_Combobox("select * from proveedor", CmbProveedor, "razonsocial")  
+  CmbMateriaPrima.Clear
+  Utilidades.Llenar_Combobox("select * from materiaprima", CmbMateriaPrima, "nombre")  
+  sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
+    " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima"
+  Configurar_Dataset_Stock(sql)
+End
+
+Private Sub Configurar_Dataset_Stock(Sql As String)
+  Dim Cabeceras As New String[]
+  Cabeceras.Add("Codigo")
+  Cabeceras.Add("Materia Prima")
+  Cabeceras.Add("Cantidad")
+  Cabeceras.Add("Lote Compra")
+  Cabeceras.Add("Proveedor")
+  Cabeceras.Add("N. F. Compra")
+  Cabeceras.Add("N. Fecha Compra")
+  Cabeceras.Add("Precio")
+  Cabeceras.Add("Usado")
+  DtsStock.Connection = FMain.Conexion_Base_Datos
+  DtsStock.Table = sql
+  DtbStock.Labels = Cabeceras
+  DtbStock.view.Columns[0].Width = 90
+  DtbStock.view.Columns[1].Width = 150
+  DtbStock.view.Columns[2].Width = 150
+  DtbStock.view.Columns[3].Width = 200  
+  DtbStock.view.Columns[4].Width = 150  
+  DtbStock.view.Columns[5].Width = 100  
+  DtbStock.view.Columns[6].Width = 150
+  DtbStock.view.Columns[7].Width = 150  
+  DtbStock.view.Columns[8].Width = 90  
+  
+  
+End
+
+
+
+

@@ -1,0 +1,134 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,145,79)
+  Icon = Picture["imagenes/32x32/stock.png"]
+  { FrameStock Frame
+    MoveScaled(1,0,142,77)
+    Text = ("Stock")
+    { BtnFiltrar Button
+      MoveScaled(101,2,19,5)
+      ToolTip = ("Ejecutamos los filtros seleccionamos.")
+      Text = ("FILTRAR")
+      Picture = Picture["icon:/32/filter"]
+    }
+    { PanelFiltrar Panel
+      MoveScaled(1,2,21,20)
+      Border = Border.Plain
+      { VBox5 VBox
+        MoveScaled(0,1,19,18)
+        { ChkFechaCompra CheckBox
+          MoveScaled(1,3,16,3)
+          Text = ("Fecha Compra")
+        }
+        { ChkProveedor CheckBox
+          MoveScaled(2,6,13,3)
+          Text = ("Proveedor")
+        }
+        { ChkMateriaPrima CheckBox
+          MoveScaled(2,9,16,3)
+          Text = ("Materia Prima")
+        }
+        { ChkUsado CheckBox
+          MoveScaled(2,12,16,3)
+          Text = ("Usado")
+        }
+        { ChkCantidad0 CheckBox
+          MoveScaled(2,14,18,4)
+          Text = ("Cantidad 0")
+        }
+      }
+    }
+    { PanelFCompra Panel
+      MoveScaled(24,2,21,20)
+      Enabled = False
+      Border = Border.Plain
+      { Label3 Label
+        MoveScaled(1,1,19,3)
+        Text = ("Fecha Inicio Compra")
+      }
+      { Label4 Label
+        MoveScaled(2,8,18,4)
+        Text = ("Fecha Fin Compra")
+      }
+      { DteFICompra DateBox
+        MoveScaled(1,4,19,4)
+      }
+      { DteFFCompra DateBox
+        MoveScaled(1,12,19,4)
+      }
+    }
+    { PanelProveedor Panel
+      MoveScaled(46,2,30,9)
+      Enabled = False
+      Border = Border.Plain
+      { LblFProveedor Label
+        MoveScaled(9.875,1,10,3)
+        Text = ("Proveedor")
+      }
+      { CmbProveedor ComboBox
+        MoveScaled(0.875,4,28,4)
+        ReadOnly = True
+      }
+    }
+    { PanelMatreriaprima Panel
+      MoveScaled(46,12,30,10)
+      Enabled = False
+      Border = Border.Plain
+      { LblFMateriaPRima Label
+        MoveScaled(8.375,1,13,3)
+        Text = ("Materia Prima")
+      }
+      { CmbMateriaPrima ComboBox
+        MoveScaled(1,4,28,4)
+        ReadOnly = True
+      }
+    }
+    { BtnQuitarFiltro Button
+      MoveScaled(101,10,19,5)
+      ToolTip = ("Borramos los filtros que se han seleccionado.")
+      Text = ("QUITAR FILTRO")
+      Picture = Picture["icon:/32/grid"]
+    }
+    { BtnSalirStock Button
+      MoveScaled(111,17,19,5)
+      Foreground = Color.Red
+      Text = ("SALIR")
+      Picture = Picture["imagenes/32x32/salida.png"]
+    }
+    { PanelStock Panel
+      MoveScaled(77,2,20,10)
+      Enabled = False
+      Border = Border.Plain
+      { RdbUsado RadioButton
+        MoveScaled(1,1,17,4)
+        Text = ("Usado.")
+      }
+      { RdbNoUsado RadioButton
+        MoveScaled(1,5,18,4)
+        Text = ("No Usado.")
+      }
+    }
+    { DtsStock DataSource
+      MoveScaled(1,23,138,53)
+      { DtbStock DataBrowser
+        MoveScaled(5,4,132,46)
+        CanCreate = False
+        CanDelete = False
+      }
+    }
+    { BtnBorrarStocCero Button
+      MoveScaled(121,2,19,5)
+      ToolTip = ("Borramos el Stock que la cantidad sea 0.")
+      Text = ("Borrar Stock 0")
+      Picture = Picture["imagenes/32x32/borrar.png"]
+    }
+    { BtnBorrarLineaStock Button
+      MoveScaled(121,10,19,5)
+      Font = Font["-1"]
+      ToolTip = ("Borrar Linea Stock Seleccionada.")
+      Text = ("Borrar Linea Stock")
+      Picture = Picture["icon:/32/delete"]
+    }
+  }
+}

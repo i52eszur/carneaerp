@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: localhost
--- Tiempo de generación: 12-10-2017 a las 20:49:41
+-- Tiempo de generación: 13-10-2017 a las 20:11:30
 -- Versión del servidor: 5.7.19-0ubuntu0.16.04.1
 -- Versión de PHP: 7.0.22-0ubuntu0.16.04.1
 
@@ -203,10 +203,11 @@ DROP TABLE IF EXISTS `compras`;
 CREATE TABLE `compras` (
   `codigocompra` int(11) NOT NULL COMMENT 'Codigo de la compra auto incremental',
   `fecharecepcion` varchar(10) NOT NULL COMMENT 'Fecha de la recepcion de la compra',
+  `fechafacturacompra` varchar(10) NOT NULL,
   `cantidad` float NOT NULL COMMENT 'Cantidad en kilos',
   `lotecompra` varchar(20) NOT NULL COMMENT 'Lote de la compra',
   `nfacturacompra` varchar(20) NOT NULL COMMENT 'Numero de factura de la compra',
-  `higiene` varchar(12) NOT NULL COMMENT 'Higiene solo acepta Aceptable y No aceptable',
+  `higiene` varchar(12) DEFAULT NULL COMMENT 'Higiene solo acepta Aceptable y No aceptable',
   `carolep` varchar(12) NOT NULL COMMENT 'Caro leptidos solo acepta Aceptable y No aceptable',
   `precio` float NOT NULL COMMENT 'Coste de la compra',
   `firma` varchar(20) DEFAULT NULL COMMENT 'Datos de la compra',
@@ -216,6 +217,15 @@ CREATE TABLE `compras` (
   `proveedor` varchar(10) NOT NULL,
   `materiaprima` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Compras a proveedores';
+
+--
+-- Volcado de datos para la tabla `compras`
+--
+
+INSERT INTO `compras` (`codigocompra`, `fecharecepcion`, `fechafacturacompra`, `cantidad`, `lotecompra`, `nfacturacompra`, `higiene`, `carolep`, `precio`, `firma`, `observaciones`, `transporte`, `stock`, `proveedor`, `materiaprima`) VALUES
+(1, '1', '1', 1, '1', '1', '1', '1', 1, '1', '1', 1, '1', '0000000001', '001'),
+(2, '10/13/2017', '10/13/2017', 20, '2', '2', 'ACEPTABLE', 'ACEPTABLE', 20, '2', '2', 20, 'N', '0000000001', '001'),
+(3, '10/13/2017', '10/13/2017', 10, '23', '32', 'ACEPTABLE', 'ACEPTABLE', 2, '', '', 10, 'N', '0000000001', '001');
 
 -- --------------------------------------------------------
 
@@ -687,7 +697,8 @@ CREATE TABLE `vendedor` (
 INSERT INTO `vendedor` (`codigovendedor`, `nombre`, `nif`, `direccion`, `localidad`, `provincia`, `codigopostal`) VALUES
 ('1', 'NO', 'N', 'P', 'L', 'PR', '14200'),
 ('2', '2', '2', '2', '2', '2', '22222'),
-('3', 'CAJA', '', '', '', '', '');
+('3', 'CAJA', '', '', '', '', ''),
+('4', '4', '4', '4', '4', '4', '44444');
 
 -- --------------------------------------------------------
 
@@ -871,7 +882,7 @@ ALTER TABLE `vendedortelefono`
 -- AUTO_INCREMENT de la tabla `compras`
 --
 ALTER TABLE `compras`
-  MODIFY `codigocompra` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Codigo de la compra auto incremental';
+  MODIFY `codigocompra` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Codigo de la compra auto incremental', AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT de la tabla `stock`
 --
