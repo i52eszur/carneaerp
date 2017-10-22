@@ -1,6 +1,375 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,64,64)
+  MoveScaled(0,0,162,102)
   Icon = Picture["imagenes/32x32/lotes.png"]
+  Resizable = False
+  { FrameLotes Frame
+    MoveScaled(1,1,160,99)
+    Text = ("Lotes")
+    { HPanel1 HPanel
+      MoveScaled(1,3,67,24)
+      { LblLote Label
+        MoveScaled(1,1,7,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("Lote :  ")
+      }
+      { TxtLote TextBox
+        MoveScaled(10,1,13,4)
+        MaxLength = 10
+      }
+      { LblFechaCreacion Label
+        MoveScaled(26,1,17,4)
+        Font = Font["Bold"]
+        Text = ("  Fecha Creacion :  ")
+      }
+      { DteFechaCreacion DateBox
+        MoveScaled(44,1,17,4)
+      }
+      { LblCantidadFabricada Label
+        MoveScaled(1,5,19,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("Cantidad fabricada :  ")
+      }
+      { VlbCantidadFabricada ValueBox
+        MoveScaled(20,5,9,4)
+        Enabled = False
+      }
+      { LblCosteLoteTotal Label
+        MoveScaled(28,5,19,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("  Coste Total Lote :  ")
+      }
+      { VlbCosteLoteTotal ValueBox
+        MoveScaled(45,5,9,4)
+        Enabled = False
+      }
+      { VBox2 VBox
+        MoveScaled(54,5,9,5)
+      }
+      { LblArticuloLote Label
+        MoveScaled(1,9,10,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("Articulo :  ")
+      }
+      { CmbArticulo ComboBox
+        MoveScaled(10,9,28,4)
+        ReadOnly = True
+      }
+      { ChkTiempoTemp CheckBox
+        MoveScaled(38,9,24,4)
+        Text = ("Activar Tiempo Temp.")
+      }
+      { VBox3 VBox
+        MoveScaled(59,10,5,4)
+      }
+      { LblCantidadBruta Label
+        MoveScaled(0,14,19,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("Cantidad Bruta  :  ")
+      }
+      { VlbCantidadBruta ValueBox
+        MoveScaled(17,14,8,4)
+        Enabled = False
+      }
+      { LblMerma Label
+        MoveScaled(28,14,14,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("  Merma en %  :  ")
+      }
+      { VlbMerma ValueBox
+        MoveScaled(44,14,8,4)
+      }
+      { VBox4 VBox
+        MoveScaled(54,14,14,4)
+      }
+      { LblKilosMerma Label
+        MoveScaled(0,18,14,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("Kilos Merma :  ")
+      }
+      { TxtLKilosMerma TextLabel
+        MoveScaled(14,18,15,4)
+        Font = Font["Bold,+4"]
+        Foreground = Color.Blue
+        Text = ("0")
+        Alignment = Align.Center
+      }
+      { LblStockMateriaprima Label
+        MoveScaled(28,18,21,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("  Stock Materia Prima :  ")
+      }
+      { TxtLStockMateriaPrima TextLabel
+        MoveScaled(45,18,16,4)
+        Font = Font["Bold,+4"]
+        Foreground = Color.Blue
+        Text = ("0")
+        Alignment = Align.Center
+      }
+    }
+    { TxtErrorLotes TextLabel
+      MoveScaled(1,24,94,4)
+      Visible = False
+      Font = Font["Bold,+1"]
+      Foreground = Color.Red
+      Border = Border.Raised
+    }
+    { PanelTeTi Panel
+      MoveScaled(66,3,26,19)
+      Enabled = False
+      Border = Border.Plain
+      { LblTiempo Label
+        MoveScaled(1,1,9,4)
+        Font = Font["Bold,Underline,+1"]
+        Text = ("Tiempo")
+      }
+      { LblTemperatura Label
+        MoveScaled(12,1,13,4)
+        Font = Font["Bold,Underline,+1"]
+        Text = ("Temperatura")
+      }
+      { VlbTiempo1 ValueBox
+        MoveScaled(1,6,9,4)
+      }
+      { VlbTiempo2 ValueBox
+        MoveScaled(1,13,9,4)
+      }
+      { VlbTemperatura2 ValueBox
+        MoveScaled(14,13,9,4)
+      }
+      { VlbTemperatura1 ValueBox
+        MoveScaled(14,6,9,4)
+      }
+    }
+    { FrameComposicionLotes Frame
+      MoveScaled(1,28,158,38)
+      Text = ("Composicion Lote")
+      { GridLoteDetalle GridView
+        MoveScaled(1,13,146,23)
+        Mode = Select.Single
+      }
+      { BtnLDInicio Button
+        MoveScaled(148,13,5,5)
+        Picture = Picture["icon:/22/top"]
+      }
+      { BtnLDPrevio Button
+        MoveScaled(148,19,5,5)
+        Picture = Picture["icon:/22/up"]
+      }
+      { PanelComposicionLote Panel
+        MoveScaled(0,2,156,10)
+        Enabled = False
+        { CmbCLMateriaPrima ComboBox
+          MoveScaled(2,5,26,4)
+          ReadOnly = True
+        }
+        { LblCLFechaFactura Label
+          MoveScaled(29,0,14,4)
+          Font = Font["Bold,Underline"]
+          AutoResize = True
+          Text = ("Fecha Factura")
+        }
+        { CmbCLFechaFactura ComboBox
+          MoveScaled(29,5,19,4)
+          ReadOnly = True
+        }
+        { LblCLNumeroLote Label
+          MoveScaled(50,0,14,4)
+          Font = Font["Bold,Underline"]
+          AutoResize = True
+          Text = ("Nº Lote")
+        }
+        { CmbCLNumeroLote ComboBox
+          MoveScaled(50,5,19,4)
+          ReadOnly = True
+        }
+        { LblCLProveedor Label
+          MoveScaled(70,0,14,4)
+          Font = Font["Bold,Underline"]
+          AutoResize = True
+          Text = ("Proveedor")
+        }
+        { TxtCLProveedor TextBox
+          MoveScaled(70,5,31,4)
+          Enabled = False
+        }
+        { LblCLNumeroFactura Label
+          MoveScaled(102,0,14,4)
+          Font = Font["Bold,Underline"]
+          AutoResize = True
+          Text = ("Nº Factura")
+        }
+        { TxtCLNumeroFactura TextBox
+          MoveScaled(102,5,14,4)
+          Enabled = False
+        }
+        { LblCLCantidad Label
+          MoveScaled(117,0,9,4)
+          Font = Font["Bold,Underline"]
+          AutoResize = True
+          Text = ("Cantidad")
+        }
+        { VlbCLCantidad ValueBox
+          MoveScaled(117,5,9,4)
+          ToolTip = ("Ingresar cantidad y pulsar INTRO para calcular Coste.")
+        }
+        { LblCLCoste Label
+          MoveScaled(127,0,9,4)
+          Font = Font["Bold,Underline"]
+          AutoResize = True
+          Text = ("Coste")
+        }
+        { TxtCLCoste TextBox
+          MoveScaled(127,5,9,4)
+          Enabled = False
+        }
+        { BtnAgregarLineaLote Button
+          MoveScaled(139,4,5,5)
+          ToolTip = ("Añade la familia")
+          Picture = Picture["icon:/32/apply"]
+        }
+        { BtnBorrarLineaLote Button
+          MoveScaled(146,4,5,5)
+          ToolTip = ("Borra la familia seleccionada")
+          Picture = Picture["icon:/32/cancel"]
+        }
+        { LblCLMateriaPrima Label
+          MoveScaled(2,0,14,4)
+          Font = Font["Bold,Underline"]
+          AutoResize = True
+          Text = ("Materia Prima")
+        }
+      }
+    }
+    { FrameLote Frame
+      MoveScaled(1,67,158,31)
+      Text = ("Lotes")
+      { GridLote GridView
+        MoveScaled(1,3,105,28)
+        Mode = Select.Single
+      }
+      { BtnLFin Button
+        MoveScaled(107,22,5,5)
+        Picture = Picture["icon:/22/bottom"]
+      }
+      { BtnLSiguiente Button
+        MoveScaled(107,16,5,5)
+        Picture = Picture["icon:/22/down"]
+      }
+      { BtnLPrevio Button
+        MoveScaled(107,10,5,5)
+        Picture = Picture["icon:/22/up"]
+      }
+      { BtnLInicio Button
+        MoveScaled(107,4,5,5)
+        Picture = Picture["icon:/22/top"]
+      }
+      { BtnBorrarLote Button
+        MoveScaled(137,4,16,5)
+        Font = Font["Bold,+1"]
+        Text = ("BORRAR")
+      }
+      { BtnEditarLote Button
+        MoveScaled(118,13,16,5)
+        Font = Font["Bold,+1"]
+        Text = ("EDITAR")
+      }
+      { BtnSalirStock Button
+        MoveScaled(129,22,16,5)
+        Foreground = Color.Red
+        Text = ("SALIR")
+        Picture = Picture["imagenes/32x32/salida.png"]
+      }
+      { BtnAgregarLote Button
+        MoveScaled(118,4,16,5)
+        Font = Font["Bold,+1"]
+        Text = ("NUEVO")
+      }
+      { BtnConsultarLotes Button
+        MoveScaled(137,13,16,5)
+        Font = Font["Bold,-1"]
+        Text = ("CONSULTAR LOTES")
+      }
+    }
+    { FrameFiltrar Frame
+      MoveScaled(99,2,59,26)
+      Text = ("Filtrar Lotes")
+      { BtnQuitarFiltro Button
+        MoveScaled(44,10,14,3)
+        Font = Font["-2"]
+        Text = ("QUITAR FILTRO")
+        Picture = Picture["icon:/16/grid"]
+      }
+      { BtnFiltrar Button
+        MoveScaled(44,5,14,3)
+        Text = ("FILTRAR")
+        Picture = Picture["icon:/16/filter"]
+      }
+      { PanelArticulos Panel
+        MoveScaled(1,20,51,5)
+        Enabled = False
+        Border = Border.Plain
+        { LblFArticulos Label
+          MoveScaled(2,1,13,3)
+          Text = ("Articulos")
+        }
+        { CmbFArticulo ComboBox
+          MoveScaled(16,1,28,3)
+          ReadOnly = True
+        }
+      }
+      { PanelFCreacion Panel
+        MoveScaled(22,2,21,17)
+        Enabled = False
+        Border = Border.Plain
+        { Label3 Label
+          MoveScaled(1,1,19,3)
+          Text = ("Fecha Inicio Creacion")
+        }
+        { Label4 Label
+          MoveScaled(2,8,18,4)
+          Text = ("Fecha Fin Creacion")
+        }
+        { DteFICreacion DateBox
+          MoveScaled(1,4,19,4)
+        }
+        { DteFFCreacion DateBox
+          MoveScaled(1,12,19,4)
+        }
+      }
+      { PanelFiltros Panel
+        MoveScaled(1,3,19,11)
+        Border = Border.Plain
+        { VBox5 VBox
+          MoveScaled(0,0,19,11)
+          { ChkFechaCreacionLote CheckBox
+            MoveScaled(1,1,18,3)
+            AutoResize = True
+            Text = ("Fecha Creacion")
+          }
+          { ChkArticulo CheckBox
+            MoveScaled(1,5,16,3)
+            Text = ("Articulos")
+          }
+        }
+      }
+    }
+  }
+  { BtnLDFin Button
+    MoveScaled(150,60,5,5)
+    Picture = Picture["icon:/22/bottom"]
+  }
+  { BtnLDSiguiente Button
+    MoveScaled(150,54,5,5)
+    Picture = Picture["icon:/22/down"]
+  }
 }

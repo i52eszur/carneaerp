@@ -6,7 +6,7 @@ Public Sub Form_Open()
 
   Me.Title = "GESTION DE ARTICULOS"
   
-  'Configurar_Tab_Articulos("TODO")
+  Configurar_Tab_Articulos("TODO")
   Configurar_Tab_Familias()
   Configurar_Tab_MateriaPrima()
   Configurar_tab_Tarifa()
@@ -451,8 +451,8 @@ Private Sub Configurar_Tab_Articulos(Accion As String)
     DtsArticulos.table = "articulo"  
     DtbArticulos.Labels = Cabeceras
     DtbArticulos.View.Columns[0].width = 100
-    DtbArticulos.View.Columns[1].width = 150
-    DtbArticulos.View.Columns[2].width = 200
+    DtbArticulos.View.Columns[1].width = 200
+    DtbArticulos.View.Columns[2].width = 250
   Endif
   
   
@@ -547,9 +547,9 @@ Private Function Comprobar_Campos_Articulos(Accion As String) As Boolean
    Balloon.Error("Debe introducir el nombre del Articulo", TxtNombreArticulo)
    Validar = False
    TxtNombreArticulo.SetFocus
-  Else If LtBKMPComposicion.Count = 0
-    Balloon.Error("Debe añadir las materias primas que componen el articulo", LtBKMPComposicion)
-    Validar = False
+  'Else If LtBKMPComposicion.Count = 0
+  '  Balloon.Error("Debe añadir las materias primas que componen el articulo", LtBKMPComposicion)
+  '  Validar = False
   Endif
   If Accion = "AGREGAR" Then
     If Utilidades.Comprobar_existe_dato(Sql) Then 

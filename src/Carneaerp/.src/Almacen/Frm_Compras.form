@@ -1,10 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,143,102)
+  MoveScaled(0,0,145,103)
   Icon = Picture["imagenes/32x32/compras.png"]
+  Resizable = False
   { FrameCompras Frame
-    MoveScaled(2,0,141,100)
+    MoveScaled(2,0,141,102)
     Text = ("Datos de las Compras")
     { HPanel1 HPanel
       MoveScaled(1,4,119,41)
@@ -174,15 +175,6 @@
         Border = Border.Raised
       }
     }
-    { DtsCompras DataSource
-      MoveScaled(1,65,139,36)
-      { DtbCompras DataBrowser
-        MoveScaled(0,1,138,33)
-        Font = Font["Bold,+1"]
-        CanCreate = False
-        CanDelete = False
-      }
-    }
     { PanelBotones Panel
       MoveScaled(121,4,18,41)
       Border = Border.Plain
@@ -325,6 +317,33 @@
         MoveScaled(119,11,19,5)
         Text = ("QUITAR FILTRO")
         Picture = Picture["icon:/32/grid"]
+      }
+    }
+    { GridCompras GridView
+      MoveScaled(1,65,138,30)
+      Mode = Select.Single
+    }
+    { PanelBotonesGrid Panel
+      MoveScaled(1,95,138,5)
+      Border = Border.Plain
+      { HBox1 HBox
+        MoveScaled(1,95,138,5)
+      }
+      { BtnComprasInicio Button
+        MoveScaled(3,0,4.5,4.5)
+        Picture = Picture["icon:/32/first"]
+      }
+      { BtnComprasAnterior Button
+        MoveScaled(8,0,4.5,4.5)
+        Picture = Picture["icon:/32/left"]
+      }
+      { BtnComprasFin Button
+        MoveScaled(18,0,4.5,4.5)
+        Picture = Picture["icon:/32/last"]
+      }
+      { BtnComprasSiguiente Button
+        MoveScaled(13,0,4.5,4.5)
+        Picture = Picture["icon:/32/next"]
       }
     }
   }

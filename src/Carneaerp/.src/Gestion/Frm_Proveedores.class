@@ -425,7 +425,7 @@ Private Sub Configurar_DataSet_Proveedores()
   DtbProveedor.Labels = Cabeceras
   DtbProveedor.view.Columns[0].Width = 100 
   DtbProveedor.view.Columns[1].Width = 250
-  DtbProveedor.view.Columns[2].Width = 90
+  DtbProveedor.view.Columns[2].Width = 100
   DtbProveedor.view.Columns[3].Width = 250
   DtbProveedor.view.Columns[4].Width = 200
   DtbProveedor.view.Columns[5].Width = 200 
@@ -552,7 +552,10 @@ Private Sub Borrar_Campos_Proveedor()
   LtbTelefono.Clear
   Utilidades.Llenar_Listbox("select * from materiaprima", LtBMP, "nombre")
   Numero_fila = GridComerciales.Rows.Count
-  GridComerciales.Rows.Remove(0, Numero_fila)
+  If GridComerciales.Rows.Count > 0 Then
+    GridComerciales.Rows.Remove(0, Numero_fila)  
+  Endif
+  
   Configurar_DataSet_Proveedores()
   
 End

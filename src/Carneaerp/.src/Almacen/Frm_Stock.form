@@ -1,10 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,145,79)
+  MoveScaled(0,0,145,84)
   Icon = Picture["imagenes/32x32/stock.png"]
+  Resizable = False
   { FrameStock Frame
-    MoveScaled(1,0,142,77)
+    MoveScaled(1,-1,142,83)
     Text = ("Stock")
     { BtnFiltrar Button
       MoveScaled(101,2,19,5)
@@ -97,24 +98,16 @@
       Picture = Picture["imagenes/32x32/salida.png"]
     }
     { PanelStock Panel
-      MoveScaled(77,2,20,10)
+      MoveScaled(77,2,20,9)
       Enabled = False
       Border = Border.Plain
       { RdbUsado RadioButton
-        MoveScaled(1,1,17,4)
+        MoveScaled(1,0,17,4)
         Text = ("Usado.")
       }
       { RdbNoUsado RadioButton
-        MoveScaled(1,5,18,4)
+        MoveScaled(1,4,18,4)
         Text = ("No Usado.")
-      }
-    }
-    { DtsStock DataSource
-      MoveScaled(1,23,138,53)
-      { DtbStock DataBrowser
-        MoveScaled(5,4,132,46)
-        CanCreate = False
-        CanDelete = False
       }
     }
     { BtnBorrarStocCero Button
@@ -129,6 +122,66 @@
       ToolTip = ("Borrar Linea Stock Seleccionada.")
       Text = ("Borrar Linea Stock")
       Picture = Picture["icon:/32/delete"]
+    }
+    { GridStock GridView
+      MoveScaled(1,31,129,52)
+      Mode = Select.Single
+    }
+    { BtnLPrevio Button
+      MoveScaled(132,46,8.75,8.75)
+      Picture = Picture["icon:/64/up"]
+    }
+    { BtnLSiguiente Button
+      MoveScaled(132,57,8.75,8.75)
+      Picture = Picture["icon:/64/down"]
+    }
+    { BtnLFin Button
+      MoveScaled(132,69,8.75,8.75)
+      Picture = Picture["icon:/64/bottom"]
+    }
+    { BtnLInicio Button
+      MoveScaled(132,35,8.75,8.75)
+      Picture = Picture["icon:/64/top"]
+    }
+    { FrameColores Frame
+      MoveScaled(4,23,113,7)
+      Text = ("Colores")
+      { LblCuadradoNaranja Label
+        MoveScaled(61,3,3,3)
+        Background = Color.Orange
+      }
+      { LblCuadradoBlanco Label
+        MoveScaled(84,3,3,3)
+        Background = Color.White
+      }
+      { LblCuadradoVerde Label
+        MoveScaled(2,3,3,3)
+        Background = Color.Green
+      }
+      { LblCuadradoAmarillo Label
+        MoveScaled(28,3,3,3)
+        Background = Color.Yellow
+      }
+      { LblVerde Label
+        MoveScaled(8,2,14,4)
+        Font = Font["Bold,+2"]
+        Text = ("Stock > 60%")
+      }
+      { LblAmarillo Label
+        MoveScaled(34,2,24,4)
+        Font = Font["Bold,+2"]
+        Text = ("20 % < Stock < 60%")
+      }
+      { LblNaranja Label
+        MoveScaled(67,2,14,4)
+        Font = Font["Bold,+2"]
+        Text = ("Stock < 20%")
+      }
+      { LblBlanco Label
+        MoveScaled(90,2,14,4)
+        Font = Font["Bold,+2"]
+        Text = ("Stock = 0%")
+      }
     }
   }
 }

@@ -53,12 +53,12 @@ Public Sub Llenar_Combobox(Sql As String, ByRef Combobox_Trabajo As ComboBox, Ca
   FMain.Conexion_Base_Datos.Open
   Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
   Result_Trabajo.MoveFirst
-  Combobox_Trabajo.Add("")
+  'Combobox_Trabajo.Add("")
   While Result_Trabajo.Available
     Combobox_Trabajo.Add(Result_Trabajo[Campo])
     Result_Trabajo.MoveNext
   Wend
-  Combobox_Trabajo.text = ""
+  'Combobox_Trabajo.text = ""
   FMain.Conexion_Base_Datos.Close
   
 End
@@ -101,6 +101,7 @@ Public Function Obtener_Campo_Tabla(sql As String, Campo As String) As String
   
   FMain.Conexion_Base_Datos.Close
   FMain.Conexion_Base_Datos.Open
+  'Print sql
   Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
   Result_Trabajo.MoveFirst
   Valor_A_Devolver = Result_Trabajo[Campo]

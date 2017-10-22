@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: localhost
--- Tiempo de generación: 13-10-2017 a las 20:11:30
+-- Tiempo de generación: 21-10-2017 a las 12:00:08
 -- Versión del servidor: 5.7.19-0ubuntu0.16.04.1
 -- Versión de PHP: 7.0.22-0ubuntu0.16.04.1
 
@@ -86,9 +86,13 @@ CREATE TABLE `articulo` (
 --
 
 INSERT INTO `articulo` (`codigoarticulo`, `nombre`, `familia`) VALUES
-('001', 'CHISTORRA', 'AVE CANAL DESP Y ELABORA'),
+('001', 'CHISTORRA', 'PRODUCTOS ELABORADOS'),
 ('002', 'PINCHITOS', 'PRODUCTOS ELABORADOS'),
-('003', 'BUTIFARRA', 'PRODUCTOS ELABORADOS');
+('003', 'BUTIFARRA', 'PRODUCTOS ELABORADOS'),
+('004', 'MORCILLA CEBOLLA', 'PRODUCTOS ELABORADOS'),
+('005', 'CHORIZO 1ª', 'PRODUCTOS ELABORADOS'),
+('006', 'BUTIFARRA ECO', 'PRODUCTOS ELABORADOS'),
+('007', 'COSTILLAS', 'CANAL DESPIEZADA');
 
 -- --------------------------------------------------------
 
@@ -115,7 +119,26 @@ INSERT INTO `articulomateriaprima` (`articulo`, `materiaprima`) VALUES
 ('003', '003'),
 ('003', '004'),
 ('003', '016'),
-('003', '017');
+('003', '017'),
+('004', '005'),
+('004', '006'),
+('004', '007'),
+('004', '008'),
+('004', '009'),
+('004', '013'),
+('004', '025'),
+('005', '001'),
+('005', '003'),
+('005', '004'),
+('005', '009'),
+('005', '011'),
+('005', '012'),
+('006', '001'),
+('006', '003'),
+('006', '004'),
+('006', '012'),
+('006', '016'),
+('006', '017');
 
 -- --------------------------------------------------------
 
@@ -128,14 +151,6 @@ CREATE TABLE `clientefax` (
   `fax` varchar(9) NOT NULL,
   `cliente` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Volcado de datos para la tabla `clientefax`
---
-
-INSERT INTO `clientefax` (`fax`, `cliente`) VALUES
-('222222222', '1'),
-('957376739', '2');
 
 -- --------------------------------------------------------
 
@@ -169,9 +184,8 @@ CREATE TABLE `clientes` (
 --
 
 INSERT INTO `clientes` (`codigocliente`, `razonsocial`, `direccion`, `localidad`, `provincia`, `codigopostal`, `nif`, `subcuentaiva`, `descuentopp`, `descuentoesp`, `recargo`, `iva`, `email`, `enviofacturaemail`, `formapago`, `tarifa`, `vendedor`) VALUES
-('1', '12345', '1', '1', '1', '12345', '111111', 43000001, 1.2, 20.1, 'N', 'S', '1sdafl@uco.es', 'S', 'CONTADO', 'TARIFA 1', 'CAJA'),
-('2', 'RAFAEL', 'RAMON Y CAJAL Nº 11', 'ESPEJO', 'CORDOBA', '14830', '30811829V', 43000002, 1.2, 0.3, 'N', 'S', 'i52eszur@uco.es', 'S', 'CONTADO', 'TARIFA 1', 'CAJA'),
-('3', 'E', '', '', '', '', '', 43000003, 0, 0, 'N', 'S', '', 'N', 'PAGARE', 'TARIFA 1', '');
+('0000000001', 'VENTA CONTADO TRANSEUNTES', 'CRTA BADAJOJ', 'ESPEJO', 'CORDOBA', '11111', '1111111111', 43000000, 0, 0, 'N', 'S', '', 'N', 'CONTADO', 'TARIFA 1', 'CAJA'),
+('0000000002', 'HERMANOS ROMERO', 'C SIN SILLA', 'CORDOBA', 'CORDOBA', '22222', '3333333333', 43000001, 5, 0, 'S', 'S', '', 'N', 'PAGARE', 'TARIFA 2', 'RAFAEL');
 
 -- --------------------------------------------------------
 
@@ -184,14 +198,6 @@ CREATE TABLE `clientetelefono` (
   `telefono` varchar(9) NOT NULL,
   `cliente` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Almacenamos los telefonos del cliente';
-
---
--- Volcado de datos para la tabla `clientetelefono`
---
-
-INSERT INTO `clientetelefono` (`telefono`, `cliente`) VALUES
-('111111111', '1'),
-('615013808', '2');
 
 -- --------------------------------------------------------
 
@@ -223,9 +229,8 @@ CREATE TABLE `compras` (
 --
 
 INSERT INTO `compras` (`codigocompra`, `fecharecepcion`, `fechafacturacompra`, `cantidad`, `lotecompra`, `nfacturacompra`, `higiene`, `carolep`, `precio`, `firma`, `observaciones`, `transporte`, `stock`, `proveedor`, `materiaprima`) VALUES
-(1, '1', '1', 1, '1', '1', '1', '1', 1, '1', '1', 1, '1', '0000000001', '001'),
-(2, '10/13/2017', '10/13/2017', 20, '2', '2', 'ACEPTABLE', 'ACEPTABLE', 20, '2', '2', 20, 'N', '0000000001', '001'),
-(3, '10/13/2017', '10/13/2017', 10, '23', '32', 'ACEPTABLE', 'ACEPTABLE', 2, '', '', 10, 'N', '0000000001', '001');
+(17, '20/10/2017', '20/10/2017', 95, '4321', '1234', 'ACEPTABLE', 'ACEPTABLE', 0.29, '', '', 0, 'S', '0000000001', '008'),
+(18, '19/10/2017', '18/10/2017', 177, 'TCN123', '59434', 'ACEPTABLE', 'ACEPTABLE', 1.23, '', '', 0, 'S', '0000000003', '003');
 
 -- --------------------------------------------------------
 
@@ -289,8 +294,7 @@ CREATE TABLE `dispositivomovilvendedor` (
 --
 
 INSERT INTO `dispositivomovilvendedor` (`dispositivomovil`, `vendedor`) VALUES
-('2', '2'),
-('1', '1');
+('3', '0000000002');
 
 -- --------------------------------------------------------
 
@@ -398,7 +402,7 @@ CREATE TABLE `lotedetalle` (
   `coste` float NOT NULL COMMENT 'Coste medido en euros/kilo de la materia prima',
   `numerolotecompra` varchar(12) NOT NULL COMMENT 'Lote de compra de la mateira prima',
   `proveedor` varchar(10) NOT NULL COMMENT 'Proveedor de la materia prima',
-  `nfactuacompra` varchar(10) NOT NULL COMMENT 'Numero de la facrua de compra de la materia prima',
+  `nfacturacompra` varchar(10) NOT NULL COMMENT 'Numero de la facrua de compra de la materia prima',
   `fechafacturacompra` varchar(10) NOT NULL COMMENT 'Fecha factura de compra',
   `materiaprima` varchar(10) NOT NULL COMMENT 'Materia prima de la linea detalle'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Lineas detalle de los lotes';
@@ -460,7 +464,8 @@ INSERT INTO `materiaprima` (`codigomateriaprima`, `nombre`) VALUES
 ('021', 'APORRO'),
 ('022', 'CHIRIZO EXTRA'),
 ('023', 'CHORIZO SELECTO'),
-('024', 'MANTECA DE CERDO IBERICO');
+('024', 'MANTECA DE CERDO IBERICO'),
+('025', 'PROANSOY');
 
 -- --------------------------------------------------------
 
@@ -487,7 +492,8 @@ CREATE TABLE `proveedor` (
 
 INSERT INTO `proveedor` (`codigoproveedor`, `razonsocial`, `nif`, `direccion`, `localidad`, `provincia`, `codigopostal`, `web`, `email`) VALUES
 ('0000000001', 'DIATESA', '11111111V', 'C MOLINOS N10', 'CORDOBA', 'CORDOBA', '12345', 'WWW.A.COM', 'ASDF@A.COM'),
-('1111111111', '111111111111', '', '', '', '', '', '', '');
+('0000000002', 'FRIMANCHO', '1111111111', 'AUTOVIA', 'VALDEPEñAS', 'CIUDAD REAL', '22222', '', ''),
+('0000000003', 'FACCSOO', '3333333333', 'PLAZA ESPAñA', 'TORREMOLINOS', 'MALAGA', '22222', '', '');
 
 -- --------------------------------------------------------
 
@@ -509,7 +515,6 @@ CREATE TABLE `proveedorcomercial` (
 
 INSERT INTO `proveedorcomercial` (`codigoproveedor`, `nombre`, `telefono`, `email`) VALUES
 ('1', '111111111', '222222222', '11111111111111111111'),
-('1111111111', '111111111111111', '111111111', '11111111111'),
 ('0000000001', 'PEPE', '111111111', 'PEPE@A.COM');
 
 -- --------------------------------------------------------
@@ -548,10 +553,28 @@ CREATE TABLE `proveedormateriaprima` (
 --
 
 INSERT INTO `proveedormateriaprima` (`proveedor`, `materiaprima`) VALUES
+('0000000001', '008'),
 ('0000000001', '009'),
+('0000000001', '016'),
+('0000000001', '018'),
 ('0000000001', '021'),
 ('0000000001', '023'),
-('1111111111', '021');
+('0000000002', '003'),
+('0000000002', '005'),
+('0000000002', '009'),
+('0000000002', '016'),
+('0000000002', '017'),
+('0000000002', '021'),
+('0000000003', '002'),
+('0000000003', '003'),
+('0000000003', '008'),
+('0000000003', '009'),
+('0000000003', '011'),
+('0000000003', '015'),
+('0000000003', '017'),
+('0000000003', '020'),
+('0000000003', '021'),
+('0000000003', '022');
 
 -- --------------------------------------------------------
 
@@ -590,6 +613,14 @@ CREATE TABLE `stock` (
   `precio` float NOT NULL,
   `usado` varchar(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `stock`
+--
+
+INSERT INTO `stock` (`codigostock`, `materiaprima`, `cantidad`, `lotecompra`, `proveedor`, `nfacturacompra`, `ffacturacompra`, `precio`, `usado`) VALUES
+(7, '008', 95, '4321', '0000000001', '1234', '20/10/2017', 0.29, 'N'),
+(8, '003', 177, 'TCN123', '0000000003', '59434', '18/10/2017', 1.23, 'N');
 
 -- --------------------------------------------------------
 
@@ -695,10 +726,8 @@ CREATE TABLE `vendedor` (
 --
 
 INSERT INTO `vendedor` (`codigovendedor`, `nombre`, `nif`, `direccion`, `localidad`, `provincia`, `codigopostal`) VALUES
-('1', 'NO', 'N', 'P', 'L', 'PR', '14200'),
-('2', '2', '2', '2', '2', '2', '22222'),
-('3', 'CAJA', '', '', '', '', ''),
-('4', '4', '4', '4', '4', '4', '44444');
+('0000000001', 'CAJA', '1111111111', 'C  RAMON Y CAJAL', 'ESPEJO', 'CORDOBA', '14830'),
+('0000000002', 'RAFAEL', '444444444V', 'C REGIONES DEVASTADAS', 'ESPEJO', 'CORDOBA', '14830');
 
 -- --------------------------------------------------------
 
@@ -717,8 +746,8 @@ CREATE TABLE `vendedortelefono` (
 --
 
 INSERT INTO `vendedortelefono` (`telefono`, `vendedor`) VALUES
-('111111111', '1'),
-('222222222', '2');
+('123456789', '0000000001'),
+('222222222', '0000000002');
 
 --
 -- Índices para tablas volcadas
@@ -882,12 +911,12 @@ ALTER TABLE `vendedortelefono`
 -- AUTO_INCREMENT de la tabla `compras`
 --
 ALTER TABLE `compras`
-  MODIFY `codigocompra` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Codigo de la compra auto incremental', AUTO_INCREMENT=4;
+  MODIFY `codigocompra` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Codigo de la compra auto incremental', AUTO_INCREMENT=19;
 --
 -- AUTO_INCREMENT de la tabla `stock`
 --
 ALTER TABLE `stock`
-  MODIFY `codigostock` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `codigostock` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

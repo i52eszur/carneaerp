@@ -162,3 +162,15 @@ Public Sub MenuStock_Click()
   Frm_Stock.Show()
 
 End
+
+Public Sub ButtonLotes_Click()
+
+  Frm_Lotes.ShowModal()
+
+End
+
+Public Sub Menu1Lotes_Click()
+
+  Frm_Lotes.ShowModal()
+
+End

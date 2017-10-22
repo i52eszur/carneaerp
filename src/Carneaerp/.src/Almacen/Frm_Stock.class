@@ -1,6 +1,6 @@
 ' Gambas class file
 
-
+Public Linea_Stock As Integer
 Public Sub Form_Open()
 
   Me.Title = "GESTION DE STOCK"
@@ -22,7 +22,7 @@ Public Sub BtnBorrarStocCero_Click()
     utilidades.In_Act_Bor("delete from stock where cantidad=0")
     sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
     " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima"
-  Configurar_Dataset_Stock(sql)
+    Llenar_Datagrid_Stock(sql)
   Endif
 End
 Public Sub BtnBorrarLineaStock_Click()
@@ -30,20 +30,70 @@ Public Sub BtnBorrarLineaStock_Click()
   Dim Respuesta As Integer
   Dim Sql As String
   Dim Numero_fila As Integer
-  Numero_fila = DtbStock.View.Row
-  If DtbStock.View.Rows.Count > 0 Then
-    Respuesta = Message.Delete("Desea Borrar linea Stock Materia Prima: <b>" & DtbStock.View[Numero_fila, 1].Text & " </b>", "Si", "No")
+  
+  If GridStock.Rows.Selection.Count > 0 Then
+    Numero_fila = GridStock.Rows.Selection[0]
+    Respuesta = Message.Delete("Desea Borrar linea Stock Materia Prima: <b>" & GridStock[Numero_fila, 1].Text & " </b>", "Si", "No")
     If Respuesta = 1 Then
-      utilidades.In_Act_Bor("delete from stock where codigostock=" & DtbStock.View[Numero_fila, 0].Text)
+      utilidades.In_Act_Bor("delete from stock where codigostock=" & GridStock[Numero_fila, 0].Text)
       sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
       " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima"
-       Configurar_Dataset_Stock(sql)
+       Llenar_Datagrid_Stock(sql)
   Endif
     
   Endif
   
+End
+
+
+Public Sub BtnLInicio_Click()
+
+    If GridStock.Rows.Count > 0 Then
+      GridStock.Rows.UnSelectAll
+      Linea_Stock = 0
+      GridStock.Rows.Select(Linea_Stock, 1) 
+  Endif
 
 End
+
+Public Sub BtnLPrevio_Click()
+
+  If GridStock.Rows.Count > 0 Then
+    If Linea_Stock = 0 Then
+      GridStock.Rows.Select(Linea_Stock, 1)
+     Else  
+       GridStock.Rows.UnSelectAll
+       Linea_Stock = Linea_Stock - 1
+       GridStock.Rows.Select(Linea_Stock, 1)
+    Endif
+  Endif
+
+End
+
+Public Sub BtnLSiguiente_Click()
+
+  If GridStock.Rows.Count > 0 Then
+    If Linea_Stock = GridStock.Rows.Count - 1 Then
+      GridStock.Rows.Select(Linea_Stock, 1)
+     Else  
+       GridStock.Rows.UnSelectAll
+       Linea_Stock = Linea_Stock + 1
+       GridStock.Rows.Select(Linea_Stock, 1)
+    Endif
+  Endif
+
+End
+
+Public Sub BtnLFin_Click()
+
+  If GridStock.Rows.Count > 0 Then
+      GridStock.Rows.UnSelectAll
+      Linea_Stock = GridStock.Rows.Count - 1
+      GridStock.Rows.Select(Linea_Stock, 1)
+  Endif
+
+End
+
 
 ''*************************** FILTROS **************************************
 ''
@@ -142,7 +192,7 @@ Private Sub Quitar_Filtros()
     ChkCantidad0.value = False
     sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
     " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima"
-  Configurar_Dataset_Stock(sql)
+  Llenar_Datagrid_Stock(sql)
   
 End
 
@@ -182,45 +232,154 @@ Private Sub Ejecutar_Filtros()
       sql &= " and S.cantidad = 0 " 
     Endif
   
-  Configurar_Dataset_Stock(sql)
+  Llenar_Datagrid_Stock(sql)
   
 End
 
 Private Sub Configurar_Objetos_Stock()
   Dim Sql As String
   CmbProveedor.Clear
+  Linea_Stock = 0
   Utilidades.Llenar_Combobox("select * from proveedor", CmbProveedor, "razonsocial")  
   CmbMateriaPrima.Clear
   Utilidades.Llenar_Combobox("select * from materiaprima", CmbMateriaPrima, "nombre")  
   sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
     " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima"
-  Configurar_Dataset_Stock(sql)
+  Configurar_Grid_Stock()
+  Llenar_Datagrid_Stock(sql)
+  
+  End
+
+Private Sub Configurar_Grid_Stock()
+  GridStock.Columns.Count = 9
+  GridStock.Header = GridStock.Both
+  GridStock.Columns[0].Title = "Codigo"
+  GridStock.Columns[1].Title = "Materia Prima"
+  GridStock.Columns[2].Title = "Cantidad"
+  GridStock.Columns[3].Title = "Lote Compra"
+  GridStock.Columns[4].Title = "Proveedor"
+  GridStock.Columns[5].Title = "N Factura Compra"
+  GridStock.Columns[6].Title = "F Factura Compra"
+  GridStock.Columns[7].Title = "Precio"
+  GridStock.Columns[8].Title = "Usado"
+  GridStock.Columns[0].Width = 100 
+  GridStock.Columns[1].Width = 200
+  GridStock.Columns[2].Width = 90 
+  GridStock.Columns[3].Width = 150
+  GridStock.Columns[4].Width = 150 
+  GridStock.Columns[5].Width = 200
+  GridStock.Columns[6].Width = 200
+  GridStock.Columns[7].Width = 100
+  GridStock.Columns[8].Width = 90
+  
+  
 End
 
-Private Sub Configurar_Dataset_Stock(Sql As String)
-  Dim Cabeceras As New String[]
-  Cabeceras.Add("Codigo")
-  Cabeceras.Add("Materia Prima")
-  Cabeceras.Add("Cantidad")
-  Cabeceras.Add("Lote Compra")
-  Cabeceras.Add("Proveedor")
-  Cabeceras.Add("N. F. Compra")
-  Cabeceras.Add("N. Fecha Compra")
-  Cabeceras.Add("Precio")
-  Cabeceras.Add("Usado")
-  DtsStock.Connection = FMain.Conexion_Base_Datos
-  DtsStock.Table = sql
-  DtbStock.Labels = Cabeceras
-  DtbStock.view.Columns[0].Width = 90
-  DtbStock.view.Columns[1].Width = 150
-  DtbStock.view.Columns[2].Width = 150
-  DtbStock.view.Columns[3].Width = 200  
-  DtbStock.view.Columns[4].Width = 150  
-  DtbStock.view.Columns[5].Width = 100  
-  DtbStock.view.Columns[6].Width = 150
-  DtbStock.view.Columns[7].Width = 150  
-  DtbStock.view.Columns[8].Width = 90  
+'' Llenamos DataGrid Stock <br>
+'' Parametros:<br>
+''    Sql --> Sentencia para cargar datos en el Dataset
+Private Sub Llenar_Datagrid_Stock(Sql As String)
+  Dim Result_Trabajo As Result
+  Dim Numero_fila As Integer
   
+  Numero_fila = GridStock.Rows.Count
+  If GridStock.Rows.Count > 0 Then
+    GridStock.Rows.Remove(0, Numero_fila)  
+  Endif
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
+  Result_Trabajo.MoveFirst
+  If Result_Trabajo.Count > 0 Then
+    While Result_Trabajo.Available
+      Numero_fila = GridStock.Rows.Count
+      GridStock.Rows.Insert(Numero_fila, 1)
+      GridStock[Numero_fila, 0].Text = Result_Trabajo["S.codigostock"]
+      GridStock[Numero_fila, 1].Text = Result_Trabajo["M.nombre"]
+      GridStock[Numero_fila, 2].Text = Result_Trabajo["S.cantidad"]
+      GridStock[Numero_fila, 3].Text = Result_Trabajo["S.lotecompra"]
+      GridStock[Numero_fila, 4].Text = Result_Trabajo["P.razonsocial"]
+      GridStock[Numero_fila, 5].Text = Result_Trabajo["S.nfacturacompra"]
+      GridStock[Numero_fila, 6].Text = Result_Trabajo["S.ffacturacompra"]
+      GridStock[Numero_fila, 7].Text = Result_Trabajo["S.precio"]
+      GridStock[Numero_fila, 8].Text = Result_Trabajo["S.usado"]
+      Result_Trabajo.MoveNext
+    Wend
+    FMain.Conexion_Base_Datos.Close
+    GridStock.Rows.Select(Linea_Stock, 1)
+    Colorear_GridView_Stock()
+  End If
+End
+'' Coloreamos las filas segun cantidad quede en stock<br>
+'' cantidad < 20% Color Naranja<br>
+''  20% < cantidad < 60% Color Amarillo<br>
+'' cantidad < 60% Color Vede<br>
+'' cantidad 0% Color Blanco<br>
+
+Private Sub Colorear_GridView_Stock()
+  Dim Numero_fila As Integer
+  Dim Sql As String
+  Dim Cantidad_compra As String
+  Dim Codigo_Materia_Prima_Compra As String
+  Dim Valor As Float
+  Dim Porciento As Float
+  Dim Lote_stock As String
+  Dim NFactura_stock As String
+  Dim Cantidad_Stock As String
+  Dim Nombre_MP As String
+  
+  
+  For Numero_fila = 0 To GridStock.Rows.Count - 1
+    
+    Lote_stock = GridStock[Numero_fila, 3].Text
+    NFactura_stock = GridStock[Numero_fila, 5].Text
+    Cantidad_Stock = GridStock[Numero_fila, 2].Text
+    Nombre_MP = GridStock[Numero_fila, 1].Text
+  ' Comprobamos cuanto queda de stock para colorear
+    Sql = "select * from materiaprima where nombre='" & Nombre_MP & "'"
+    Codigo_Materia_Prima_Compra = utilidades.Obtener_Campo_Tabla(Sql, "codigomateriaprima")
+    Sql = "select * from compras where lotecompra='" & Lote_stock & "' and nfacturacompra='" & NFactura_stock & "' and materiaprima='" & Codigo_Materia_Prima_Compra & "'"
+    Cantidad_compra = utilidades.Obtener_Campo_Tabla(Sql, "cantidad")
+    If Cantidad_compra = "" Or Cantidad_compra = "0" Then
+      valor = 1.0
+    Else
+      valor = CFloat(Cantidad_compra)
+    Endif
+    Porciento = (CFloat(Cantidad_Stock) * 100) / valor
+    
+    If Porciento = 0 Then
+    Else If Porciento < 20
+      GridStock[Numero_fila, 0].Background = Color.Orange
+      GridStock[Numero_fila, 1].Background = Color.Orange
+      GridStock[Numero_fila, 2].Background = Color.Orange
+      GridStock[Numero_fila, 3].Background = Color.Orange
+      GridStock[Numero_fila, 4].Background = Color.Orange
+      GridStock[Numero_fila, 5].Background = Color.Orange
+      GridStock[Numero_fila, 6].Background = Color.Orange
+      GridStock[Numero_fila, 7].Background = Color.Orange
+      GridStock[Numero_fila, 8].Background = Color.Orange
+    Else If porciento > 20 And Porciento < 60
+      GridStock[Numero_fila, 0].Background = Color.Yellow
+      GridStock[Numero_fila, 1].Background = Color.Yellow
+      GridStock[Numero_fila, 2].Background = Color.Yellow
+      GridStock[Numero_fila, 3].Background = Color.Yellow
+      GridStock[Numero_fila, 4].Background = Color.Yellow
+      GridStock[Numero_fila, 5].Background = Color.Yellow
+      GridStock[Numero_fila, 6].Background = Color.Yellow
+      GridStock[Numero_fila, 7].Background = Color.Yellow
+      GridStock[Numero_fila, 8].Background = Color.Yellow
+    Else If porciento > 60
+      GridStock[Numero_fila, 0].Background = Color.Green
+      GridStock[Numero_fila, 1].Background = Color.Green
+      GridStock[Numero_fila, 2].Background = Color.Green
+      GridStock[Numero_fila, 3].Background = Color.Green
+      GridStock[Numero_fila, 4].Background = Color.Green
+      GridStock[Numero_fila, 5].Background = Color.Green
+      GridStock[Numero_fila, 6].Background = Color.Green
+      GridStock[Numero_fila, 7].Background = Color.Green
+      GridStock[Numero_fila, 8].Background = Color.Green
+    Endif
+  Next
   
 End
 

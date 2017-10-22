@@ -30,7 +30,7 @@ Private Sub Configurar_Dataset_Vendedores()
   DtbVendedor.Labels = Cabeceras
   DtbVendedor.view.Columns[0].Width = 100 
   DtbVendedor.view.Columns[1].Width = 250
-  DtbVendedor.view.Columns[2].Width = 90
+  DtbVendedor.view.Columns[2].Width = 100
   DtbVendedor.view.Columns[3].Width = 200
   DtbVendedor.view.Columns[4].Width = 100
   DtbVendedor.view.Columns[5].Width = 100 
