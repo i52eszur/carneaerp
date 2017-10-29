@@ -1,0 +1,185 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,121,81)
+  Icon = Picture["imagenes/32x32/lotes.png"]
+  Resizable = False
+  { FrameConsultaLotes Frame
+    MoveScaled(1,1,118,31)
+    Text = ("Seleccion de Lotes")
+    { FrameFiltrar Frame
+      MoveScaled(2,4,59,26)
+      Text = ("Filtrar Lotes")
+      { BtnQuitarFiltro Button
+        MoveScaled(44,10,14,3)
+        Font = Font["-2"]
+        Text = ("QUITAR FILTRO")
+        Picture = Picture["icon:/16/grid"]
+      }
+      { BtnFiltrar Button
+        MoveScaled(44,5,14,3)
+        Text = ("FILTRAR")
+        Picture = Picture["icon:/16/filter"]
+      }
+      { PanelArticulos Panel
+        MoveScaled(1,20,51,5)
+        Enabled = False
+        Border = Border.Plain
+        { LblFArticulos Label
+          MoveScaled(2,1,13,3)
+          Text = ("Articulos")
+        }
+        { CmbFArticulo ComboBox
+          MoveScaled(16,1,28,3)
+          ReadOnly = True
+        }
+      }
+      { PanelFCreacion Panel
+        MoveScaled(22,2,21,17)
+        Enabled = False
+        Border = Border.Plain
+        { Label3 Label
+          MoveScaled(1,1,19,3)
+          Text = ("Fecha Inicio Creacion")
+        }
+        { Label4 Label
+          MoveScaled(2,8,18,4)
+          Text = ("Fecha Fin Creacion")
+        }
+        { DteFICreacion DateBox
+          MoveScaled(1,4,19,4)
+        }
+        { DteFFCreacion DateBox
+          MoveScaled(1,12,19,4)
+        }
+      }
+      { PanelFiltros Panel
+        MoveScaled(1,3,19,11)
+        Border = Border.Plain
+        { VBox5 VBox
+          MoveScaled(0,0,19,11)
+          { ChkFechaCreacionLote CheckBox
+            MoveScaled(1,1,18,3)
+            AutoResize = True
+            Text = ("Fecha Creacion")
+          }
+          { ChkArticulo CheckBox
+            MoveScaled(1,5,16,3)
+            Text = ("Articulos")
+          }
+        }
+      }
+    }
+    { FrameLote Frame
+      MoveScaled(66,4,39,26)
+      Text = ("Lotes")
+      { CmbLote ComboBox
+        MoveScaled(8,3,24,4)
+      }
+      { BtnSalirStock Button
+        MoveScaled(12,16,16,5)
+        Foreground = Color.Red
+        Text = ("SALIR")
+        Picture = Picture["imagenes/32x32/salida.png"]
+      }
+      { BtnConsultarLote Button
+        MoveScaled(11,10,16,4)
+        Font = Font["Bold,+1"]
+        Text = ("CONSULTAR")
+      }
+    }
+  }
+  { FrameDatosLote Frame
+    MoveScaled(1,34,118,43)
+    Text = ("Datos Lote")
+    { HBox1 HBox
+      MoveScaled(5,3,108,7)
+      { LblCodigoLote Label
+        MoveScaled(0,0,13,4)
+        Font = Font["Bold,+1"]
+        Text = ("Codigo Lote : ")
+      }
+      { TxtlCodigoLote TextLabel
+        MoveScaled(16,0,15,4)
+        Alignment = Align.Center
+      }
+      { LblFechaCreacion Label
+        MoveScaled(33,0,17,4)
+        Font = Font["Bold,+1"]
+        Text = ("  Fecha Creacion : ")
+      }
+      { TxtFechaCreacion TextLabel
+        MoveScaled(51,0,15,4)
+        Alignment = Align.Center
+      }
+      { LblArticulo Label
+        MoveScaled(67,0,11,4)
+        Font = Font["Bold,+1"]
+        Text = ("  Articulo : ")
+      }
+      { TxtArticulo TextLabel
+        MoveScaled(78,0,27,4)
+        Alignment = Align.Left
+      }
+    }
+    { HBox2 HBox
+      MoveScaled(5,10,108,7)
+      { LblCantidadFabricada Label
+        MoveScaled(0,0,26,4)
+        Font = Font["Bold,+1"]
+        Text = ("Cantidad Neta Fabricada : ")
+      }
+      { TxtCantidad TextLabel
+        MoveScaled(25,0,7,4)
+        Alignment = Align.Center
+      }
+      { LblCantidadBruta Label
+        MoveScaled(33,1,27,3)
+        Font = Font["Bold,+1"]
+        Text = ("  Cantidad Bruta Fabricada : ")
+      }
+      { TxtCantidadBruta TextLabel
+        MoveScaled(61,0,7,4)
+        Alignment = Align.Center
+      }
+      { LblCoste Label
+        MoveScaled(70,0,11,4)
+        Font = Font["Bold,+1"]
+        Text = ("  Coste : ")
+      }
+      { TxtCoste TextLabel
+        MoveScaled(81,0,7,4)
+        Alignment = Align.Center
+      }
+      { LblMerma Label
+        MoveScaled(89,0,11,4)
+        Font = Font["Bold,+1"]
+        Text = ("  Merma : ")
+      }
+      { TxtMerma TextLabel
+        MoveScaled(100,0,7,4)
+        Alignment = Align.Center
+      }
+    }
+    { GridLoteDetalle GridView
+      MoveScaled(1,17,112,20)
+      Mode = Select.Single
+    }
+    { BtnLDPrevio Button
+      MoveScaled(7,37,4.5,4.5)
+      Picture = Picture["icon:/32/left"]
+    }
+    { BtnLDSiguiente Button
+      MoveScaled(12,37,4.5,4.5)
+      Picture = Picture["icon:/32/next"]
+    }
+    { BtnLDFin Button
+      MoveScaled(17,37,4.5,4.5)
+      Picture = Picture["icon:/32/last"]
+    }
+    { BtnLDInicio Button
+      MoveScaled(2,37,4,5)
+      Picture = Picture["icon:/32/first"]
+    }
+  }
+}

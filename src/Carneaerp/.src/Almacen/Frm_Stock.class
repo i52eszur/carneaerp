@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Public Linea_Stock As Integer
+Public Uso_filtro As Boolean
 Public Sub Form_Open()
 
   Me.Title = "GESTION DE STOCK"
@@ -93,6 +94,47 @@ Public Sub BtnLFin_Click()
   Endif
 
 End
+Public Sub GridStock_DblClick()
+
+    Dim sql As String
+  Dim Columna_Seleccionada As Integer
+  
+  
+  If Not Uso_filtro Then
+    Columna_Seleccionada = GridStock.Column
+    Select Columna_Seleccionada  
+      Case 0
+        sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
+        " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima order by 1"
+      Case 1
+        sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
+        " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima order by 2"  
+      Case 2
+        sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
+        " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima order by 3"
+      Case 3
+        sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
+        " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima order by 4"
+      Case 4
+        sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
+        " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima order by 5"
+      Case 5
+        sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
+        " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima order by 6"
+      Case 6
+        sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
+        " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima order by 7"
+      Case 7
+        sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
+        " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima order by 8"
+      Case 8
+        sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
+        " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima order by 9"
+    End Select
+    Llenar_Datagrid_Stock(sql)
+  Endif
+
+End
 
 
 ''*************************** FILTROS **************************************
@@ -101,6 +143,7 @@ End
 Public Sub BtnFiltrar_Click()
   Dim Validar As Boolean
   Validar = True
+  Uso_filtro = True
   If ChkFechaCompra.value = False And ChkMateriaPrima.Value = False And ChkProveedor.value = False And ChkUsado.value = False And ChkCantidad0.value = False Then
     validar = False
     Balloon.Error("Debe elegir un filtro.", PanelFiltrar)
@@ -117,7 +160,7 @@ Public Sub BtnFiltrar_Click()
   
 End
 Public Sub BtnQuitarFiltro_Click()
-
+  Uso_filtro = False
   Quitar_Filtros()
 
 End
@@ -190,6 +233,7 @@ Private Sub Quitar_Filtros()
     PanelMatreriaprima.Enabled = False
     PanelStock.Enabled = False
     ChkCantidad0.value = False
+    LblStockFiltrado.Visible = False
     sql = "select S.codigostock,M.nombre,S.cantidad,S.lotecompra,P.razonsocial,S.nfacturacompra,S.ffacturacompra,S.precio,S.usado" &
     " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima"
   Llenar_Datagrid_Stock(sql)
@@ -231,7 +275,7 @@ Private Sub Ejecutar_Filtros()
     If ChkCantidad0.value = True Then
       sql &= " and S.cantidad = 0 " 
     Endif
-  
+  LblStockFiltrado.Visible = True
   Llenar_Datagrid_Stock(sql)
   
 End
@@ -240,6 +284,7 @@ Private Sub Configurar_Objetos_Stock()
   Dim Sql As String
   CmbProveedor.Clear
   Linea_Stock = 0
+  Uso_filtro = False
   Utilidades.Llenar_Combobox("select * from proveedor", CmbProveedor, "razonsocial")  
   CmbMateriaPrima.Clear
   Utilidades.Llenar_Combobox("select * from materiaprima", CmbMateriaPrima, "nombre")  
@@ -382,6 +427,7 @@ Private Sub Colorear_GridView_Stock()
   Next
   
 End
+
 
 
 

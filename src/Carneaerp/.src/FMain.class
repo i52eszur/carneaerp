@@ -174,3 +174,9 @@ Public Sub Menu1Lotes_Click()
   Frm_Lotes.ShowModal()
 
 End
+
+Public Sub ButtonFacturacion_Click()
+
+  Frm_Facturacion.ShowModal()
+
+End

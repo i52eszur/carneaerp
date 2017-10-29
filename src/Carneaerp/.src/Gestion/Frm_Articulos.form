@@ -163,7 +163,7 @@
       Text = ("Codigo Articulo : ")
     }
     { BtnSalirA Button
-      MoveScaled(19,59,16,5)
+      MoveScaled(37,59,16,5)
       Foreground = Color.Red
       Text = ("SALIR")
       Picture = Picture["imagenes/32x32/salida.png"]
@@ -239,16 +239,16 @@
       Text = ("BORRAR")
     }
     { DtsArticulos DataSource
-      MoveScaled(60,8,66,49)
+      MoveScaled(60,14,66,43)
       { DtbArticulos DataBrowser
-        MoveScaled(1,5,64,41)
+        MoveScaled(1,1,64,41)
         Font = Font["Bold,+1"]
         CanCreate = False
         CanDelete = False
       }
     }
     { TxtlerrorArticulos TextLabel
-      MoveScaled(42,60,80,4)
+      MoveScaled(61,60,64,4)
       Visible = False
       Font = Font["Bold,+1"]
       Foreground = Color.Red
@@ -258,6 +258,17 @@
       MoveScaled(6,45,18,4)
       Font = Font["Bold"]
       Text = ("MATERIAS PRIMAS")
+    }
+    { BtnVisualizarComposicion Button
+      MoveScaled(1,59,35,4)
+      Font = Font["Bold,+1"]
+      ToolTip = ("Poder Visualizar la composcion de los articulos.")
+      Text = ("COMPOSICION ARTICULOS")
+    }
+    { CmbVisualizarComposicion ComboBox
+      MoveScaled(74,7,33,4)
+      Visible = False
+      ReadOnly = True
     }
     Index = 3
     Text = ("TARIFAS")

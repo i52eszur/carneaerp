@@ -1,7 +1,10 @@
 ' Gambas class file
 
-Public Linea_Lote As Integer  ' Variable para controlar la linea de posicion del DatagridLote y  poder movernos con flechas
-Public Linea_lote_Detalle As Integer ' Variable para controlar la linea de posicion del DatagridLoteDetalle y  poder movernos con flechas
+Public Linea_Lote As Integer  ' Variable para controlar la linea de posicion del DatagridLote y  poder movernos con flechas.
+Public Linea_lote_Detalle As Integer ' Variable para controlar la linea de posicion del DatagridLoteDetalle y  poder movernos con flechas.
+Public Uso_Filtro As Boolean 'Controlamos que estamos filtrando datos para pdoer controlar ordenar por columna.
+Public Contador_Linea_Detalle_lote As Integer ' Llevamos el control de las lineas de detalle.
+Public Articulo_Sin_stock As String ' Almacenamos el nombre del articulo que se ha elejido en el combo sin stock para no dejar crear lote
 
 Public Sub Form_Open()
 
@@ -11,8 +14,72 @@ Public Sub Form_Open()
 
 End
 Public Sub Form_Close()
-
+  Dim Numero_Lineas As Integer
+  Dim i As Integer
+  Dim Sql As String
+  Dim Texto As String
+  Dim Detalle_Cantidad As String
+  Dim Detalle_Coste As String
+  Dim Detalle_Codigo_Materia_Prima As String
+  Dim Detalle_Codigo_Proveedor As String
+  Dim Detalle_NLote As String
+  Dim Detalle_Fecha As String
+  Dim Detalle_NFactura As String
+  Dim Detalle_Codigo As String
+  Dim Stock_Cantidad As String
+  Dim Compra_Id As String
+  Dim Compra_Precio As String
+  Dim Compra_Cantidad As String
+  If GridLoteDetalle.Rows.Count > 0 Then
+    Numero_Lineas = GridLoteDetalle.Rows.Count
+    For i = 0 To Numero_Lineas - 1
+      Detalle_Codigo = GridLoteDetalle[i, 0].Text
+      Detalle_Cantidad = GridLoteDetalle[i, 2].Text
+      Detalle_Coste = GridLoteDetalle[i, 3].Text
+      Detalle_NLote = GridLoteDetalle[i, 4].Text
+      Detalle_Fecha = GridLoteDetalle[i, 7].Text
+      Detalle_NFactura = GridLoteDetalle[i, 6].Text
+      sql = "select codigomateriaprima from materiaprima where nombre='" & GridLoteDetalle[i, 8].Text & "'"
+      Detalle_Codigo_Materia_Prima = Utilidades.Obtener_Campo_Tabla(sql, "codigomateriaprima")
+      sql = "select codigoproveedor from proveedor where razonsocial='" & GridLoteDetalle[i, 5].Text & "'"
+      Detalle_Codigo_Proveedor = Utilidades.Obtener_Campo_Tabla(sql, "codigoproveedor")
+      sql = "select * from stock where materiaprima='" & Detalle_Codigo_Materia_Prima & "'and ffacturacompra='" & Detalle_Fecha &
+      "' and lotecompra='" & Detalle_NLote & "' and proveedor='" & Detalle_Codigo_Proveedor & "' and nfacturacompra='" & Detalle_NFactura & "'"
+      ' Comprobamos que tenemos stock de esta materia prima.
+      If Utilidades.Tabla_Vacia(sql) = 1 Then
+        ' Si tenemos Stock actualizamos la cantidad en Stock
+        Stock_Cantidad = Format(CFloat(Utilidades.Obtener_Campo_Tabla(sql, "cantidad")) + CFloat(Detalle_Cantidad), "##0.00")
+        sql = "update stock set cantidad=" & Stock_Cantidad & "  where materiaprima='" & Detalle_Codigo_Materia_Prima & "'and ffacturacompra='" & Detalle_Fecha &
+        "' and lotecompra='" & Detalle_NLote & "' and proveedor='" & Detalle_Codigo_Proveedor & "' and nfacturacompra='" & Detalle_NFactura & "'"
+        Utilidades.In_Act_Bor(Sql)
+        
+        ' Obtenemos la cantidad de compras y si es igual no se ha usado el Stock y actualizamos Usado a N
+        sql = "select * from compras where materiaprima='" & Detalle_Codigo_Materia_Prima & "'and fechafacturacompra='" & Detalle_Fecha &
+        "' and lotecompra='" & Detalle_NLote & "' and proveedor='" & Detalle_Codigo_Proveedor & "' and nfacturacompra='" & Detalle_NFactura & "'"
+        Compra_Cantidad = Format(Utilidades.Obtener_Campo_Tabla(sql, "cantidad"), "##0.00")
+        If CFloat(Stock_Cantidad) = CFloat(Compra_Cantidad) Then
+          sql = "update stock set usado='N'  where materiaprima='" & Detalle_Codigo_Materia_Prima & "'and ffacturacompra='" & Detalle_Fecha &
+          "' and lotecompra='" & Detalle_NLote & "' and proveedor='" & Detalle_Codigo_Proveedor & "' and nfacturacompra='" & Detalle_NFactura & "'"
+          Utilidades.In_Act_Bor(Sql)
+        Endif
+      Else 
+        ' Si no tenemos stock lo añadimos a Stock
+        sql = "select * from compras where materiaprima='" & Detalle_Codigo_Materia_Prima & "'and fechafacturacompra='" & Detalle_Fecha &
+        "' and lotecompra='" & Detalle_NLote & "' and proveedor='" & Detalle_Codigo_Proveedor & "' and nfacturacompra='" & Detalle_NFactura & "'"
+        Compra_Id = Utilidades.Obtener_Campo_Tabla(sql, "codigocompra")
+        Compra_Precio = Utilidades.Obtener_Campo_Tabla(sql, "precio")
+        sql = "insert into stock (codigostock,materiaprima,cantidad,lotecompra,proveedor,nfacturacompra,ffacturacompra,precio,usado)" &
+        " values('" & Compra_Id & "','" & Detalle_Codigo_Materia_Prima & "'," & Detalle_Cantidad & ",'" & Detalle_NLote & "','" & Detalle_Codigo_Proveedor & "','" & Detalle_NFactura &
+        "','" & Detalle_Fecha & "'," & Compra_Precio & ",'N')"
+        Utilidades.In_Act_Bor(Sql)
+      Endif
+      
+    Next
+  Endif
+  sql = "delete from lotedetalle where codigolote='" & Detalle_Codigo & "'" 
+  Utilidades.In_Act_Bor(Sql)
   
+
 
 End
 Public Sub BtnSalirStock_Click()
@@ -20,7 +87,14 @@ Public Sub BtnSalirStock_Click()
   Me.Close
 
 End
+Public Sub GridLoteDetalle_DblClick()
 
+  If Not Uso_Filtro Then
+
+    
+  Endif
+
+End
 
 
 ''*************************** FILTROS **************************************
@@ -45,6 +119,19 @@ Public Sub ChkArticulo_Click()
   Endif
 
 End
+Public Sub BtnFiltrar_Click()
+
+  Uso_Filtro = True
+  Ejecutar_Filtros()
+
+End
+
+Public Sub BtnQuitarFiltro_Click()
+
+  Uso_Filtro = False
+  Quitar_Filtros()
+
+End
 ''***************************FIN FILTROS ***********************************
 ''
 ''**************************************************************************
@@ -55,19 +142,21 @@ End
 
 
 Public Sub BtnLInicio_Click()
-
-  If GridLote.Rows.Count > 0 Then
+  Dim Sql As String
+  If GridLote.Rows.Count > 0 And BtnAgregarLote.text = "NUEVO" And BtnAgregarLote.Enabled = True Then
       GridLote.Rows.UnSelectAll
       Linea_lote = 0
       GridLote.Rows.Select(Linea_lote, 1) 
-      Llenar_Datagrid_LoteDetalle("Select * from lotedetalle where codigolote='" & GridLote[Linea_Lote, 0].Text & "'")
+      sql = "select L.codigolote,L.linea,L.cantidad,L.coste,L.numerolotecompra,P.razonsocial,L.nfacturacompra,L.fechafacturacompra,M.nombre from lotedetalle L left join " &
+    "proveedor P on L.proveedor = P.codigoproveedor left join materiaprima M on L.materiaprima = M.codigomateriaprima where L.codigolote='" & GridLote[Linea_Lote, 0].Text & "'"
+      Llenar_Datagrid_LoteDetalle(sql)
   Endif
   
 End
 
 Public Sub BtnLPrevio_Click()
-
-  If GridLote.Rows.Count > 0 Then
+  Dim Sql As String
+  If GridLote.Rows.Count > 0 And BtnAgregarLote.text = "NUEVO" And BtnAgregarLote.Enabled = True Then
     If Linea_lote = 0 Then
       GridLote.Rows.Select(Linea_Lote, 1)
      Else  
@@ -75,14 +164,16 @@ Public Sub BtnLPrevio_Click()
        Linea_lote = Linea_lote - 1
        GridLote.Rows.Select(Linea_lote, 1)
     Endif
-    Llenar_Datagrid_LoteDetalle("Select * from lotedetalle where codigolote='" & GridLote[Linea_Lote, 0].Text & "'")
+    sql = "select L.codigolote,L.linea,L.cantidad,L.coste,L.numerolotecompra,P.razonsocial,L.nfacturacompra,L.fechafacturacompra,M.nombre from lotedetalle L left join " &
+    "proveedor P on L.proveedor = P.codigoproveedor left join materiaprima M on L.materiaprima = M.codigomateriaprima where L.codigolote='" & GridLote[Linea_Lote, 0].Text & "'"
+      Llenar_Datagrid_LoteDetalle(sql)
   Endif
   
 End
 
 Public Sub BtnLSiguiente_Click()
-
-  If GridLote.Rows.Count > 0 Then
+  Dim Sql As String
+  If GridLote.Rows.Count > 0 And BtnAgregarLote.text = "NUEVO" And BtnAgregarLote.Enabled = True Then
     If Linea_lote = GridLote.Rows.Count - 1 Then
       GridLote.Rows.Select(Linea_lote, 1)
      Else  
@@ -90,19 +181,22 @@ Public Sub BtnLSiguiente_Click()
        Linea_lote = Linea_lote + 1
        GridLote.Rows.Select(Linea_lote, 1)
     Endif
-    Llenar_Datagrid_LoteDetalle("Select * from lotedetalle where codigolote='" & GridLote[Linea_Lote, 0].Text & "'")
+    sql = "select L.codigolote,L.linea,L.cantidad,L.coste,L.numerolotecompra,P.razonsocial,L.nfacturacompra,L.fechafacturacompra,M.nombre from lotedetalle L left join " &
+    "proveedor P on L.proveedor = P.codigoproveedor left join materiaprima M on L.materiaprima = M.codigomateriaprima where L.codigolote='" & GridLote[Linea_Lote, 0].Text & "'"
+      Llenar_Datagrid_LoteDetalle(sql)
   Endif
   
 End
 
 Public Sub BtnLFin_Click()
-
-  If GridLote.Rows.Count > 0 Then
+  Dim Sql As String
+  If GridLote.Rows.Count > 0 And BtnAgregarLote.text = "NUEVO" And BtnAgregarLote.Enabled = True Then
       GridLote.Rows.UnSelectAll
       Linea_lote = GridLote.Rows.Count - 1
       GridLote.Rows.Select(Linea_lote, 1)
-        Llenar_Datagrid_LoteDetalle("Select * from lotedetalle where codigolote='" & GridLote[Linea_Lote, 0].Text & "'")
-
+      sql = "select L.codigolote,L.linea,L.cantidad,L.coste,L.numerolotecompra,P.razonsocial,L.nfacturacompra,L.fechafacturacompra,M.nombre from lotedetalle L left join " &
+    "proveedor P on L.proveedor = P.codigoproveedor left join materiaprima M on L.materiaprima = M.codigomateriaprima where L.codigolote='" & GridLote[Linea_Lote, 0].Text & "'"
+      Llenar_Datagrid_LoteDetalle(sql)
   Endif
 End
 
@@ -163,73 +257,215 @@ Public Sub CmbArticulo_Click()
   Dim Sql As String
   Dim Codigo_Articulo As String
   Codigo_Articulo = Utilidades.Obtener_Campo_Tabla("select * from articulo where nombre='" & CmbArticulo.Text & "'", "codigoarticulo")
-  sql = "select * from materiaprima where codigomateriaprima in (select materiaprima from articulomateriaprima where articulo='" & Codigo_Articulo & "')"
-  Utilidades.Llenar_Combobox(sql, CmbCLMateriaPrima, "nombre")
-
+  sql = "select * from articulomateriaprima where articulo='" & Codigo_Articulo & "'"
+  
+  If CInt(Utilidades.Tabla_Vacia(sql)) > 0 Then ' Comprobamos si tiene composicion este articulo
+    VlbCantidadFabricada.Enabled = False
+    VlbCosteLoteTotal.Enabled = False
+    sql = "select * from materiaprima where codigomateriaprima in (select materiaprima from articulomateriaprima where articulo='" & Codigo_Articulo & "' and materiaprima " &
+    "in (select distinct materiaprima from stock))"
+    
+    If CInt(Utilidades.Tabla_Vacia(sql)) > 0 Then
+      Utilidades.Llenar_Combobox(sql, CmbCLMateriaPrima, "nombre")
+      CmbCLMateriaPrima.text = ""
+    Else
+      Articulo_Sin_stock = CmbArticulo.Text
+      Balloon.Error("No hay Materias Primas en stock para Producir el Lote del articulo: " & CmbArticulo.text, CmbArticulo)
+    Endif
+    
+  Endif
+  
 End
 
 Public Sub CmbCLMateriaPrima_Click()
   Dim sql As String
-  Dim Codigio_MateriaPrima As String
+  Dim Codigo_MateriaPrima As String
   Dim Codigo_Proveedor As String
-  TxtCLCoste.text = ""
-  TxtCLNumeroFactura.Text = ""
-  TxtCLProveedor.Text = ""
-  TxtLStockMateriaPrima.Text = 0
-  Codigio_MateriaPrima = Utilidades.Obtener_Campo_Tabla("select * from materiaprima where nombre='" & CmbCLMateriaPrima.Text & "'", "codigomateriaprima")
-  Sql = "select ffacturacompra from stock where materiaprima='" & Codigio_MateriaPrima & "' ORDER BY 1 DESC"
-  Utilidades.Llenar_Combobox(sql, CmbCLFechaFactura, "ffacturacompra")
-  If CmbCLNumeroLote.Count = 1 Then
-    Codigio_MateriaPrima = Utilidades.Obtener_Campo_Tabla("select * from materiaprima where nombre='" & CmbCLMateriaPrima.Text & "'", "codigomateriaprima")
-    Sql = "select * from stock where materiaprima='" & Codigio_MateriaPrima & "'and ffacturacompra='" & CmbCLFechaFactura.Text & "' and cantidad > 0"
-    Utilidades.Llenar_Combobox(sql, CmbCLNumeroLote, "lotecompra")
-    If CmbCLNumeroLote.Count = 1 Then
-      'CmbCLNumeroLote.text = CmbCLNumeroLote[0].Text
-      sql = "select * from stock where materiaprima='" & Codigio_MateriaPrima & "'and ffacturacompra='" & CmbCLFechaFactura.Text &
-      "' and lotecompra='" & CmbCLNumeroLote.text & "'" 
-      Codigo_Proveedor = Utilidades.Obtener_Campo_Tabla(sql, "proveedor")
-      TxtCLProveedor.text = Utilidades.Obtener_Campo_Tabla("select * from proveedor where codigoproveedor='" & Codigo_Proveedor & "'", "razonsocial")
-      TxtCLNumeroFactura.Text = Utilidades.Obtener_Campo_Tabla(sql, "nfacturacompra")
-      TxtLStockMateriaPrima.Text = Utilidades.Obtener_Campo_Tabla(sql, "cantidad")
-      VlbCLCantidad.Text = Val(TxtLStockMateriaPrima.Text)
+  If CmbCLMateriaPrima.text = "" Then
+    
+  Else 
+    TxtCLCoste.text = ""
+    TxtCLNumeroFactura.Text = ""
+    TxtCLProveedor.Text = ""
+    TxtLStockMateriaPrima.Text = Format(0, "##0.00")
+    Codigo_MateriaPrima = Utilidades.Obtener_Campo_Tabla("select * from materiaprima where nombre='" & CmbCLMateriaPrima.Text & "'", "codigomateriaprima")
+    Sql = "select distinct ffacturacompra from stock where materiaprima='" & Codigo_MateriaPrima & "' ORDER BY 1 DESC"
+    Utilidades.Llenar_Combobox(sql, CmbCLFechaFactura, "ffacturacompra")
+    If CmbCLFechaFactura.Count = 1 Then
+      Codigo_MateriaPrima = Utilidades.Obtener_Campo_Tabla("select * from materiaprima where nombre='" & CmbCLMateriaPrima.Text & "'", "codigomateriaprima")
+      Sql = "select * from stock where materiaprima='" & Codigo_MateriaPrima & "'and ffacturacompra='" & CmbCLFechaFactura.Text & "' and cantidad > 0"
+      Utilidades.Llenar_Combobox(sql, CmbCLNumeroLote, "lotecompra")
+      If CmbCLNumeroLote.Count = 1 Then
+        CmbCLNumeroLote.text = CmbCLNumeroLote[0].Text
+        sql = "select * from stock where materiaprima='" & Codigo_MateriaPrima & "'and ffacturacompra='" & CmbCLFechaFactura.Text &
+        "' and lotecompra='" & CmbCLNumeroLote.text & "'" 
+        Codigo_Proveedor = Utilidades.Obtener_Campo_Tabla(sql, "proveedor")
+        TxtCLProveedor.text = Utilidades.Obtener_Campo_Tabla("select * from proveedor where codigoproveedor='" & Codigo_Proveedor & "'", "razonsocial")
+        TxtCLNumeroFactura.Text = Utilidades.Obtener_Campo_Tabla(sql, "nfacturacompra")
+        TxtLStockMateriaPrima.Text = Format(Utilidades.Obtener_Campo_Tabla(sql, "cantidad"), "##0.00")
+        VlbCLCantidad.Text = Format(Val(TxtLStockMateriaPrima.Text), "##0.00")
+      Endif
+      VlbCLCantidad.SetFocus
+    Else
+      CmbCLFechaFactura.text = ""
+      CmbCLFechaFactura.Sorted = True  
     Endif
-  Else
-    CmbCLFechaFactura.text = ""
-    CmbCLFechaFactura.Sorted = True  
   Endif
-  
   
 End
 
 Public Sub CmbCLFechaFactura_Click()
 
   Dim sql As String
-  Dim Codigio_MateriaPrima As String
+  Dim Codigo_MateriaPrima As String
   Dim Codigo_Proveedor As String
   TxtCLCoste.text = ""
   TxtCLNumeroFactura.Text = ""
   TxtCLProveedor.Text = ""
-  TxtLStockMateriaPrima.Text = 0
-  Codigio_MateriaPrima = Utilidades.Obtener_Campo_Tabla("select * from materiaprima where nombre='" & CmbCLMateriaPrima.Text & "'", "codigomateriaprima")
-  Sql = "select * from stock where materiaprima='" & Codigio_MateriaPrima & "'and ffacturacompra='" & CmbCLFechaFactura.Text & "' and cantidad > 0"
+  TxtLStockMateriaPrima.Text = Format(0, "##0.00")
+  Codigo_MateriaPrima = Utilidades.Obtener_Campo_Tabla("select * from materiaprima where nombre='" & CmbCLMateriaPrima.Text & "'", "codigomateriaprima")
+  Sql = "select * from stock where materiaprima='" & Codigo_MateriaPrima & "'and ffacturacompra='" & CmbCLFechaFactura.Text & "' and cantidad > 0"
   Utilidades.Llenar_Combobox(sql, CmbCLNumeroLote, "lotecompra")
   If CmbCLNumeroLote.Count = 1 Then
-    'CmbCLNumeroLote.text = CmbCLNumeroLote[0].Text
-    sql = "select * from stock where materiaprima='" & Codigio_MateriaPrima & "'and ffacturacompra='" & CmbCLFechaFactura.Text &
+    CmbCLNumeroLote.text = CmbCLNumeroLote[0].Text
+    sql = "select * from stock where materiaprima='" & Codigo_MateriaPrima & "'and ffacturacompra='" & CmbCLFechaFactura.Text &
     "' and lotecompra='" & CmbCLNumeroLote.text & "'" 
     Codigo_Proveedor = Utilidades.Obtener_Campo_Tabla(sql, "proveedor")
     TxtCLProveedor.text = Utilidades.Obtener_Campo_Tabla("select * from proveedor where codigoproveedor='" & Codigo_Proveedor & "'", "razonsocial")
     TxtCLNumeroFactura.Text = Utilidades.Obtener_Campo_Tabla(sql, "nfacturacompra")
-    TxtLStockMateriaPrima.Text = Utilidades.Obtener_Campo_Tabla(sql, "cantidad")
-    VlbCLCantidad.Text = Val(TxtLStockMateriaPrima.Text)
+    TxtLStockMateriaPrima.Text = Format(Utilidades.Obtener_Campo_Tabla(sql, "cantidad"), "##0.00")
+    VlbCLCantidad.Text = Format(Val(TxtLStockMateriaPrima.Text), "##0.00")
+    VlbCLCantidad.SetFocus
+    Else
+      CmbCLNumeroLote.text = ""
+      CmbCLNumeroLote.Sorted = True
   Endif
 End
 
+Public Sub CmbCLNumeroLote_Click()
+
+  Dim sql As String
+  Dim Codigo_MateriaPrima As String
+  Dim Codigo_Proveedor As String
+  TxtCLCoste.text = ""
+  TxtCLNumeroFactura.Text = ""
+  TxtCLProveedor.Text = ""
+  TxtLStockMateriaPrima.Text = Format(0, "##0.00")
+  Codigo_MateriaPrima = Utilidades.Obtener_Campo_Tabla("select * from materiaprima where nombre='" & CmbCLMateriaPrima.Text & "'", "codigomateriaprima")
+  sql = "select * from stock where materiaprima='" & Codigo_MateriaPrima & "'and ffacturacompra='" & CmbCLFechaFactura.Text &
+  "' and lotecompra='" & CmbCLNumeroLote.text & "' and cantidad > 0" 
+  Codigo_Proveedor = Utilidades.Obtener_Campo_Tabla(sql, "proveedor")
+  TxtCLProveedor.text = Utilidades.Obtener_Campo_Tabla("select * from proveedor where codigoproveedor='" & Codigo_Proveedor & "'", "razonsocial")
+  TxtCLNumeroFactura.Text = Utilidades.Obtener_Campo_Tabla(sql, "nfacturacompra")
+  TxtLStockMateriaPrima.Text = Format(Utilidades.Obtener_Campo_Tabla(sql, "cantidad"), "##0.00")
+  VlbCLCantidad.Text = Val(TxtLStockMateriaPrima.Text)
+  VlbCLCantidad.SetFocus
+  
+End
+
+Public Sub BtnAgregarLineaLote_Click()
+
+  If Comprobar_Datos_Lotes("DETALLES") Then
+    If TxtCLCoste.text = "" Then
+      Calculo_Costes_Linea_Detalle()
+    Endif
+    Calculo_Merma()
+    Realiza_Grabado_Linea_Lote()
+    limpiar_Datos_Lotes_Detalles()
+  Endif
+
+End
+
+Public Sub VlbCLCantidad_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    If Comprobar_Datos_Lotes("DETALLES") Then
+      Calculo_Costes_Linea_Detalle()
+      Calculo_Merma()
+    Endif
+  Endif
+End
+
+Public Sub BtnBorrarLineaLote_Click()
+
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Dim Respuesta As Integer
+  Dim Texto As String
+  Dim Detalle_Cantidad As String
+  Dim Detalle_Coste As String
+  Dim Detalle_Codigo_Materia_Prima As String
+  Dim Detalle_Codigo_Proveedor As String
+  Dim Detalle_NLote As String
+  Dim Detalle_Fecha As String
+  Dim Detalle_NFactura As String
+  Dim Detalle_Linea As String
+  Dim Stock_Cantidad As String
+  Dim Compra_Id As String
+  Dim Compra_Precio As String
+  Dim Compra_Cantidad As String
+  If GridLoteDetalle.Rows.Selection.Count > 0 Then
+      Numero_fila = GridLoteDetalle.Rows.Selection[0]
+      Detalle_Cantidad = GridLoteDetalle[Numero_fila, 2].Text
+      Detalle_Coste = GridLoteDetalle[Numero_fila, 3].Text
+      Detalle_NLote = GridLoteDetalle[Numero_fila, 4].Text
+      Detalle_Fecha = GridLoteDetalle[Numero_fila, 7].Text
+      Detalle_NFactura = GridLoteDetalle[Numero_fila, 6].Text
+      Detalle_Linea = GridLoteDetalle[Numero_fila, 1].Text
+      sql = "select codigomateriaprima from materiaprima where nombre='" & GridLoteDetalle[Numero_fila, 8].Text & "'"
+      Detalle_Codigo_Materia_Prima = Utilidades.Obtener_Campo_Tabla(sql, "codigomateriaprima")
+      sql = "select codigoproveedor from proveedor where razonsocial='" & GridLoteDetalle[Numero_fila, 5].Text & "'"
+      Detalle_Codigo_Proveedor = Utilidades.Obtener_Campo_Tabla(sql, "codigoproveedor")
+      'Deshacemos la operacion.
+      VlbCantidadBruta.Value = Format(CFloat(VlbCantidadBruta.Value) - CFloat(Detalle_Cantidad), "##0.00")
+      Calculo_Merma()
+      VlbCosteLoteTotal.value = Format(CFloat(VlbCosteLoteTotal.Value) - CFloat(Detalle_Coste), "##0.00")
+      sql = "select * from stock where materiaprima='" & Detalle_Codigo_Materia_Prima & "'and ffacturacompra='" & Detalle_Fecha &
+      "' and lotecompra='" & Detalle_NLote & "' and proveedor='" & Detalle_Codigo_Proveedor & "' and nfacturacompra='" & Detalle_NFactura & "'"
+      ' Comprobamos que tenemos stock de esta materia prima.
+      If Utilidades.Tabla_Vacia(sql) = 1 Then
+        ' Si tenemos Stock actualizamos la cantidad en Stock
+        Stock_Cantidad = Format(CFloat(Utilidades.Obtener_Campo_Tabla(sql, "cantidad")) + CFloat(Detalle_Cantidad), "##0.00")
+        sql = "update stock set cantidad=" & Stock_Cantidad & "  where materiaprima='" & Detalle_Codigo_Materia_Prima & "'and ffacturacompra='" & Detalle_Fecha &
+        "' and lotecompra='" & Detalle_NLote & "' and proveedor='" & Detalle_Codigo_Proveedor & "' and nfacturacompra='" & Detalle_NFactura & "'"
+        Utilidades.In_Act_Bor(Sql)
+        
+        ' Obtenemos la cantidad de compras y si es igual no se ha usado el Stock y actualizamos Usado a N
+        sql = "select * from compras where materiaprima='" & Detalle_Codigo_Materia_Prima & "'and fechafacturacompra='" & Detalle_Fecha &
+        "' and lotecompra='" & Detalle_NLote & "' and proveedor='" & Detalle_Codigo_Proveedor & "' and nfacturacompra='" & Detalle_NFactura & "'"
+        Compra_Cantidad = Format(Utilidades.Obtener_Campo_Tabla(sql, "cantidad"), "##0.00")
+        If CFloat(Stock_Cantidad) = CFloat(Compra_Cantidad) Then
+          sql = "update stock set usado='N'  where materiaprima='" & Detalle_Codigo_Materia_Prima & "'and ffacturacompra='" & Detalle_Fecha &
+          "' and lotecompra='" & Detalle_NLote & "' and proveedor='" & Detalle_Codigo_Proveedor & "' and nfacturacompra='" & Detalle_NFactura & "'"
+          Utilidades.In_Act_Bor(Sql)
+        Endif
+      Else 
+        ' Si no tenemos stock lo añadimos a Stock
+        sql = "select * from compras where materiaprima='" & Detalle_Codigo_Materia_Prima & "'and fechafacturacompra='" & Detalle_Fecha &
+        "' and lotecompra='" & Detalle_NLote & "' and proveedor='" & Detalle_Codigo_Proveedor & "' and nfacturacompra='" & Detalle_NFactura & "'"
+        Compra_Id = Utilidades.Obtener_Campo_Tabla(sql, "codigocompra")
+        Compra_Precio = Utilidades.Obtener_Campo_Tabla(sql, "precio")
+        sql = "insert into stock (codigostock,materiaprima,cantidad,lotecompra,proveedor,nfacturacompra,ffacturacompra,precio,usado)" &
+        " values('" & Compra_Id & "','" & Detalle_Codigo_Materia_Prima & "'," & Detalle_Cantidad & ",'" & Detalle_NLote & "','" & Detalle_Codigo_Proveedor & "','" & Detalle_NFactura &
+        "','" & Detalle_Fecha & "'," & Compra_Precio & ",'N')"
+        Utilidades.In_Act_Bor(Sql)
+      Endif
+      sql = "delete from lotedetalle where linea='" & Detalle_Linea & "'" 
+      Utilidades.In_Act_Bor(Sql)
+      sql = "select L.codigolote,L.linea,L.cantidad,L.coste,L.numerolotecompra,P.razonsocial,L.nfacturacompra,L.fechafacturacompra,M.nombre from lotedetalle L left join " &
+      "proveedor P on L.proveedor = P.codigoproveedor left join materiaprima M on L.materiaprima = M.codigomateriaprima where L.codigolote='" & UCase(TxtLote.text) & "'"
+      Llenar_Datagrid_LoteDetalle(sql)
+  Endif
+
+End
 
 ''******************  Lotes        *****************************************
 ''
 ''**************************************************************************
 Public Sub BtnAgregarLote_Click()
+  Dim Sql As String
+  Dim Codigo_Articulo As String
+  
   If Comprobar_Datos_Lotes("NUEVO") Then
     If BtnAgregarLote.Text = "NUEVO" Then
       BtnAgregarLote.Text = "GRABAR"
@@ -238,29 +474,125 @@ Public Sub BtnAgregarLote_Click()
       BtnConsultarLotes.Enabled = False
       FrameFiltrar.Enabled = False
       TxtLote.Enabled = False
+      CmbArticulo.Enabled = False
       PanelComposicionLote.Enabled = True
+      'BtnSalirStock.Enabled = False
+      sql = "select L.codigolote,L.linea,L.cantidad,L.coste,L.numerolotecompra,P.razonsocial,L.nfacturacompra,L.fechafacturacompra,M.nombre from lotedetalle L left join " &
+      "proveedor P on L.proveedor = P.codigoproveedor left join materiaprima M on L.materiaprima = M.codigomateriaprima where L.codigolote='" & UCase(TxtLote.text) & "'"
+      Llenar_Datagrid_LoteDetalle(sql)
     Else  
-      BtnAgregarLote.Text = "NUEVO"
-      BtnBorrarLote.Enabled = True
-      BtnEditarLote.Enabled = True
-      BtnConsultarLotes.Enabled = True
-      FrameFiltrar.Enabled = True
-      TxtLote.Enabled = True
-      PanelComposicionLote.Enabled = False
+      If Comprobar_Datos_Lotes("GRABAR") Then
+        BtnAgregarLote.Text = "NUEVO"
+        BtnBorrarLote.Enabled = True
+        BtnEditarLote.Enabled = True
+        BtnConsultarLotes.Enabled = True
+        FrameFiltrar.Enabled = True
+        TxtLote.Enabled = True
+        CmbArticulo.Enabled = True
+        PanelComposicionLote.Enabled = False
+       ' BtnSalirStock.Enabled = True
+        Realiza_Grabado_Lote()
+        limpiar_Datos_Lotes()
+        limpiar_Datos_Lotes_Detalles()
+      Endif
     Endif
-  End If
+   
+  Endif
 
 End
 
 Public Sub BtnBorrarLote_Click()
-
-  
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Dim Respuesta As Integer
+  Dim Texto As String
+  If GridLote.Rows.Selection.Count > 0 Then
+    Numero_fila = GridLote.Rows.Selection[0]
+    Texto = "Desea borrar el Lote Codigo : <b>" & GridLote[Numero_fila, 0].Text & "</b> y Articulo: <b>" & GridLote[Numero_fila, 6].Text & "</b>"
+    Respuesta = Message.Delete(Texto, "Si", "No")
+    If respuesta = 1 Then
+      ' Borramos Lote
+      sql = "delete from lotes where codigolote='" & GridLote[Numero_fila, 0].Text & "'" 
+      Utilidades.In_Act_Bor(Sql)
+      ' Borramos Detalle de lote.
+      sql = "delete from lotedetalle where codigolote='" & GridLote[Numero_fila, 0].Text & "'" 
+      Utilidades.In_Act_Bor(Sql)
+      ' Borramos las temperaturas y los tiempos
+      sql = "select * from tclote where codigolote='" & GridLote[Numero_fila, 0].Text & "'"
+      If utilidades.Tabla_Vacia(sql) > 0 Then
+        sql = "delete from tclote where codigolote='" & GridLote[Numero_fila, 0].Text & "'" 
+        Utilidades.In_Act_Bor(Sql)
+      Endif
+      
+      sql = "select L.codigolote,L.fecha,L.cantidad,L.coste,L.cantidadbruta,L.merma,A.nombre from lotes L left join " &
+      "articulo A on L.articulo = A.codigoarticulo"
+      Llenar_Datagrid_Lote(Sql)
+      If GridLote.Rows.Count > 0 Then
+       sql = "select L.codigolote,L.linea,L.cantidad,L.coste,L.numerolotecompra,P.razonsocial,L.nfacturacompra,L.fechafacturacompra,M.nombre from lotedetalle L left join " &
+       "proveedor P on L.proveedor = P.codigoproveedor left join materiaprima M on L.materiaprima = M.codigomateriaprima where L.codigolote='" & GridLote[0, 0].Text & "'"
+       Llenar_Datagrid_LoteDetalle(sql)
+      Endif
+    Endif
+  Endif
 
 End
 
 Public Sub BtnEditarLote_Click()
 
-  
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Dim Dia As String
+  Dim Mes As String
+  Dim Ano As String
+  If BtnEditarLote.text = "EDITAR" And GridLote.Rows.Count > 0 Then ' Cargamos los datos del lote seleccionado.
+    Numero_fila = GridLote.Rows.Selection[0]
+    TxtLote.text = GridLote[Numero_fila, 0].Text
+    Dia = Mid(GridLote[Numero_fila, 1].Text, 1, 2)
+    Mes = Mid(GridLote[Numero_fila, 1].Text, 4, 2)
+    Ano = Mid(GridLote[Numero_fila, 1].Text, 7, 4)
+    DteFechaCreacion.Value = Date(ano, mes, dia)
+    VlbCantidadFabricada.Value = GridLote[Numero_fila, 2].Text
+    VlbCosteLoteTotal.Value = GridLote[Numero_fila, 3].Text
+    VlbCantidadBruta.Value = GridLote[Numero_fila, 4].Text
+    VlbMerma.Value = GridLote[Numero_fila, 5].Text
+    CmbArticulo.Text = GridLote[Numero_fila, 6].Text
+    sql = "select * from tclote where codigolote='" & GridLote[Numero_fila, 0].Text & "'"
+    If utilidades.Tabla_Vacia(sql) > 0 Then
+      PanelTeTi.Enabled = True
+      VlbTiempo1.Value = CInt(utilidades.Obtener_Campo_Tabla(sql, "tiempo1"))
+      VlbTiempo2.Value = CInt(utilidades.Obtener_Campo_Tabla(sql, "tiempo2"))
+      VlbTemperatura1.Value = CInt(utilidades.Obtener_Campo_Tabla(sql, "temperatura1"))
+      VlbTemperatura2.Value = CInt(utilidades.Obtener_Campo_Tabla(sql, "temperatura2"))
+    Endif
+    Calculo_Merma()
+    BtnEditarLote.text = "ACTUALIZAR"
+    CmbArticulo.Enabled = False
+    BtnAgregarLote.Enabled = False
+    BtnBorrarLote.Enabled = False
+    BtnConsultarLotes.Enabled = False
+    TxtLote.Enabled = False
+    BtnSalirStock.Enabled = False
+  Else ' Actualizamos el lote si los datos son correctos.
+    If Comprobar_Datos_Lotes("GRABAR") Then
+      Actualizar_Lote()
+      limpiar_Datos_Lotes()
+      sql = "select L.codigolote,L.fecha,L.cantidad,L.coste,L.cantidadbruta,L.merma,A.nombre from lotes L left join " &
+      "articulo A on L.articulo = A.codigoarticulo"
+      Llenar_Datagrid_Lote(Sql)
+      If GridLote.Rows.Count > 0 Then
+        sql = "select L.codigolote,L.linea,L.cantidad,L.coste,L.numerolotecompra,P.razonsocial,L.nfacturacompra,L.fechafacturacompra,M.nombre from lotedetalle L left join " &
+        "proveedor P on L.proveedor = P.codigoproveedor left join materiaprima M on L.materiaprima = M.codigomateriaprima where L.codigolote='" & GridLote[0, 0].Text & "'"
+        Llenar_Datagrid_LoteDetalle(sql)
+      Endif
+      BtnAgregarLote.Enabled = True
+      BtnBorrarLote.Enabled = True
+      BtnConsultarLotes.Enabled = True
+      TxtLote.Enabled = True
+      CmbArticulo.Enabled = True
+      BtnSalirStock.Enabled = True
+      BtnEditarLote.text = "EDITAR"
+    Endif
+  Endif
 
 End
 Public Sub ChkTiempoTemp_Click()
@@ -273,21 +605,52 @@ Public Sub ChkTiempoTemp_Click()
 
 End
 
-''******************  Filtros      *****************************************
-''
-''**************************************************************************
-
-Public Sub BtnFiltrar_Click()
-
+Public Sub VlbMerma_KeyRelease()
   
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    Calculo_Merma()
+  Endif
+End
+
+Public Sub GridLote_DblClick()
+
+  Dim sql As String
+  Dim Columna_Seleccionada As Integer
+  If Not Uso_Filtro Then
+   Columna_Seleccionada = GridLote.Column
+   Select Columna_Seleccionada
+    Case 0
+      sql = "select L.codigolote,L.fecha,L.cantidad,L.coste,L.cantidadbruta,L.merma,A.nombre from lotes L left join " &
+      "articulo A on L.articulo = A.codigoarticulo order by 1"
+    Case 1
+      sql = "select L.codigolote,L.fecha,L.cantidad,L.coste,L.cantidadbruta,L.merma,A.nombre from lotes L left join " &
+      "articulo A on L.articulo = A.codigoarticulo order by 2"  
+    Case 2
+      sql = "select L.codigolote,L.fecha,L.cantidad,L.coste,L.cantidadbruta,L.merma,A.nombre from lotes L left join " &
+      "articulo A on L.articulo = A.codigoarticulo order by 3"
+    Case 3
+      sql = "select L.codigolote,L.fecha,L.cantidad,L.coste,L.cantidadbruta,L.merma,A.nombre from lotes L left join " &
+      "articulo A on L.articulo = A.codigoarticulo order by 4"  
+    Case 4
+      sql = "select L.codigolote,L.fecha,L.cantidad,L.coste,L.cantidadbruta,L.merma,A.nombre from lotes L left join " &
+      "articulo A on L.articulo = A.codigoarticulo order by 5"
+    Case 5
+      sql = "select L.codigolote,L.fecha,L.cantidad,L.coste,L.cantidadbruta,L.merma,A.nombre from lotes L left join " &
+      "articulo A on L.articulo = A.codigoarticulo order by 6"
+    Case 6
+      sql = "select L.codigolote,L.fecha,L.cantidad,L.coste,L.cantidadbruta,L.merma,A.nombre from lotes L left join " &
+      "articulo A on L.articulo = A.codigoarticulo order by 7"
+    End Select
+    Llenar_Datagrid_Lote(sql)
+  Endif
+
+End
+Public Sub BtnConsultarLotes_Click()
+
+  Frm_ConsultaLotes.Show
 
 End
 
-Public Sub BtnQuitarFiltro_Click()
-
-  
-
-End
 
 
 ''*************************** Funciones privadas****************************
@@ -301,22 +664,28 @@ Private Sub Configurar_Objetos_Lotes()
   Dim Numero_Clientes As Integer
   Dim Valor_Subcuenta_Iva As Integer
   Error_V = False
-  
+  Uso_Filtro = False
   If Utilidades.Tabla_Vacia("select * from articulo") = 0 Then
      Error_Tablas_Vacias = "Deber Cear Articulos"
      Error_V = True
   Else
       CmbArticulo.clear
       Utilidades.Llenar_Combobox("select * from articulo", CmbArticulo, "nombre")  
-      CmbArticulo.text = ""
+      CmbArticulo.Index = -1
+      CmbfArticulo.clear
+      Utilidades.Llenar_Combobox("select * from articulo", CmbfArticulo, "nombre")  
+      CmbfArticulo.Index = -1
   Endif
   If Error_V Then
     TxtErrorLotes.Visible = True
     TxtErrorLotes.text = Error_Tablas_Vacias
   Endif
+  Contador_Linea_Detalle_lote = 1
   Linea_Lote = 0
   Linea_lote_Detalle = 0
   TxtLote.SetFocus()
+  TxtLKilosMerma.text = Format(0, "##0.00")
+  TxtLStockMateriaPrima.Text = Format(0, "##0.00")
   DteFechaCreacion.Value = Date(Year(Now), Month(Now), Day(Now))
   DteFICreacion.Value = Date(Year(Now), Month(Now), Day(Now))
   DteFFCreacion.Value = Date(Year(Now), Month(Now), Day(Now))
@@ -327,7 +696,7 @@ End
 
 '' Configuramos Cabeceras de DataGridLotes
 Private Sub Configurar_Datagrid_Lotes()
-
+  Dim Sql As String
   GridLote.Columns.Count = 7
   GridLote.Header = GridLote.Both
   GridLote.Columns[0].Title = "Codigo"
@@ -344,7 +713,9 @@ Private Sub Configurar_Datagrid_Lotes()
   GridLote.Columns[4].Width = 150 
   GridLote.Columns[5].Width = 150
   GridLote.Columns[6].Width = 150
-   Llenar_Datagrid_Lote("Select * from lotes")
+  sql = "select L.codigolote,L.fecha,L.cantidad,L.coste,L.cantidadbruta,L.merma,A.nombre from lotes L left join " &
+    "articulo A on L.articulo = A.codigoarticulo"
+  Llenar_Datagrid_Lote(Sql)
   
 End
 
@@ -354,7 +725,9 @@ End
 Private Sub Llenar_Datagrid_Lote(sql As String)
   Dim Result_Trabajo As Result
   Dim Numero_fila As Integer
-    
+  If GridLote.Rows.Count > 0 Then
+    GridLote.Rows.Remove(0, GridLote.Rows.Count)  
+  Endif  
   FMain.Conexion_Base_Datos.Close
   FMain.Conexion_Base_Datos.Open
   Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
@@ -362,13 +735,13 @@ Private Sub Llenar_Datagrid_Lote(sql As String)
   While Result_Trabajo.Available
     Numero_fila = GridLote.Rows.Count
     GridLote.Rows.Insert(Numero_fila, 1)
-    GridLote[Numero_fila, 0].Text = Result_Trabajo["codigolote"]
-    GridLote[Numero_fila, 1].Text = Result_Trabajo["fecha"]
-    GridLote[Numero_fila, 2].Text = Result_Trabajo["cantidad"]
-    GridLote[Numero_fila, 3].Text = Result_Trabajo["coste"]
-    GridLote[Numero_fila, 4].Text = Result_Trabajo["cantidadbruta"]
-    GridLote[Numero_fila, 5].Text = Result_Trabajo["merma"]
-    GridLote[Numero_fila, 6].Text = Result_Trabajo["articulo"]
+    GridLote[Numero_fila, 0].Text = Result_Trabajo["L.codigolote"]
+    GridLote[Numero_fila, 1].Text = Result_Trabajo["L.fecha"]
+    GridLote[Numero_fila, 2].Text = Result_Trabajo["L.cantidad"]
+    GridLote[Numero_fila, 3].Text = Result_Trabajo["L.coste"]
+    GridLote[Numero_fila, 4].Text = Result_Trabajo["L.cantidadbruta"]
+    GridLote[Numero_fila, 5].Text = Result_Trabajo["L.merma"]
+    GridLote[Numero_fila, 6].Text = Result_Trabajo["A.nombre"]
     Result_Trabajo.MoveNext
   Wend
   FMain.Conexion_Base_Datos.Close
@@ -381,9 +754,9 @@ End
 
 '' Configuramos Cabeceras de DataGridLotes
 Private Sub Configurar_Datagrid_LotesDetalles()
-  
+  Dim Sql As String
   GridLoteDetalle.Columns.Count = 9
-  GridLoteDetalle.Header = GridLote.Both
+  GridLoteDetalle.Header = GridLoteDetalle.Both
   GridLoteDetalle.Columns[0].Title = "Codigo"
   GridLoteDetalle.Columns[1].Title = "Linea"
   GridLoteDetalle.Columns[2].Title = "Cantidad"
@@ -394,17 +767,19 @@ Private Sub Configurar_Datagrid_LotesDetalles()
   GridLoteDetalle.Columns[7].Title = "F Factura Compra"
   GridLoteDetalle.Columns[8].Title = "Materia Prima"
   GridLoteDetalle.Columns[0].Width = 100 
-  GridLoteDetalle.Columns[1].Width = 90
+  GridLoteDetalle.Columns[1].Width = 50
   GridLoteDetalle.Columns[2].Width = 100 
   GridLoteDetalle.Columns[3].Width = 100
-  GridLoteDetalle.Columns[4].Width = 250 
+  GridLoteDetalle.Columns[4].Width = 150 
   GridLoteDetalle.Columns[5].Width = 150
-  GridLoteDetalle.Columns[6].Width = 250
+  GridLoteDetalle.Columns[6].Width = 150
   GridLoteDetalle.Columns[7].Width = 150 
   GridLoteDetalle.Columns[8].Width = 200
   If GridLote.Rows.Count > 0 Then
-    Llenar_Datagrid_LoteDetalle("Select * from lotedetalle where codigolote='" & GridLote[0, 0].Text & "'")
-  End If
+   sql = "select L.codigolote,L.linea,L.cantidad,L.coste,L.numerolotecompra,P.razonsocial,L.nfacturacompra,L.fechafacturacompra,M.nombre from lotedetalle L left join " &
+    "proveedor P on L.proveedor = P.codigoproveedor left join materiaprima M on L.materiaprima = M.codigomateriaprima where L.codigolote='" & GridLote[0, 0].Text & "'"
+    Llenar_Datagrid_LoteDetalle(sql)
+  Endif
 
 End
 
@@ -416,7 +791,7 @@ Private Sub Llenar_Datagrid_LoteDetalle(sql As String)
   Dim Numero_fila As Integer
   If GridLoteDetalle.Rows.Count > 0 Then
     GridLoteDetalle.Rows.Remove(0, GridLoteDetalle.Rows.Count)
-  End If
+  Endif
   FMain.Conexion_Base_Datos.Close
   FMain.Conexion_Base_Datos.Open
   Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
@@ -424,15 +799,15 @@ Private Sub Llenar_Datagrid_LoteDetalle(sql As String)
   While Result_Trabajo.Available
     Numero_fila = GridLoteDetalle.Rows.Count
     GridLoteDetalle.Rows.Insert(Numero_fila, 1)
-    GridLoteDetalle[Numero_fila, 0].Text = Result_Trabajo["codigolote"]
-    GridLoteDetalle[Numero_fila, 1].Text = Result_Trabajo["linea"]
-    GridLoteDetalle[Numero_fila, 2].Text = Result_Trabajo["cantidad"]
-    GridLoteDetalle[Numero_fila, 3].Text = Result_Trabajo["coste"]
-    GridLoteDetalle[Numero_fila, 4].Text = Result_Trabajo["numerolotecompra"]
-    GridLoteDetalle[Numero_fila, 5].Text = Result_Trabajo["proveedor"]
-    GridLoteDetalle[Numero_fila, 6].Text = Result_Trabajo["nfacturacompra"]
-    GridLoteDetalle[Numero_fila, 7].Text = Result_Trabajo["fechafacturacompra"]
-    GridLoteDetalle[Numero_fila, 8].Text = Result_Trabajo["materiaprima"]
+    GridLoteDetalle[Numero_fila, 0].Text = Result_Trabajo["L.codigolote"]
+    GridLoteDetalle[Numero_fila, 1].Text = Result_Trabajo["L.linea"]
+    GridLoteDetalle[Numero_fila, 2].Text = Result_Trabajo["L.cantidad"]
+    GridLoteDetalle[Numero_fila, 3].Text = Result_Trabajo["L.coste"]
+    GridLoteDetalle[Numero_fila, 4].Text = Result_Trabajo["L.numerolotecompra"]
+    GridLoteDetalle[Numero_fila, 5].Text = Result_Trabajo["P.razonsocial"]
+    GridLoteDetalle[Numero_fila, 6].Text = Result_Trabajo["L.nfacturacompra"]
+    GridLoteDetalle[Numero_fila, 7].Text = Result_Trabajo["L.fechafacturacompra"]
+    GridLoteDetalle[Numero_fila, 8].Text = Result_Trabajo["M.nombre"]
     Result_Trabajo.MoveNext
   Wend
   FMain.Conexion_Base_Datos.Close
@@ -444,10 +819,10 @@ End
 '' Parametros:<br>
 ''    Accion Tomara los siguientes valores<br>
 ''        NUEVO -- Comprobar los datos para crear nuevo Lote.<br>
+''        DETALLES -- Comprobar los datos antes de añadir linea detalle.
 '' Devuelve:<br>
 ''   TRUE -- Datos corecctos<br>
 ''   FALSE -- Datos erroneos
-
 Private Function Comprobar_Datos_Lotes(Accion As String) As Boolean
   Dim Validar As Boolean
   Dim Sql As String
@@ -459,13 +834,259 @@ Private Function Comprobar_Datos_Lotes(Accion As String) As Boolean
       Validar = False
       TxtLote.SetFocus
     Else If Utilidades.Comprobar_existe_dato(Sql) 
-      Balloon.Error("El codigo Proveedor ya existe", TxtLote)
+      Balloon.Error("El codigo del lote ya existe", TxtLote)
       Validar = False
       TxtLote.SetFocus  
+    Else If CmbArticulo.text = ""
+      Balloon.Error("Debe elegir un articulo para crear el lote", CmbArticulo)
+      Validar = False
+    Else If CmbArticulo.text = Articulo_Sin_stock
+      Balloon.Error("No hay Materias Primas en stock para Producir el Lote del articulo: " & CmbArticulo.text, CmbArticulo)
+      validar = False
     Endif
-  Endif
+  Else If Accion = "DETALLES"
+    If CmbCLMateriaPrima.text = "" Then
+      Balloon.Error("Debe elegir Materia Prima", CmbCLMateriaPrima)
+      Validar = False
+    Else If CmbCLFechaFactura.text = ""
+      Balloon.Error("Debe elegir Fecha Factura", CmbCLFechaFactura)
+      Validar = False
+    Else If CmbCLNumeroLote.text = ""
+      Balloon.Error("Debe elegir Lote", CmbCLNumeroLote)
+      Validar = False  
+    Else If VlbCLCantidad.text = "" Or VlbCLCantidad.Text = "0"
+      Balloon.Error("Debe introducir una cantidad mayor que 0 ", VlbCLCantidad)
+      Validar = False
+      VlbCLCantidad.SetFocus
+    Else If Val(VlbCLcantidad.text) > Val(TxtLStockMateriaPrima.Text)
+      Balloon.Error("La cantidad de Materia Prima es superior al Stock", VlbCLCantidad)
+      Validar = False 
+      VlbCLCantidad.SetFocus
+    Endif  
+  Else If Accion = "GRABAR"
+    If VlbCantidadFabricada.Value = "" Or VlbCantidadFabricada.Value = "0"
+      Balloon.Error("Introduzca cantidad fabricada", VlbCantidadFabricada)
+      Validar = False
+      VlbCantidadFabricada.SetFocus
+    Else If VlbCosteLoteTotal.Value = "" Or VlbCosteLoteTotal.Value = "0"
+      Balloon.Error("El coste del lote no puede ser 0, introduzca cantidad y pulse INTRO para calcular coste.", VlbCosteLoteTotal)
+      Validar = False
+      VlbCosteLoteTotal.SetFocus
+   Endif
+  Endif   
   Return Validar
 End
+
+'' Procedimiento que limpia los datos para poder añadir otra linea de detalle.
+Private Sub limpiar_Datos_Lotes_Detalles()
+
+  TxtCLCoste.Text = ""
+  VlbCLCantidad.text = ""
+  TxtCLProveedor.text = ""
+  TxtCLNumeroFactura.text = ""
+  CmbCLFechaFactura.Clear
+  CmbCLNumeroLote.Clear
+  CmbCLMateriaPrima.Index = -1
+  TxtLStockMateriaPrima.Text = Format(0, "##0.00")
+End
+'' Procedimiento que limpia los datos del lote.
+Private Sub limpiar_Datos_Lotes()
+
+  TxtLote.Text = ""
+  VlbCantidadFabricada.text = ""
+  VlbCosteLoteTotal.text = ""
+  ChkTiempoTemp.Value = False
+  PanelTeTi.Enabled = False
+  VlbCantidadBruta.text = ""
+  VlbMerma.text = ""
+  TxtLKilosMerma.text = Format(0, "##0.00")
+  TxtLStockMateriaPrima.Text = Format(0, "##0.00")
+  VlbTiempo1.text = ""
+  VlbTemperatura1.text = ""
+  VlbTiempo2.text = ""
+  VlbTemperatura2.text = ""
+  DteFechaCreacion.Value = Date(Year(Now), Month(Now), Day(Now))
+  VlbCantidadFabricada.Enabled = False
+  VlbCosteLoteTotal.Enabled = False
+  CmbArticulo.Index = -1
+End
+'' Realiza el calculo del coste  al añadir una linea de detalle. Añade los kilos al total.
+Private Sub Calculo_Costes_Linea_Detalle()
+  Dim sql As String
+  Dim Codigo_MateriaPrima As String
+  Dim Codigo_Proveedor As String
+  Codigo_MateriaPrima = Utilidades.Obtener_Campo_Tabla("select * from materiaprima where nombre='" & CmbCLMateriaPrima.Text & "'", "codigomateriaprima")
+  Codigo_Proveedor = Utilidades.Obtener_Campo_Tabla("select * from proveedor where razonsocial='" & TxtCLProveedor.Text & "'", "codigoproveedor")
+  sql = "select * from stock where materiaprima='" & Codigo_MateriaPrima & "'and ffacturacompra='" & CmbCLFechaFactura.Text &
+  "' and lotecompra='" & CmbCLNumeroLote.text & "' and proveedor='" & Codigo_Proveedor & "' and nfacturacompra='" & TxtCLNumeroFactura.text & "'"
+  TxtLStockMateriaPrima.Text = Format(Val(TxtLStockMateriaPrima.text) - Val(VlbCLCantidad.text), "##0.00")
+  VlbCantidadBruta.text = Format(Val(VlbCantidadBruta.text) + Val(VlbCLCantidad.text), "##0.00")
+  TxtCLCoste.text = Format(Val(VlbCLCantidad.text) * Val(Utilidades.Obtener_Campo_Tabla(sql, "precio")), "##0.00")
+  VlbCosteLoteTotal.Text = Format(Val(VlbCosteLoteTotal.Text) + Val(TxtCLCoste.Text), "##0.00")
+  
+End
+
+'' Procedimiento para el calculo de la merma
+Private Sub Calculo_Merma()
+  Dim Merma As Float
+  If CInt(VlbMerma.text) > 0 Then
+    Merma = (CFloat(VlbCantidadBruta.text) * CFloat(VlbMerma.text)) / 100
+    VlbCantidadFabricada.text = Format(CFloat(VlbCantidadBruta.text) - Merma, "##0.00")
+    TxtLKilosMerma.text = Format(Merma, "##0.00")
+  Else
+    VlbCantidadFabricada.text = Format(VlbCantidadBruta.text, "##0.00")
+    TxtLKilosMerma.text = Format(0, "##0.00")
+  Endif
+  
+End
+
+'' Procedimiento que realiza el almacenamiento del registro correpondiente al lote que estamos creando.
+
+Private Sub Realiza_Grabado_Lote()
+  Dim sql As String
+  Dim Codigo_Articulo As String
+  Codigo_Articulo = Utilidades.Obtener_Campo_Tabla("select * from articulo where nombre='" & CmbArticulo.Text & "'", "codigoarticulo")
+  Calculo_Merma()
+  If VlbCantidadBruta.Value = "" Then
+    VlbCantidadBruta.Value = VlbCantidadFabricada.Value
+  Endif
+  sql = "insert into lotes(codigolote,fecha,cantidad,coste,cantidadbruta,merma,articulo) values('" &
+  UCase(TxtLote.Text) & "','" & Utilidades.Fecha_Correcta(DteFechaCreacion.Value) & "'," & CFloat(VlbCantidadFabricada.value) & "," &
+  CFloat(VlbCosteLoteTotal.Value) & "," & CFloat(VlbCantidadBruta.Value) & "," & CFloat(VlbMerma.Value) & ",'" & Codigo_Articulo & "')"
+  Utilidades.In_Act_Bor(sql)
+  ' Se se ha activado las temperatura.
+  If ChkTiempoTemp.Value = True Then
+    sql = "insert into tclote(codigolote,temperatura1,tiempo1,temperatura2,tiempo2) values('" &
+    UCase(TxtLote.Text) & "'," & VlbTemperatura1.Text & "," & VlbTiempo1.Text & "," & VlbTemperatura2.Text & "," & VlbTiempo2.Text & ")"
+    Utilidades.In_Act_Bor(sql)
+  Endif
+  
+  Contador_Linea_Detalle_lote = 1
+  sql = "select L.codigolote,L.fecha,L.cantidad,L.coste,L.cantidadbruta,L.merma,A.nombre from lotes L left join " &
+    "articulo A on L.articulo = A.codigoarticulo"
+  Llenar_Datagrid_Lote(Sql)
+  sql = "select L.codigolote,L.linea,L.cantidad,L.coste,L.numerolotecompra,P.razonsocial,L.nfacturacompra,L.fechafacturacompra,M.nombre from lotedetalle L left join " &
+    "proveedor P on L.proveedor = P.codigoproveedor left join materiaprima M on L.materiaprima = M.codigomateriaprima where L.codigolote='" & GridLote[0, 0].Text & "'"
+    Llenar_Datagrid_LoteDetalle(sql)
+End
+'' Procedimiento para la actualizacion de los datos del lote cuando se ha editado.
+Private Sub Actualizar_Lote()
+  
+  Dim Sql As String
+  sql = "select * from tclote where codigolote='" & TxtLote.Text & "'"
+  ' Se se ha activado las temperatura.
+  If ChkTiempoTemp.Value = True Then ' Si tenemos marcado las temperaturas y tiempos
+    If utilidades.Tabla_Vacia(sql) > 0 Then ' Si existe actualizamos los datos
+      Sql = "update tclote set temperatura1=" & VlbTemperatura1.Value & ",tiempo1=" & VlbTiempo1.Value & ",temperatura2=" & VlbTemperatura2.Value &
+      ",tiempo2=" & VlbTiempo2.Value & " where codigolote='" & TxtLote.Text & "'"
+    Else  ' si no existe registro lo añadimos
+      sql = "insert into tclote(codigolote,temperatura1,tiempo1,temperatura2,tiempo2) values('" &
+      UCase(TxtLote.Text) & "'," & VlbTemperatura1.Text & "," & VlbTiempo1.Text & "," & VlbTemperatura2.Text & "," & VlbTiempo2.Text & ")"
+   Endif 
+    Utilidades.In_Act_Bor(sql)
+  Else ' si no tenemos marcado comprobamos si existe temperatura para ese lote y si existe  lo borramos
+    sql = "select * from tclote where codigolote='" & TxtLote.Text & "'"
+    If utilidades.Tabla_Vacia(sql) > 0 Then
+      sql = "delete from tclote where codigolote='" & TxtLote.Text & "'" ""
+      Utilidades.In_Act_Bor(sql)
+    Endif
+  Endif
+End
+
+'' Procedimiento que realiza el almacenamiento del registro correpondiente a la linea de lote que estamos creando.
+
+Private Sub Realiza_Grabado_Linea_Lote()
+  
+  Dim sql As String
+  Dim Codigo_MateriaPrima As String
+  Dim Codigo_Proveedor As String
+  Dim Codigo_Stock As String
+  Codigo_MateriaPrima = Utilidades.Obtener_Campo_Tabla("select * from materiaprima where nombre='" & CmbCLMateriaPrima.Text & "'", "codigomateriaprima")
+  Codigo_Proveedor = Utilidades.Obtener_Campo_Tabla("select * from proveedor where razonsocial='" & TxtCLProveedor.Text & "'", "codigoproveedor")
+  ' Insertamos linea detalle
+  sql = "insert into lotedetalle(codigolote,linea,cantidad,coste,numerolotecompra,proveedor,nfacturacompra,fechafacturacompra,materiaprima) values('" &
+  UCase(TxtLote.text) & "'," & Contador_Linea_Detalle_lote & "," & CFloat(VlbCLCantidad.text) & "," & CFloat(TxtCLCoste.Text) & ",'" & CmbCLNumeroLote.Text & "','" &
+   Codigo_Proveedor & "','" & TxtCLNumeroFactura.Text & "','" & CmbCLFechaFactura.text & "','" & Codigo_MateriaPrima & "')"
+  Utilidades.In_Act_Bor(sql)
+  ' Actualizamos Stock
+  sql = "select * from stock where materiaprima='" & Codigo_MateriaPrima & "'and ffacturacompra='" & CmbCLFechaFactura.Text &
+  "' and lotecompra='" & CmbCLNumeroLote.text & "' and proveedor='" & Codigo_Proveedor & "' and nfacturacompra='" & TxtCLNumeroFactura.text & "'"
+  Codigo_Stock = Utilidades.Obtener_Campo_Tabla(sql, "codigostock")
+  ' Actualizamos la cantidad en stock
+  sql = "update stock set cantidad=" & TxtLStockMateriaPrima.Text & ", usado='S' where codigostock='" & Codigo_Stock & "'"
+  Llenar_Datagrid_LoteDetalle(sql)
+  ' Recargamos datos en el DataGrid
+  Contador_Linea_Detalle_lote = Contador_Linea_Detalle_lote + 1
+  sql = "select L.codigolote,L.linea,L.cantidad,L.coste,L.numerolotecompra,P.razonsocial,L.nfacturacompra,L.fechafacturacompra,M.nombre from lotedetalle L left join " &
+  "proveedor P on L.proveedor = P.codigoproveedor left join materiaprima M on L.materiaprima = M.codigomateriaprima where L.codigolote='" & UCase(TxtLote.text) & "'"
+  Llenar_Datagrid_LoteDetalle(sql)
+  
+End
+
+'' Procedimiento para quitar los filtros de los lotes.
+Private Sub Quitar_Filtros()
+  Dim Sql As String
+  CmbfArticulo.Index = -1
+  DteFICreacion.Value = Date(Year(Now), Month(Now), Day(Now))
+  DteFFCreacion.Value = Date(Year(Now), Month(Now), Day(Now))
+  PanelArticulos.Enabled = False
+  PanelFCreacion.Enabled = False
+  ChkFechaCreacionLote.Value = False
+  ChkArticulo.Value = False
+  sql = "select L.codigolote,L.fecha,L.cantidad,L.coste,L.cantidadbruta,L.merma,A.nombre from lotes L left join " &
+    "articulo A on L.articulo = A.codigoarticulo"
+  Llenar_Datagrid_Lote(Sql)
+  sql = "select L.codigolote,L.linea,L.cantidad,L.coste,L.numerolotecompra,P.razonsocial,L.nfacturacompra,L.fechafacturacompra,M.nombre from lotedetalle L left join " &
+    "proveedor P on L.proveedor = P.codigoproveedor left join materiaprima M on L.materiaprima = M.codigomateriaprima where L.codigolote='" & GridLote[0, 0].Text & "'"
+    Llenar_Datagrid_LoteDetalle(sql)
+End
+
+
+'' Procedimiento para ejcutar los filtros seleccionados.
+
+Private Sub Ejecutar_Filtros()
+  
+  Dim Sql As String
+  sql = "select L.codigolote,L.fecha,L.cantidad,L.coste,L.cantidadbruta,L.merma,A.nombre from lotes L left join " &
+    "articulo A on L.articulo = A.codigoarticulo where "
+    ' Filtro para la fecha de creacion.
+   If ChkFechaCreacionLote.Value = True Then
+      If DteFICreacion.Value = DteFFCreacion.value Then
+        sql &= "L.fecha='" & Utilidades.Fecha_Correcta(DteFICreacion.value) & "'"
+      Else
+        sql &= "L.fecha between '" & utilidades.Fecha_Correcta(DteFICreacion.value) & "' and '" & utilidades.Fecha_Correcta(DteFFCreacion.value) & "'"
+      Endif
+   Endif
+    
+    
+    ' Filtro para Articulos
+    If ChkArticulo.Value = True Then
+      If ChkFechaCreacionLote.value = True Then
+        sql &= " and A.nombre='" & CmbfArticulo.text & "'"
+        Else
+        sql &= "A.nombre='" & CmbfArticulo.text & "'"
+      Endif
+    Endif
+  Llenar_Datagrid_Lote(Sql)
+  If GridLote.Rows.Count > 0 Then
+    sql = "select L.codigolote,L.linea,L.cantidad,L.coste,L.numerolotecompra,P.razonsocial,L.nfacturacompra,L.fechafacturacompra,M.nombre from lotedetalle L left join " &
+    "proveedor P on L.proveedor = P.codigoproveedor left join materiaprima M on L.materiaprima = M.codigomateriaprima where L.codigolote='" & GridLote[0, 0].Text & "'"
+    Llenar_Datagrid_LoteDetalle(sql)
+  Endif
+End
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

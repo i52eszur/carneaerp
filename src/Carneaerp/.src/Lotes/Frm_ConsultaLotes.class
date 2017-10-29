@@ -1,0 +1,245 @@
+' Gambas class file
+
+
+Public Linea_lote_Detalle As Integer ' Variable para controlar la linea de posicion del DatagridLoteDetalle y  poder movernos con flechas.
+Public Sub Form_Open()
+
+  Me.Title = "CONSULTA DE LOTES"
+  Configurar_Objetos_Consulat_Lotes()
+End
+
+Public Sub BtnSalirStock_Click()
+
+  Me.Close
+
+End
+
+
+
+
+
+Public Sub BtnLDInicio_Click()
+
+  If GridLoteDetalle.Rows.Count > 0 Then
+      GridLoteDetalle.Rows.UnSelectAll
+      Linea_lote_Detalle = 0
+      GridLoteDetalle.Rows.Select(Linea_lote_Detalle, 1) 
+  Endif
+  
+End
+
+Public Sub BtnLDPrevio_Click()
+
+  If GridLoteDetalle.Rows.Count > 0 Then
+    If Linea_lote_Detalle = 0 Then
+      GridLoteDetalle.Rows.Select(Linea_lote_Detalle, 1)
+     Else  
+       GridLoteDetalle.Rows.UnSelectAll
+       Linea_lote_Detalle = Linea_lote_Detalle - 1
+       GridLoteDetalle.Rows.Select(Linea_lote_Detalle, 1)
+    Endif
+  Endif
+
+End
+
+Public Sub BtnLDSiguiente_Click()
+
+    If GridLoteDetalle.Rows.Count > 0 Then
+    If Linea_lote_Detalle = GridLoteDetalle.Rows.Count - 1 Then
+      GridLoteDetalle.Rows.Select(Linea_lote_Detalle, 1)
+     Else  
+       GridLoteDetalle.Rows.UnSelectAll
+       Linea_lote_Detalle = Linea_lote_Detalle + 1
+       GridLoteDetalle.Rows.Select(Linea_lote_Detalle, 1)
+    Endif
+  Endif
+
+End
+
+Public Sub BtnLDFin_Click()
+
+  If GridLoteDetalle.Rows.Count > 0 Then
+      GridLoteDetalle.Rows.UnSelectAll
+      Linea_lote_Detalle = GridLoteDetalle.Rows.Count - 1
+      GridLoteDetalle.Rows.Select(Linea_lote_Detalle, 1)
+  Endif
+  
+End
+
+''*************************** FILTROS **************************************
+''
+''**************************************************************************
+Public Sub ChkFechaCreacionLote_Click()
+
+  If ChkFechaCreacionLote.value = True Then
+    PanelFCreacion.Enabled = True
+  Else
+      PanelFCreacion.Enabled = False
+  Endif
+
+End
+
+Public Sub ChkArticulo_Click()
+  Dim sql As String
+  If ChkArticulo.value = True Then
+    PanelArticulos.Enabled = True
+    sql = "select nombre from articulo where codigoarticulo in(select  distinct articulo from lotes)"
+    Utilidades.Llenar_Combobox(sql, CmbfArticulo, "nombre")
+    CmbfArticulo.Index = -1
+  Else
+    PanelArticulos.Enabled = False
+  Endif
+
+End
+Public Sub BtnFiltrar_Click()
+
+  Dim Sql As String
+  Dim Sql_Filtro As String
+  Dim Codigo_Articulo As String
+  sql_filtro = "select codigolote from lotes where"
+  If ChkArticulo.Value = True Then
+    sql = "select codigoarticulo from articulo  where nombre='" & CmbfArticulo.Text & "'"
+    Codigo_Articulo = Utilidades.Obtener_Campo_Tabla(sql, "codigoarticulo")
+    sql_filtro &= " articulo='" & Codigo_Articulo & "'"
+  Endif
+  Utilidades.Llenar_Combobox(sql_filtro, CmbLote, "codigolote")
+  CmbLote.Text = ""
+  CmbLote.Index = -1
+End
+
+Public Sub BtnQuitarFiltro_Click()
+  ChkArticulo.Value = False
+  PanelArticulos.Enabled = False
+  ChkFechaCreacionLote.Value = False
+  PanelFCreacion.Enabled = False
+  utilidades.Llenar_Combobox("select * from lotes", CmbLote, "codigolote")
+  CmbLote.Index = -1
+
+
+End
+
+
+''***************************FIN FILTROS ***********************************
+''
+''**************************************************************************
+
+''*************************** Funciones privadas****************************
+''
+''**************************************************************************
+
+
+
+Public Sub BtnConsultarLote_Click()
+
+  Dim Sql As String
+  If CmbLote.Text = "" Then
+    If GridLoteDetalle.Rows.Count > 0 Then
+      GridLoteDetalle.Rows.Remove(0, GridLoteDetalle.Rows.Count)
+    Endif
+  Else
+    If utilidades.Tabla_Vacia("select * from lotedetalle where codigolote='" & UCase(CmbLote.Text) & "'") > 0 Then
+      Visualizar_Campos_Lote(UCase(CmbLote.Text))
+      sql = "select L.codigolote,L.linea,L.cantidad,L.coste,L.numerolotecompra,P.razonsocial,L.nfacturacompra,L.fechafacturacompra,M.nombre from lotedetalle L left join " &
+      "proveedor P on L.proveedor = P.codigoproveedor left join materiaprima M on L.materiaprima = M.codigomateriaprima where L.codigolote='" & CmbLote.Text & "'"
+      Llenar_Datagrid_LoteDetalle(sql)
+    Else
+      Balloon.Error("Lote no existe", CmbLote)
+    Endif 
+  Endif
+End
+
+Private Sub Configurar_Objetos_Consulat_Lotes()
+  
+  'Utilidades.Llenar_Combobox("select * from articulo", CmbfArticulo, "nombre")
+  'CmbfArticulo.Index = -1
+  Linea_lote_Detalle = 0
+  Utilidades.Llenar_Combobox("select * from lotes", CmbLote, "codigolote")
+  CmbLote.Index = -1
+  DteFICreacion.Value = Date(Year(Now), Month(Now), Day(Now))
+  DteFFCreacion.Value = Date(Year(Now), Month(Now), Day(Now))
+  Configurar_Datagrid_LotesDetalles()
+End
+
+'' Configuramos Cabeceras de DataGridLotes
+Private Sub Configurar_Datagrid_LotesDetalles()
+  Dim Sql As String
+  GridLoteDetalle.Columns.Count = 9
+  GridLoteDetalle.Header = GridLoteDetalle.Both
+  GridLoteDetalle.Columns[0].Title = "Codigo"
+  GridLoteDetalle.Columns[1].Title = "Linea"
+  GridLoteDetalle.Columns[2].Title = "Cantidad"
+  GridLoteDetalle.Columns[3].Title = "Coste"
+  GridLoteDetalle.Columns[4].Title = "N Lote Compra"
+  GridLoteDetalle.Columns[5].Title = "Proveedor"
+  GridLoteDetalle.Columns[6].Title = "N Factura Compra"
+  GridLoteDetalle.Columns[7].Title = "F Factura Compra"
+  GridLoteDetalle.Columns[8].Title = "Materia Prima"
+  GridLoteDetalle.Columns[0].Width = 100 
+  GridLoteDetalle.Columns[1].Width = 50
+  GridLoteDetalle.Columns[2].Width = 100 
+  GridLoteDetalle.Columns[3].Width = 100
+  GridLoteDetalle.Columns[4].Width = 150 
+  GridLoteDetalle.Columns[5].Width = 150
+  GridLoteDetalle.Columns[6].Width = 150
+  GridLoteDetalle.Columns[7].Width = 150 
+  GridLoteDetalle.Columns[8].Width = 200
+
+End
+
+'' Llenamos DataGrid Lote Detalle<br>
+'' Parametros:<br>
+''    Sql --> Sentencia para cargar datos en el Dataset
+Private Sub Llenar_Datagrid_LoteDetalle(sql As String)
+  Dim Result_Trabajo As Result
+  Dim Numero_fila As Integer
+  If GridLoteDetalle.Rows.Count > 0 Then
+    GridLoteDetalle.Rows.Remove(0, GridLoteDetalle.Rows.Count)
+  Endif
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
+  Result_Trabajo.MoveFirst
+  While Result_Trabajo.Available
+    Numero_fila = GridLoteDetalle.Rows.Count
+    GridLoteDetalle.Rows.Insert(Numero_fila, 1)
+    GridLoteDetalle[Numero_fila, 0].Text = Result_Trabajo["L.codigolote"]
+    GridLoteDetalle[Numero_fila, 1].Text = Result_Trabajo["L.linea"]
+    GridLoteDetalle[Numero_fila, 2].Text = Result_Trabajo["L.cantidad"]
+    GridLoteDetalle[Numero_fila, 3].Text = Result_Trabajo["L.coste"]
+    GridLoteDetalle[Numero_fila, 4].Text = Result_Trabajo["L.numerolotecompra"]
+    GridLoteDetalle[Numero_fila, 5].Text = Result_Trabajo["P.razonsocial"]
+    GridLoteDetalle[Numero_fila, 6].Text = Result_Trabajo["L.nfacturacompra"]
+    GridLoteDetalle[Numero_fila, 7].Text = Result_Trabajo["L.fechafacturacompra"]
+    GridLoteDetalle[Numero_fila, 8].Text = Result_Trabajo["M.nombre"]
+    Result_Trabajo.MoveNext
+  Wend
+  GridLoteDetalle.Rows.Select(Linea_lote_Detalle, 1)
+  FMain.Conexion_Base_Datos.Close
+End
+
+
+
+'' Nos muestra los datos del lote elegido<br>
+'' Parametros:<br>
+''    Codigo --> Codigo del lote
+Private Sub Visualizar_Campos_Lote(Codigo As String)
+  
+  Dim Result_Trabajo As Result
+  Dim Sql As String
+  
+  sql = "select L.codigolote,L.fecha,L.cantidad,L.coste,L.cantidadbruta,L.merma,A.nombre from lotes L left join " &
+  "articulo A on L.articulo = A.codigoarticulo where L.codigolote='" & codigo & "'"
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
+  Result_Trabajo.MoveFirst
+  TxtlCodigoLote.Text = Result_Trabajo["L.codigolote"]
+  TxtFechaCreacion.Text = Result_Trabajo["L.fecha"]
+  TxtCantidad.Text = Result_Trabajo["L.cantidad"]
+  TxtCoste.Text = Result_Trabajo["L.coste"]
+  TxtCantidadBruta.Text = Result_Trabajo["L.cantidadbruta"]
+  TxtMerma.Text = Result_Trabajo["L.merma"]
+  TxtArticulo.Text = Result_Trabajo["A.nombre"]
+  FMain.Conexion_Base_Datos.Close
+  
+End

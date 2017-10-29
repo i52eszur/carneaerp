@@ -3,8 +3,8 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: localhost
--- Tiempo de generación: 27-10-2017 a las 13:51:29
--- Versión del servidor: 5.7.20-0ubuntu0.16.04.1
+-- Tiempo de generación: 21-10-2017 a las 12:00:08
+-- Versión del servidor: 5.7.19-0ubuntu0.16.04.1
 -- Versión de PHP: 7.0.22-0ubuntu0.16.04.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -92,8 +92,7 @@ INSERT INTO `articulo` (`codigoarticulo`, `nombre`, `familia`) VALUES
 ('004', 'MORCILLA CEBOLLA', 'PRODUCTOS ELABORADOS'),
 ('005', 'CHORIZO 1ª', 'PRODUCTOS ELABORADOS'),
 ('006', 'BUTIFARRA ECO', 'PRODUCTOS ELABORADOS'),
-('007', 'COSTILLAS', 'CANAL DESPIEZADA'),
-('008', 'CABEZADA', 'CANAL DESPIEZADA');
+('007', 'COSTILLAS', 'CANAL DESPIEZADA');
 
 -- --------------------------------------------------------
 
@@ -139,9 +138,7 @@ INSERT INTO `articulomateriaprima` (`articulo`, `materiaprima`) VALUES
 ('006', '004'),
 ('006', '012'),
 ('006', '016'),
-('006', '017'),
-('007', '026'),
-('008', '027');
+('006', '017');
 
 -- --------------------------------------------------------
 
@@ -233,16 +230,7 @@ CREATE TABLE `compras` (
 
 INSERT INTO `compras` (`codigocompra`, `fecharecepcion`, `fechafacturacompra`, `cantidad`, `lotecompra`, `nfacturacompra`, `higiene`, `carolep`, `precio`, `firma`, `observaciones`, `transporte`, `stock`, `proveedor`, `materiaprima`) VALUES
 (17, '20/10/2017', '20/10/2017', 95, '4321', '1234', 'ACEPTABLE', 'ACEPTABLE', 0.29, '', '', 0, 'S', '0000000001', '008'),
-(18, '19/10/2017', '18/10/2017', 177, 'TCN123', '59434', 'ACEPTABLE', 'ACEPTABLE', 1.23, '', '', 0, 'S', '0000000003', '003'),
-(19, '21/10/2017', '21/10/2017', 150, '12341', 'TXS123', 'ACEPTABLE', 'ACEPTABLE', 0.4, '', '', 0, 'S', '0000000004', '007'),
-(20, '21/10/2017', '21/10/2017', 25, '12341', 'TXS123', 'ACEPTABLE', 'ACEPTABLE', 0.29, '', '', 0, 'S', '0000000004', '025'),
-(21, '19/10/2017', '17/10/2017', 20, '111', '111', 'ACEPTABLE', 'ACEPTABLE', 0.4, '', '', 0, 'S', '0000000004', '007'),
-(22, '21/10/2017', '21/10/2017', 30, '211233112', '111', 'ACEPTABLE', 'ACEPTABLE', 0.3, '', '', 0, 'S', '0000000004', '007'),
-(23, '21/10/2017', '21/10/2017', 120, 'ASEEED', 'ASDFS', 'ACEPTABLE', 'ACEPTABLE', 0.45, '', '', 0, 'S', '0000000001', '008'),
-(24, '25/10/2017', '25/10/2017', 30, '12112', '12331', 'ACEPTABLE', 'ACEPTABLE', 0.23, '', '', 0, 'S', '0000000002', '009'),
-(25, '25/10/2017', '25/10/2017', 230, '121221', '1234143', 'ACEPTABLE', 'ACEPTABLE', 0.34, '', '', 0, 'S', '0000000001', '018'),
-(26, '25/10/2017', '25/10/2017', 120, '22', '22', 'ACEPTABLE', 'ACEPTABLE', 0.5, '', '', 0, 'S', '0000000004', '012'),
-(27, '27/10/2017', '27/10/2017', 60, '432', '234', 'ACEPTABLE', 'ACEPTABLE', 10.2, '', '', 0, 'S', '0000000003', '026');
+(18, '19/10/2017', '18/10/2017', 177, 'TCN123', '59434', 'ACEPTABLE', 'ACEPTABLE', 1.23, '', '', 0, 'S', '0000000003', '003');
 
 -- --------------------------------------------------------
 
@@ -419,15 +407,6 @@ CREATE TABLE `lotedetalle` (
   `materiaprima` varchar(10) NOT NULL COMMENT 'Materia prima de la linea detalle'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Lineas detalle de los lotes';
 
---
--- Volcado de datos para la tabla `lotedetalle`
---
-
-INSERT INTO `lotedetalle` (`codigolote`, `linea`, `cantidad`, `coste`, `numerolotecompra`, `proveedor`, `nfacturacompra`, `fechafacturacompra`, `materiaprima`) VALUES
-('1', 1, 10.2, 12.55, 'TCN123', '0000000003', '59434', '18/10/2017', '003'),
-('2', 1, 5.3, 1.54, '4321', '0000000001', '1234', '20/10/2017', '008'),
-('2', 2, 12.1, 4.84, '12341', '0000000004', 'TXS123', '21/10/2017', '007');
-
 -- --------------------------------------------------------
 
 --
@@ -444,14 +423,6 @@ CREATE TABLE `lotes` (
   `merma` float NOT NULL COMMENT 'Kilos perdidos en el proceso de creacion del lote',
   `articulo` varchar(10) NOT NULL COMMENT 'Articulo creado en el lote'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Cabecera de lotes';
-
---
--- Volcado de datos para la tabla `lotes`
---
-
-INSERT INTO `lotes` (`codigolote`, `fecha`, `cantidad`, `coste`, `cantidadbruta`, `merma`, `articulo`) VALUES
-('1', '27/10/2017', 10.1, 12.55, 10.2, 1, '003'),
-('2', '27/10/2017', 17.05, 6.38, 17.4, 2, '004');
 
 -- --------------------------------------------------------
 
@@ -494,9 +465,7 @@ INSERT INTO `materiaprima` (`codigomateriaprima`, `nombre`) VALUES
 ('022', 'CHIRIZO EXTRA'),
 ('023', 'CHORIZO SELECTO'),
 ('024', 'MANTECA DE CERDO IBERICO'),
-('025', 'PROANSOY'),
-('026', 'COSTILLAS'),
-('027', 'CABEZADA');
+('025', 'PROANSOY');
 
 -- --------------------------------------------------------
 
@@ -524,8 +493,7 @@ CREATE TABLE `proveedor` (
 INSERT INTO `proveedor` (`codigoproveedor`, `razonsocial`, `nif`, `direccion`, `localidad`, `provincia`, `codigopostal`, `web`, `email`) VALUES
 ('0000000001', 'DIATESA', '11111111V', 'C MOLINOS N10', 'CORDOBA', 'CORDOBA', '12345', 'WWW.A.COM', 'ASDF@A.COM'),
 ('0000000002', 'FRIMANCHO', '1111111111', 'AUTOVIA', 'VALDEPEñAS', 'CIUDAD REAL', '22222', '', ''),
-('0000000003', 'FACCSOO', '3333333333', 'PLAZA ESPAñA', 'TORREMOLINOS', 'MALAGA', '22222', '', ''),
-('0000000004', 'CELEDONIA', '2222222222', 'CRTA RUTE SN', 'RUTE', 'CORDOBA', '33333', '', '');
+('0000000003', 'FACCSOO', '3333333333', 'PLAZA ESPAñA', 'TORREMOLINOS', 'MALAGA', '22222', '', '');
 
 -- --------------------------------------------------------
 
@@ -606,21 +574,7 @@ INSERT INTO `proveedormateriaprima` (`proveedor`, `materiaprima`) VALUES
 ('0000000003', '017'),
 ('0000000003', '020'),
 ('0000000003', '021'),
-('0000000003', '022'),
-('0000000003', '026'),
-('0000000004', '004'),
-('0000000004', '006'),
-('0000000004', '007'),
-('0000000004', '008'),
-('0000000004', '012'),
-('0000000004', '014'),
-('0000000004', '016'),
-('0000000004', '017'),
-('0000000004', '018'),
-('0000000004', '020'),
-('0000000004', '021'),
-('0000000004', '023'),
-('0000000004', '025');
+('0000000003', '022');
 
 -- --------------------------------------------------------
 
@@ -665,17 +619,8 @@ CREATE TABLE `stock` (
 --
 
 INSERT INTO `stock` (`codigostock`, `materiaprima`, `cantidad`, `lotecompra`, `proveedor`, `nfacturacompra`, `ffacturacompra`, `precio`, `usado`) VALUES
-(17, '008', 89.7, '4321', '0000000001', '1234', '20/10/2017', 0.29, 'S'),
-(18, '003', 166.8, 'TCN123', '0000000003', '59434', '18/10/2017', 1.23, 'S'),
-(19, '007', 137.9, '12341', '0000000004', 'TXS123', '21/10/2017', 0.4, 'S'),
-(20, '025', 25, '12341', '0000000004', 'TXS123', '21/10/2017', 0.29, 'N'),
-(21, '007', 20, '111', '0000000004', '111', '17/10/2017', 0.4, 'N'),
-(22, '007', 30, '211233112', '0000000004', '111', '21/10/2017', 0.3, 'N'),
-(23, '008', 120, 'ASEEED', '0000000001', 'ASDFS', '21/10/2017', 0.45, 'N'),
-(24, '009', 30, '12112', '0000000002', '12331', '25/10/2017', 0.23, 'N'),
-(25, '018', 230, '121221', '0000000001', '1234143', '25/10/2017', 0.34, 'N'),
-(26, '012', 120, '22', '0000000004', '22', '25/10/2017', 0.5, 'N'),
-(27, '026', 60, '432', '0000000003', '234', '27/10/2017', 10.2, 'N');
+(7, '008', 95, '4321', '0000000001', '1234', '20/10/2017', 0.29, 'N'),
+(8, '003', 177, 'TCN123', '0000000003', '59434', '18/10/2017', 1.23, 'N');
 
 -- --------------------------------------------------------
 
@@ -733,18 +678,11 @@ INSERT INTO `tarifaarticulo` (`articulo`, `tarifa`, `precio`) VALUES
 DROP TABLE IF EXISTS `tclote`;
 CREATE TABLE `tclote` (
   `codigolote` varchar(10) NOT NULL COMMENT 'Codigo lote',
-  `temperatura1` int(11) NOT NULL,
-  `tiempo1` int(11) NOT NULL,
-  `temperatura2` int(11) NOT NULL,
-  `tiempo2` int(11) NOT NULL
+  `Temperatura1` int(11) NOT NULL,
+  `Tiempo1` int(11) NOT NULL,
+  `Temperatura2` int(11) NOT NULL,
+  `Tiempo2` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Temperaturas y tiempos de algunos procesos';
-
---
--- Volcado de datos para la tabla `tclote`
---
-
-INSERT INTO `tclote` (`codigolote`, `temperatura1`, `tiempo1`, `temperatura2`, `tiempo2`) VALUES
-('2', 20, 10, 50, 110);
 
 -- --------------------------------------------------------
 
@@ -973,7 +911,12 @@ ALTER TABLE `vendedortelefono`
 -- AUTO_INCREMENT de la tabla `compras`
 --
 ALTER TABLE `compras`
-  MODIFY `codigocompra` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Codigo de la compra auto incremental', AUTO_INCREMENT=28;
+  MODIFY `codigocompra` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Codigo de la compra auto incremental', AUTO_INCREMENT=19;
+--
+-- AUTO_INCREMENT de la tabla `stock`
+--
+ALTER TABLE `stock`
+  MODIFY `codigostock` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

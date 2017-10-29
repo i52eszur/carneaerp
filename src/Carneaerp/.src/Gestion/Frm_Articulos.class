@@ -442,6 +442,7 @@ Private Sub Configurar_Tab_Articulos(Accion As String)
   
   If Accion = "COMBOBOX" Then
     Utilidades.Llenar_Combobox("select * from familiaarticulo", CmbFamiliaArticulo, "nombrefamilia")  
+    CmbFamiliaArticulo.Index = -1
   Else If Accion = "LISTBOX"
     Utilidades.Llenar_Listbox("select * from materiaprima", LtBKMP, "nombre")
   Else If Accion = "TODO"
@@ -452,7 +453,7 @@ Private Sub Configurar_Tab_Articulos(Accion As String)
     DtbArticulos.Labels = Cabeceras
     DtbArticulos.View.Columns[0].width = 100
     DtbArticulos.View.Columns[1].width = 200
-    DtbArticulos.View.Columns[2].width = 250
+    DtbArticulos.View.Columns[2].width = 200
   Endif
   
   
@@ -547,9 +548,9 @@ Private Function Comprobar_Campos_Articulos(Accion As String) As Boolean
    Balloon.Error("Debe introducir el nombre del Articulo", TxtNombreArticulo)
    Validar = False
    TxtNombreArticulo.SetFocus
-  'Else If LtBKMPComposicion.Count = 0
-  '  Balloon.Error("Debe añadir las materias primas que componen el articulo", LtBKMPComposicion)
-  '  Validar = False
+  Else If LtBKMPComposicion.Count = 0
+    Balloon.Error("Debe añadir las materias primas que componen el articulo, si el articulo no tiene composicion. <br> Cree una Materia Prima con el mismo Nombre para despues crear los lotes", LtBKMPComposicion)
+    Validar = False
   Endif
   If Accion = "AGREGAR" Then
     If Utilidades.Comprobar_existe_dato(Sql) Then 
@@ -587,7 +588,7 @@ Public Sub BtnEditarArticulo_Click()
     Eliminar_Materia_Prima_Listboxmp()
     DtsArticulos.table = "articulo"  
     DtbArticulos.View.Columns[0].width = 100
-    DtbArticulos.View.Columns[1].width = 150
+    DtbArticulos.View.Columns[1].width = 200
     DtbArticulos.View.Columns[2].width = 200
   Else
     ' Comprobamos que los datos son correctos
@@ -678,8 +679,47 @@ Private Sub Llenar_Composicion_Articulo_MateriaPrima(Sql As String)
     LtBKMPComposicion.UnselectAll
  
 End
+Public Sub BtnVisualizarComposicion_Click()
 
-
+  If BtnVisualizarComposicion.text = "COMPOSICION ARTICULOS" Then
+    BtnAgregarArticulo.Enabled = False
+    BtnBorrarArticulo.Enabled = False
+    BtnEditarArticulo.Enabled = False
+    BtnAAgregarMP.Enabled = False
+    BtnABorrarMP.Enabled = False
+    CmbVisualizarComposicion.Visible = True
+    Utilidades.Llenar_Combobox("select nombre from articulo", CmbVisualizarComposicion, "nombre")
+    CmbVisualizarComposicion.text = ""
+    BtnVisualizarComposicion.text = "S  A  L  I  R"
+  Else
+    BtnAgregarArticulo.Enabled = True
+    BtnBorrarArticulo.Enabled = True
+    BtnEditarArticulo.Enabled = True
+    BtnAAgregarMP.Enabled = True
+    BtnABorrarMP.Enabled = True
+    CmbVisualizarComposicion.Visible = False
+    CmbFamiliaArticulo.Index = -1
+    BtnVisualizarComposicion.text = "COMPOSICION ARTICULOS"
+  Endif
+DtsArticulos.Table = "articulo"
+DtbArticulos.View.Columns[0].width = 100
+DtbArticulos.View.Columns[1].width = 200
+DtbArticulos.View.Columns[2].width = 200
+End
+Public Sub CmbVisualizarComposicion_Click()
+  Dim sql As String
+  Dim Codigo_Articulo As String
+  sql = "select * from articulo where nombre='" & CmbVisualizarComposicion.text & "'"
+  Codigo_Articulo = Utilidades.Obtener_Campo_Tabla(sql, "codigoarticulo")
+  sql = "select familia from articulo where codigoarticulo='" & codigo_Articulo & "'"
+  CmbFamiliaArticulo.text = Utilidades.Obtener_Campo_Tabla(sql, "familia")
+  sql = "select * from articulomateriaprima where articulo='" & Codigo_Articulo & "'"
+  Llenar_Composicion_Articulo_MateriaPrima(sql)
+  DtsArticulos.Table = "articulo"
+  DtbArticulos.View.Columns[0].width = 100
+  DtbArticulos.View.Columns[1].width = 200
+  DtbArticulos.View.Columns[2].width = 200
+End
 
 '' *****************************************************************************************
 ''                FIN CODIGO CONFIGURACION ARTICULOS                                       *
@@ -986,3 +1026,7 @@ End
 '' *****************************************************************************************
 ''                FIN CODIGO CONFIGURACION  TARIFAS                                        *
 '' *****************************************************************************************
+
+
+
+

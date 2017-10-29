@@ -98,10 +98,8 @@ End
 Public Function Obtener_Campo_Tabla(sql As String, Campo As String) As String
   Dim Valor_A_Devolver As String
   Dim Result_Trabajo As Result
-  
   FMain.Conexion_Base_Datos.Close
   FMain.Conexion_Base_Datos.Open
-  'Print sql
   Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
   Result_Trabajo.MoveFirst
   Valor_A_Devolver = Result_Trabajo[Campo]

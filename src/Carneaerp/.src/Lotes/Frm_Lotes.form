@@ -34,7 +34,7 @@
         Text = ("Cantidad fabricada :  ")
       }
       { VlbCantidadFabricada ValueBox
-        MoveScaled(20,5,9,4)
+        MoveScaled(21,5,9,4)
         Enabled = False
       }
       { LblCosteLoteTotal Label

@@ -5,15 +5,17 @@ Count=0
 Count=0
 
 [OpenFile]
-Active=4
+Active=8
 File[1]=".src/FMain.form"
-Count=7
-File[2]=".src/FMain.class:2.143"
+Count=9
+File[2]=".src/FMain.class:3.157"
 File[3]=".src/Almacen/Frm_Compras.form"
-File[4]=".src/Almacen/Frm_Compras.class:20.385"
-File[5]=".src/Utilidades/Utilidades.module:2.37"
+File[4]=".src/Almacen/Frm_Compras.class:50.278"
+File[5]=".src/Utilidades/Utilidades.module:32.52"
 File[6]=".src/Lotes/Frm_Lotes.form"
-File[7]=".src/Lotes/Frm_Lotes.class:7.93"
+File[7]=".src/Lotes/Frm_Lotes.class:0.586"
+File[8]=".src/Lotes/Frm_ConsultaLotes.form"
+File[9]=".src/Lotes/Frm_ConsultaLotes.class:0.74"
 
 [Watches]
 Count=0

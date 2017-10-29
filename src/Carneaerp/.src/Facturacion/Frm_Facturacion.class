@@ -1,0 +1,14 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+  Me.title = "Facturacion"
+
+End
+
+Public Sub BtnSalirFacturacion_Click()
+
+  Me.Close
+
+End

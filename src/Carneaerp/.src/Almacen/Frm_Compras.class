@@ -5,6 +5,7 @@ Public Kilos_Stock_Para_Edicion As String
 Public Materia_Prima_Para_Edicion As String
 Public Proveedor_Stock_Para_Edicion As String
 Public Linea_Compras As Integer
+Public Uso_Filtro As Boolean
 
 Public Sub Form_Open()
   Me.Title = "GESTION DE COMPRAS"
@@ -26,7 +27,7 @@ Public Sub CmbProveedor_Click()
     CmbMateriaPrima.Clear
  Else
     Codigo_Proveedor = Utilidades.Obtener_Campo_Tabla("select * from proveedor where razonsocial = '" & CmbProveedor.text & "'", "codigoproveedor")
-    sql = "select * from materiaprima where codigomateriaprima in (select materiaprima from proveedormateriaprima where proveedor='" & Codigo_Proveedor & "')"
+    sql = "select nombre from materiaprima where codigomateriaprima in (select materiaprima from proveedormateriaprima where proveedor='" & Codigo_Proveedor & "') order by 1"
     Utilidades.Llenar_Combobox(sql, CmbMateriaPrima, "nombre")  
   Endif
 End
@@ -42,6 +43,7 @@ Public Sub BtnAgregarCompra_Click()
   Dim Aux As String
   Dim Codigo_Proveedor As String
   Dim Codigo_Materia_Prima As String
+  Dim Codigo_Maximo_Compra As String
   
   If Comprobar_Campos_Compras() Then
     Aux = DteFechaRecepcion.Value
@@ -75,8 +77,11 @@ Public Sub BtnAgregarCompra_Click()
     utilidades.In_Act_Bor(sql)   
     ' Añadimos a Stock 
     If ChkAgregarStock.Value = True Then
-      sql = "insert into stock (materiaprima,cantidad,lotecompra,proveedor,nfacturacompra,ffacturacompra,precio,usado)" &
-    " values('" & Codigo_Materia_Prima & "'," & CFloat(VlbCantidad.Text) & ",'" & UCase(TxtNLoteCompra.Text) & "','" & Codigo_Proveedor & "','" & UCase(TxtNFacturaCompra.text) &
+      
+    Codigo_Maximo_Compra = utilidades.Valor_Maximo("select codigocompra from compras order by codigocompra", "codigocompra")
+    'Codigo_Maximo_Compra = CStr(Val(Codigo_Maximo_Compra) + 1)
+      sql = "insert into stock (codigostock,materiaprima,cantidad,lotecompra,proveedor,nfacturacompra,ffacturacompra,precio,usado)" &
+    " values('" & Codigo_Maximo_Compra & "','" & Codigo_Materia_Prima & "'," & CFloat(VlbCantidad.Text) & ",'" & UCase(TxtNLoteCompra.Text) & "','" & Codigo_Proveedor & "','" & UCase(TxtNFacturaCompra.text) &
     "','" & Fecha_Factura_Compra & "'," & CFloat(VlbPrecio.Text) & ",'N')"
     utilidades.In_Act_Bor(sql)   
     Endif
@@ -182,10 +187,11 @@ Public Sub BtnEditarCompra_Click()
   Dim Codigo_Materia_Prima As String
   Dim Usado_stock As String
   Dim Pasado_Stock As String
+  Dim Codigo_Maximo_Compra As String
   
   If BtnEditarCompra.text = "EDITAR" And GridCompras.Rows.Selection.Count > 0 Then
-    Codigo_Compra = GridCompras[Numero_fila, 0].Text
     Numero_fila = GridCompras.Rows.Selection[0]
+    Codigo_Compra = GridCompras[Numero_fila, 0].Text
     Dia = Mid(GridCompras[Numero_fila, 1].Text, 1, 2)
     Mes = Mid(GridCompras[Numero_fila, 1].Text, 4, 2)
     Ano = Mid(GridCompras[Numero_fila, 1].Text, 7, 4)
@@ -281,9 +287,12 @@ Public Sub BtnEditarCompra_Click()
       If Not utilidades.Comprobar_existe_dato(sql) Then
         ' Si no existe en Stock pero hemos pulsado para añadir.
         If ChkAgregarStock.Value = True Then
-          sql = "insert into stock (materiaprima,cantidad,lotecompra,proveedor,nfacturacompra,ffacturacompra,precio,usado)" &
-          " values('" & Codigo_Materia_Prima & "'," & CFloat(VlbCantidad.Text) & ",'" & UCase(TxtNLoteCompra.Text) & "','" & Codigo_Proveedor & "','" & UCase(TxtNFacturaCompra.text) &
+          Codigo_Maximo_Compra = utilidades.Valor_Maximo("select codigocompra from compras order by codigocompra", "codigocompra")
+         ' Codigo_Maximo_Compra = CStr(Val(Codigo_Maximo_Compra) + 1)
+          sql = "insert into stock (codigostock,materiaprima,cantidad,lotecompra,proveedor,nfacturacompra,ffacturacompra,precio,usado)" &
+          " values('" & Codigo_Maximo_Compra & "','" & Codigo_Materia_Prima & "'," & CFloat(VlbCantidad.Text) & ",'" & UCase(TxtNLoteCompra.Text) & "','" & Codigo_Proveedor & "','" & UCase(TxtNFacturaCompra.text) &
           "','" & Fecha_Factura_Compra & "'," & CFloat(VlbPrecio.Text) & ",'N')"
+
           utilidades.In_Act_Bor(sql)   
         Endif
       Else
@@ -296,9 +305,12 @@ Public Sub BtnEditarCompra_Click()
           If respuesta = 1 Then
             sql = "delete from stock where codigostock=" & Codigo_Stock_Para_Edicion & "" 
             utilidades.In_Act_Bor(sql) 
-            sql = "insert into stock (materiaprima,cantidad,lotecompra,proveedor,nfacturacompra,ffacturacompra,precio,usado)" &
-          " values('" & Codigo_Materia_Prima & "'," & CFloat(VlbCantidad.Text) & ",'" & UCase(TxtNLoteCompra.Text) & "','" & Codigo_Proveedor & "','" & UCase(TxtNFacturaCompra.text) &
-          "','" & Fecha_Factura_Compra & "'," & CFloat(VlbPrecio.Text) & ",'N')"
+            Codigo_Maximo_Compra = utilidades.Valor_Maximo("select codigocompra from compras order by codigocompra", "codigocompra")
+            'Codigo_Maximo_Compra = CStr(Val(Codigo_Maximo_Compra) + 1)
+            sql = "insert into stock (codigostock,materiaprima,cantidad,lotecompra,proveedor,nfacturacompra,ffacturacompra,precio,usado)" &
+            " values('" & Codigo_Maximo_Compra & "','" & Codigo_Materia_Prima & "'," & CFloat(VlbCantidad.Text) & ",'" & UCase(TxtNLoteCompra.Text) & "','" & Codigo_Proveedor & "','" & UCase(TxtNFacturaCompra.text) &
+            "','" & Fecha_Factura_Compra & "'," & CFloat(VlbPrecio.Text) & ",'N')"
+
           utilidades.In_Act_Bor(sql)     
           Endif
         Endif
@@ -400,10 +412,114 @@ Public Sub BtnComprasFin_Click()
   Endif
 
 End
+Public Sub GridCompras_DblClick()
+
+  Dim sql As String
+  Dim Columna_Seleccionada As Integer
+  If Not Uso_Filtro Then
+   Columna_Seleccionada = GridCompras.Column
+   Select Columna_Seleccionada
+     Case 0
+       sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+      "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima order by 1"
+     Case 1
+       sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+      "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima order by 2"
+     Case 2 
+       sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+      "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima order by 3"
+      Case 3 
+       sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+      "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima order by 4"
+      Case 4 
+       sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+      "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima order by 5"
+      Case 5 
+       sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+      "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima order by 6"
+      Case 6 
+       sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+      "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima order by 7"
+      Case 7 
+       sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+      "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima order by 8"
+      Case 8
+       sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+      "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima order by 9"
+      Case 9 
+       sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+      "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima order by 10"
+      Case 10 
+       sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+      "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima order by 11"
+      Case 11 
+       sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+      "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima order by 12"
+      Case 12 
+       sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+      "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima order by 13"
+      Case 13 
+       sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+      "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima order by 14"
+      Case 14 
+       sql = "select C.codigocompra,C.fecharecepcion,C.fechafacturacompra,P.razonsocial, M.nombre,C.cantidad,C.Lotecompra,C.nfacturacompra,C.higiene,C.carolep,C.precio,C.firma,C.observaciones,C.transporte," &
+      "C.stock From compras C, proveedor P,materiaprima M where C.proveedor=P.codigoproveedor and C.materiaprima=M.codigomateriaprima order by 15"
+   End Select
+   Llenar_Datagrid_Compras(sql)
+  End If
+
+End
 
 
 
 
+Public Sub TxtNFacturaCompra_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtNLoteCompra.SetFocus
+  Endif
+
+End
+
+Public Sub TxtNLoteCompra_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    VlbCantidad.SetFocus
+  Endif
+
+End
+
+Public Sub VlbCantidad_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    VlbPrecio.SetFocus
+  Endif
+
+End
+
+Public Sub VlbPrecio_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    VlbTransporte.SetFocus
+  Endif
+
+End
+
+Public Sub VlbTransporte_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtFirma.SetFocus
+  Endif
+
+End
+
+Public Sub TxtFirma_KeyRelease()
+
+  If Key.Code = Key.Return Or Key.Code = Key.Enter Then
+    TxtObservaciones.SetFocus
+  Endif
+
+End
 ''*************************** Fin Conmfiguracion Botones *******************
 ''
 ''**************************************************************************
@@ -418,6 +534,7 @@ End
 Public Sub BtnFiltrar_Click()
   Dim Validar As Boolean
   Validar = True
+  Uso_Filtro = True
   If ChkFechaCompra.value = False And ChkFechaRecepcion.value = False And ChkMateriaPrima.Value = False And ChkProveedor.value = False And ChkPasadoAStock.value = False Then
     validar = False
     Balloon.Error("Debe elegir un filtro.", PanelFiltrar)
@@ -434,7 +551,7 @@ Public Sub BtnFiltrar_Click()
   
 End
 Public Sub BtnQuitarFiltro_Click()
-
+  Uso_Filtro = False
   Quitar_Filtros()
 
 End
@@ -665,6 +782,7 @@ Private Sub Configurar_Objetos_Compras()
   Dim Valor_Subcuenta_Iva As Integer
   Error_V = False
   Linea_Compras = 0
+  Uso_Filtro = False
   If Utilidades.Tabla_Vacia("select * from proveedor") = 0 Then
      Error_Tablas_Vacias = "Deber Cear Proveedores"
      Error_V = True
@@ -715,7 +833,7 @@ Private Sub Borrar_Campos_Compras()
     TxtFirma.Text = ""
     RdbCarolepAceptable.Value = True
     RdbHigieneAceptable.Value = True
-    CmbMateriaPrima.text = ""
+    CmbMateriaPrima.Index = -1
     VlbTransporte.text = ""
     VlbCantidad.text = ""
     VlbPrecio.text = ""
@@ -729,8 +847,8 @@ Private Sub Borrar_Campos_Compras()
     TxtNLoteCompra.Text = ""
     RdbCarolepAceptable.Value = True
     RdbHigieneAceptable.Value = True
-    CmbMateriaPrima.text = ""
-    CmbProveedor.Text = ""
+    CmbMateriaPrima.index = -1
+     CmbProveedor.index = -1
     VlbTransporte.text = ""
     VlbCantidad.text = ""
     VlbPrecio.text = ""
@@ -799,6 +917,9 @@ Private Function Comprobar_Campos_Varias_Compras() As Boolean
   
  Return Validar
 End
+
+
+
 
 
 

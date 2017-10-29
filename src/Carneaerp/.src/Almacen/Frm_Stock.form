@@ -183,5 +183,13 @@
         Text = ("Stock = 0%")
       }
     }
+    { LblStockFiltrado Label
+      MoveScaled(78,15,18,4)
+      Visible = False
+      Font = Font["Bold,+1"]
+      Text = ("STOCK FILTRADO")
+      Alignment = Align.Center
+      Border = Border.Raised
+    }
   }
 }

@@ -1,0 +1,16 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,162.5,102)
+  Icon = Picture["imagenes/32x32/facturacion.png"]
+  { FrameFacturacion Frame
+    MoveScaled(2,2,159,98)
+    Text = ("Facturacion")
+    { BtnSalirFacturacion Button
+      MoveScaled(131,83,16,5)
+      Foreground = Color.Red
+      Text = ("SALIR")
+      Picture = Picture["imagenes/32x32/salida.png"]
+    }
+  }
+}
