@@ -3,8 +3,13 @@
 ' Gambas class 
 ' Ruta de los directorios de trabajo
 Public CarpetaCarnea As String = User.home & "/carnea"
+Public Carpetafacturas As String = CarpetaCarnea & "/facturas"
+Public Carpetaalbaranes As String = CarpetaCarnea & "/albaranes"
+Public CarpetaLogo As String = CarpetaCarnea & "/logo"
+Public CarpetaTrazabilidad As String = CarpetaCarnea & "/tazabilidad"
 Public DirConexion As String = User.home & "/.config/carnea/conexion"
 Public FicheroConexionBD As New Settings(DirConexion & "/conexion.conf")
+
 
 Public Conexion_Base_Datos As New Connection
    ' Variables para la conexion a la base de datos
@@ -12,7 +17,7 @@ Public Conexion_Base_Datos As New Connection
 'Public ConexionBD_Tipo As String = "mysql"
 'Public ConexionBD_Puerto As String = "3306"
 
-
+Public FacturaAlbaranAMostrar As String ' Almacenamos la ruta de la factura a mostrar que antes hemos generado en Html
 Public Sub Form_Open()
   'Me.Center
   Settings.Read(Me)
@@ -43,7 +48,12 @@ Private Sub CrearDirectorios()
     Mkdir User.Home & "/.config/carnea"
     Mkdir DirConexion
   Endif
+  If Not Exist(CarpetaFacturas) Then Mkdir CarpetaFacturas
+  If Not Exist(Carpetaalbaranes) Then Mkdir Carpetaalbaranes
+  If Not Exist(CarpetaLogo) Then Mkdir CarpetaLogo
+  If Not Exist(CarpetaTrazabilidad) Then Mkdir CarpetaTrazabilidad
   Wait 0.5
+  If Not Exist(CarpetaLogo & "/logo.png") Then Copy "./imagenes/imagenes/logo.png" To CarpetaLogo & "/logo.png"
 End
 Private Sub Comprobarficheros()
   
@@ -178,5 +188,29 @@ End
 Public Sub ButtonFacturacion_Click()
 
   Frm_Facturacion.ShowModal()
+
+End
+
+Public Sub MenuFacturacion2_Click()
+
+  Frm_Facturacion.ShowModal()
+
+End
+
+Public Sub ButtonTrazabilidad_Click()
+
+  Frm_Trazabilidad.ShowModal()
+
+End
+
+Public Sub MenuTrazabilidad_Click()
+
+  Frm_Trazabilidad.ShowModal()
+
+End
+
+Public Sub ButtonAverias_Click()
+
+  Frm_Averias.Show()
 
 End

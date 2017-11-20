@@ -1,0 +1,577 @@
+' Gambas class file
+
+Public Factura_Albaran_Editar As String ' Variable para pasar al formulario de edicion la factura y albaran seleccionada.
+Public Linea_Cabeceras As Integer  ' Variable para controlar la linea de posicion del GridCabeceras y  poder movernos con flechas.
+Public Linea_Detalles As Integer ' Variable para controlar la linea de posicion del GridDetalles y  poder movernos con flechas.
+Public Uso_Filtro As Boolean 'Controlamos que estamos filtrando datos para pdoer controlar ordenar por columna.
+Public Actualiza_datos As Boolean
+
+
+Public Sub BtnSalirVisualizar_Click()
+
+  Me.Close
+
+End
+Public Sub BtnEditar_Click()
+  
+  Dim Sql As String
+  If CmbFacturaAlbaran.text = "" Then
+    Balloon.Error("Debe elegir Factura/Albaran para editar", CmbFacturaAlbaran)
+  Else
+    Factura_Albaran_Editar = CmbFacturaAlbaran.Text
+    Frm_Edicion_Factura_Albaranes.ShowModal()
+    If RdbFacturas.Value = True Then
+      sql = "select F.numerofactura,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
+      ",F.descuentoesp,F.importedescuentoesp,F.cobrada,F.formapago,F.vencimiento,F.contabilizada,F.total,C.razonsocial,V.nombre from facturas F left join clientes C on" &
+      " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor"
+      Llenar_DataGrid_Cabeceras(sql, "F")
+      sql = "select L.numerofactura,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from facturasdetalles L left join articulo A on L.articulo=A.codigoarticulo" &
+      " where L.numerofactura='" & GridCabeceras[0, 0].Text & "'"
+      Llenar_DataGrid_Detalles(sql, "F")  
+    Else
+      sql = "select F.numeroalbaran,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
+      ",F.descuentoesp,F.importedescuentoesp,F.pagado,F.formapago,F.vencimiento,F.facturado,F.total,C.razonsocial,V.nombre from albaranes F left join clientes C on" &
+      " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor"
+      Llenar_DataGrid_Cabeceras(sql, "A")
+      sql = "select L.numeroalbaran,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from albaranesdetalle L left join articulo A on L.articulo=A.codigoarticulo" &
+      " where L.numeroalbaran='" & GridCabeceras[0, 0].Text & "'"
+      Llenar_DataGrid_Detalles(sql, "A")  
+    Endif
+    CmbFacturaAlbaran.Index = -1
+  Endif
+
+End
+Public Sub BtnGenerar_Click()
+
+  If CmbFacturaAlbaran.Text = "" Then
+    Balloon.Error("Debe elegir una Factura a Generar.", CmbFacturaAlbaran)
+  Else
+    Utilidades.Generar_Factura_Albaran(CmbFacturaAlbaran.Text)
+  Endif
+
+End
+Public Sub RdbFacturas_Click()
+  Dim sql As String
+  LblNumero.text = "Nº Factura :"
+  FrameDetalles.Text = "Factura Detalle"
+  FrameFacturas.Text = "Facturas"
+  FrameFiltrar.Text = "Filtrar Facturas"
+  Utilidades.Llenar_Combobox("select * from facturas", CmbFacturaAlbaran, "numerofactura") 
+  CmbFacturaAlbaran.Text = ""
+  CmbFacturaAlbaran.Index = -1
+  Configurar_DataGrid_Cabeceras_Facturas()
+  sql = "select F.numerofactura,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
+  ",F.descuentoesp,F.importedescuentoesp,F.cobrada,F.formapago,F.vencimiento,F.contabilizada,F.total,C.razonsocial,V.nombre from facturas F left join clientes C on" &
+  " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor"
+  Llenar_DataGrid_Cabeceras(sql, "F")
+  sql = "select L.numerofactura,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from facturasdetalles L left join articulo A on L.articulo=A.codigoarticulo" &
+    " where L.numerofactura='" & GridCabeceras[0, 0].Text & "'"
+  Llenar_DataGrid_Detalles(sql, "F")  
+End
+
+Public Sub RdbAlbaranes_Click()
+  Dim sql As String
+  LblNumero.text = "Nº Albaran :"
+  FrameDetalles.Text = "Albaran Detalle"
+  FrameFacturas.Text = "Albaranes"
+  FrameFiltrar.Text = "Filtrar Albaranes"
+  Utilidades.Llenar_Combobox("select * from albaranes", CmbFacturaAlbaran, "numeroalbaran")  
+  CmbFacturaAlbaran.Text = ""
+  CmbFacturaAlbaran.Index = -1
+  Configurar_DataGrid_Cabeceras_Albaranes()
+  sql = "select F.numeroalbaran,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
+  ",F.descuentoesp,F.importedescuentoesp,F.pagado,F.formapago,F.vencimiento,F.facturado,F.total,C.razonsocial,V.nombre from albaranes F left join clientes C on" &
+  " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor"
+  Llenar_DataGrid_Cabeceras(sql, "A")
+  sql = "select L.numeroalbaran,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from albaranesdetalle L left join articulo A on L.articulo=A.codigoarticulo" &
+    " where L.numeroalbaran='" & GridCabeceras[0, 0].Text & "'"
+  Llenar_DataGrid_Detalles(sql, "A")  
+End
+
+Public Sub Form_Open()
+
+  Me.Title = "VISUALIZACION DE FACTURAS/ALBARANES"
+  Configurar_Objetos()
+End
+
+
+
+
+
+
+''***************************INICIO CABECERAS*******************************
+''
+''**************************************************************************
+Public Sub BtnInicioCabecera_Click()
+  Dim Sql As String
+  If GridCabeceras.Rows.Count > 0 Then
+      GridCabeceras.Rows.UnSelectAll
+      Linea_Cabeceras = 0
+      GridCabeceras.Rows.Select(Linea_Cabeceras, 1) 
+      If RdbFacturas.Value = True Then
+        sql = "select L.numerofactura,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from facturasdetalles L left join articulo A on L.articulo=A.codigoarticulo" &
+        " where L.numerofactura='" & GridCabeceras[Linea_Cabeceras, 0].Text & "'"
+        Llenar_DataGrid_Detalles(sql, "F")  
+      Else
+        sql = "select L.numeroalbaran,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from albaranesdetalle L left join articulo A on L.articulo=A.codigoarticulo" &
+        " where L.numeroalbaran='" & GridCabeceras[Linea_Cabeceras, 0].Text & "'"
+        Llenar_DataGrid_Detalles(sql, "A")  
+      Endif
+  Endif
+
+End
+
+Public Sub BtnAnteriorCabecera_Click()
+  Dim Sql As String
+  If GridCabeceras.Rows.Count > 0 Then
+    If Linea_Cabeceras = 0 Then
+      GridCabeceras.Rows.Select(Linea_Cabeceras, 1)
+     Else  
+       GridCabeceras.Rows.UnSelectAll
+       Linea_Detalles = Linea_Detalles - 1
+       GridCabeceras.Rows.Select(Linea_Cabeceras, 1)
+    Endif
+    If RdbFacturas.Value = True Then
+        sql = "select L.numerofactura,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from facturasdetalles L left join articulo A on L.articulo=A.codigoarticulo" &
+        " where L.numerofactura='" & GridCabeceras[Linea_Cabeceras, 0].Text & "'"
+        Llenar_DataGrid_Detalles(sql, "F")  
+      Else
+        sql = "select L.numeroalbaran,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from albaranesdetalle L left join articulo A on L.articulo=A.codigoarticulo" &
+        " where L.numeroalbaran='" & GridCabeceras[Linea_Cabeceras, 0].Text & "'"
+        Llenar_DataGrid_Detalles(sql, "A")  
+      Endif
+  Endif
+
+End
+
+Public Sub BtnSiguienteCabecera_Click()
+  Dim Sql As String
+  If GridCabeceras.Rows.Count > 0 Then
+    If Linea_Cabeceras = GridCabeceras.Rows.Count - 1 Then
+      GridCabeceras.Rows.Select(Linea_Cabeceras, 1)
+     Else  
+       GridCabeceras.Rows.UnSelectAll
+       Linea_Cabeceras = Linea_Cabeceras + 1
+       GridCabeceras.Rows.Select(Linea_Cabeceras, 1)
+    Endif
+    If RdbFacturas.Value = True Then
+        sql = "select L.numerofactura,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from facturasdetalles L left join articulo A on L.articulo=A.codigoarticulo" &
+        " where L.numerofactura='" & GridCabeceras[Linea_Cabeceras, 0].Text & "'"
+        Llenar_DataGrid_Detalles(sql, "F")  
+      Else
+        sql = "select L.numeroalbaran,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from albaranesdetalle L left join articulo A on L.articulo=A.codigoarticulo" &
+        " where L.numeroalbaran='" & GridCabeceras[Linea_Cabeceras, 0].Text & "'"
+        Llenar_DataGrid_Detalles(sql, "A")  
+      Endif
+  Endif
+
+End
+
+Public Sub BtnFinCabecera_Click()
+  Dim Sql As String
+  If GridCabeceras.Rows.Count > 0 Then
+      GridCabeceras.Rows.UnSelectAll
+      Linea_Cabeceras = GridCabeceras.Rows.Count - 1
+      GridCabeceras.Rows.Select(Linea_Cabeceras, 1)
+      If RdbFacturas.Value = True Then
+        sql = "select L.numerofactura,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from facturasdetalles L left join articulo A on L.articulo=A.codigoarticulo" &
+        " where L.numerofactura='" & GridCabeceras[Linea_Cabeceras, 0].Text & "'"
+        Llenar_DataGrid_Detalles(sql, "F")  
+      Else
+        sql = "select L.numeroalbaran,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from albaranesdetalle L left join articulo A on L.articulo=A.codigoarticulo" &
+        " where L.numeroalbaran='" & GridCabeceras[Linea_Cabeceras, 0].Text & "'"
+        Llenar_DataGrid_Detalles(sql, "A")  
+      Endif
+  Endif
+
+End
+
+''***************************FIN CABECERAS *********************************
+''
+''**************************************************************************
+
+
+
+''***************************INICIO DETALLES********************************
+''
+''**************************************************************************
+
+Public Sub BtnInicioDetalles_Click()
+
+  If GridDetalles.Rows.Count > 0 Then
+      GridDetalles.Rows.UnSelectAll
+      Linea_Detalles = 0
+      GridDetalles.Rows.Select(Linea_Detalles, 1) 
+  Endif
+
+End
+
+Public Sub BtnAnteriorDetalles_Click()
+
+  If GridDetalles.Rows.Count > 0 Then
+    If Linea_Detalles = 0 Then
+      GridDetalles.Rows.Select(Linea_Detalles, 1)
+     Else  
+       GridDetalles.Rows.UnSelectAll
+       Linea_Detalles = Linea_Detalles - 1
+       GridDetalles.Rows.Select(Linea_Detalles, 1)
+    Endif
+  Endif
+
+End
+
+Public Sub BtnSiguienteDetalles_Click()
+
+  If GridDetalles.Rows.Count > 0 Then
+    If Linea_Detalles = GridDetalles.Rows.Count - 1 Then
+      GridDetalles.Rows.Select(Linea_Detalles, 1)
+     Else  
+       GridDetalles.Rows.UnSelectAll
+       Linea_Detalles = Linea_Detalles + 1
+       GridDetalles.Rows.Select(Linea_Detalles, 1)
+    Endif
+  Endif
+
+End
+
+Public Sub BtnFinDetalles_Click()
+
+  If GridDetalles.Rows.Count > 0 Then
+      GridDetalles.Rows.UnSelectAll
+      Linea_Detalles = GridDetalles.Rows.Count - 1
+      GridDetalles.Rows.Select(Linea_Detalles, 1)
+  Endif
+
+End
+
+
+
+
+''***************************FIN DETALLES***********************************
+''
+''**************************************************************************
+
+
+
+
+''***************************INICIO FILTROS ********************************
+''
+''**************************************************************************
+Public Sub ChkFechaCreacionLote_Click()
+
+  If ChkFechaCreacionLote.Value = True Then
+    PanelFCreacion.Enabled = True
+    DteFICreacion.Value = Date(Year(Now), Month(Now), Day(Now))
+    DteFFCreacion.Value = Date(Year(Now), Month(Now), Day(Now))
+  Else
+    PanelFCreacion.Enabled = False
+  Endif
+
+End
+
+Public Sub ChkCliente_Click()
+
+  If ChkCliente.Value = True Then
+    PanelCliente.Enabled = True
+  Else
+    PanelCliente.Enabled = False
+  Endif
+  
+
+End
+
+Public Sub ChkVendedor_Click()
+
+  If ChkVendedor.Value = True Then
+    PanelVendedor.Enabled = True
+  Else 
+    PanelVendedor.Enabled = False
+  Endif
+
+End
+
+''***************************FIN FILTROS ***********************************
+''
+''**************************************************************************
+
+
+''*************************** Funciones privadas****************************
+''
+''**************************************************************************
+
+'' Procedimiento para configurar los objetos del Formulario.
+Private Sub Configurar_Objetos()
+  
+  Dim Sql As String
+  CmbFCliente.Clear
+  Utilidades.Llenar_Combobox("select * from clientes", CmbFCliente, "razonsocial")  
+  CmbFCliente.Index = -1
+  CmbFVendedor.Clear
+  Utilidades.Llenar_Combobox("select * from vendedor", CmbFVendedor, "nombre")  
+  CmbFVendedor.Index = -1
+  Utilidades.Llenar_Combobox("select * from facturas", CmbFacturaAlbaran, "numerofactura")  
+  CmbFacturaAlbaran.Index = -1
+  Configurar_DataGrid_Cabeceras_Facturas()
+  Configurar_DataGrid_Detalles()
+  Uso_Filtro = False
+  Actualiza_datos = False
+  Linea_Cabeceras = 0
+  Linea_Detalles = 0
+  RdbFacturas.Value = True
+  If Utilidades.Tabla_Vacia("select * from facturas") > 0 Then
+    sql = "select F.numerofactura,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
+    ",F.descuentoesp,F.importedescuentoesp,F.cobrada,F.formapago,F.vencimiento,F.contabilizada,F.total,C.razonsocial,V.nombre from facturas F left join clientes C on" &
+    " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor"
+    Llenar_DataGrid_Cabeceras(sql, "F")
+    sql = "select L.numerofactura,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from facturasdetalles L left join articulo A on L.articulo=A.codigoarticulo" &
+    " where L.numerofactura='" & GridCabeceras[0, 0].Text & "'"
+    Llenar_DataGrid_Detalles(sql, "F")  
+  Endif
+End
+
+'' Procedimiento para configurar Grid LineasDetalle
+Private Sub Configurar_DataGrid_Detalles()
+  
+  GridDetalles.Columns.Count = 7
+  GridDetalles.Header = GridDetalles.Both
+  GridDetalles.Columns[0].Title = "Numero"
+  GridDetalles.Columns[1].Title = "Linea"
+  GridDetalles.Columns[2].Title = "Precio"
+  GridDetalles.Columns[3].Title = "Peso"
+  GridDetalles.Columns[4].Title = "Importe"
+  GridDetalles.Columns[5].Title = "Lote"
+  GridDetalles.Columns[6].Title = "Articulo"
+  GridDetalles.Columns[0].Width = 100 
+  GridDetalles.Columns[1].Width = 100
+  GridDetalles.Columns[2].Width = 100 
+  GridDetalles.Columns[3].Width = 100
+  GridDetalles.Columns[4].Width = 100 
+  GridDetalles.Columns[5].Width = 150
+  GridDetalles.Columns[6].Width = 200
+  
+End
+'' Configuracion de las cabeceras para las facturas
+Private Sub Configurar_DataGrid_Cabeceras_Facturas()
+  
+  GridCabeceras.Columns.Count = 20
+  GridCabeceras.Header = GridCabeceras.Both
+  GridCabeceras.Columns[0].Title = "Numero"
+  GridCabeceras.Columns[1].Title = "Fecha"
+  GridCabeceras.Columns[2].Title = "Hora"
+  GridCabeceras.Columns[3].Title = "Base"
+  GridCabeceras.Columns[4].Title = "Iva"
+  GridCabeceras.Columns[5].Title = "Recargo"
+  GridCabeceras.Columns[6].Title = "Importe Iva"
+  GridCabeceras.Columns[7].Title = "Importe RE"
+  GridCabeceras.Columns[8].Title = "Fecha Cobro"
+  GridCabeceras.Columns[9].Title = "Descuento PP"
+  GridCabeceras.Columns[10].Title = "Importe DPP"
+  GridCabeceras.Columns[11].Title = "Descuento ESP"
+  GridCabeceras.Columns[12].Title = "Importe DESP"
+  GridCabeceras.Columns[13].Title = "Cobrada"
+  GridCabeceras.Columns[14].Title = "Forma Pago"
+  GridCabeceras.Columns[15].Title = "Vencimiento"
+  GridCabeceras.Columns[16].Title = "Contabilizada"
+  GridCabeceras.Columns[17].Title = "Total"
+  GridCabeceras.Columns[18].Title = "Cliente"
+  GridCabeceras.Columns[19].Title = "Vendedor"
+  GridCabeceras.Columns[0].Width = 100 
+  GridCabeceras.Columns[1].Width = 100
+  GridCabeceras.Columns[2].Width = 100 
+  GridCabeceras.Columns[3].Width = 100
+  GridCabeceras.Columns[4].Width = 100 
+  GridCabeceras.Columns[5].Width = 150
+  GridCabeceras.Columns[6].Width = 200
+  GridCabeceras.Columns[7].Width = 200
+  GridCabeceras.Columns[8].Width = 200
+  GridCabeceras.Columns[9].Width = 200
+  GridCabeceras.Columns[10].Width = 200
+  GridCabeceras.Columns[11].Width = 200
+  GridCabeceras.Columns[12].Width = 200
+  GridCabeceras.Columns[13].Width = 200
+  GridCabeceras.Columns[14].Width = 200
+  GridCabeceras.Columns[15].Width = 200
+  GridCabeceras.Columns[16].Width = 200
+  GridCabeceras.Columns[17].Width = 150
+  GridCabeceras.Columns[18].Width = 200
+  GridCabeceras.Columns[19].Width = 200
+  
+End
+
+'' Configuracion de las cabeceras para las albaraness
+Private Sub Configurar_DataGrid_Cabeceras_Albaranes()
+  
+  GridCabeceras.Columns.Count = 20
+  GridCabeceras.Header = GridCabeceras.Both
+  GridCabeceras.Columns[0].Title = "Numero"
+  GridCabeceras.Columns[1].Title = "Fecha"
+  GridCabeceras.Columns[2].Title = "Hora"
+  GridCabeceras.Columns[3].Title = "Base"
+  GridCabeceras.Columns[4].Title = "Iva"
+  GridCabeceras.Columns[5].Title = "Recargo"
+  GridCabeceras.Columns[6].Title = "Importe Iva"
+  GridCabeceras.Columns[7].Title = "Importe RE"
+  GridCabeceras.Columns[8].Title = "Fecha Cobro"
+  GridCabeceras.Columns[9].Title = "Descuento PP"
+  GridCabeceras.Columns[10].Title = "Importe DPP"
+  GridCabeceras.Columns[11].Title = "Descuento ESP"
+  GridCabeceras.Columns[12].Title = "Importe DESP"
+  GridCabeceras.Columns[13].Title = "Pagado"
+  GridCabeceras.Columns[14].Title = "Forma Pago"
+  GridCabeceras.Columns[15].Title = "Vencimiento"
+  GridCabeceras.Columns[16].Title = "Facturado"
+  GridCabeceras.Columns[17].Title = "Total"
+  GridCabeceras.Columns[18].Title = "Cliente"
+  GridCabeceras.Columns[19].Title = "Vendedor"
+  GridCabeceras.Columns[0].Width = 100 
+  GridCabeceras.Columns[1].Width = 100
+  GridCabeceras.Columns[2].Width = 100 
+  GridCabeceras.Columns[3].Width = 100
+  GridCabeceras.Columns[4].Width = 100 
+  GridCabeceras.Columns[5].Width = 150
+  GridCabeceras.Columns[6].Width = 200
+  GridCabeceras.Columns[7].Width = 200
+  GridCabeceras.Columns[8].Width = 200
+  GridCabeceras.Columns[9].Width = 200
+  GridCabeceras.Columns[10].Width = 200
+  GridCabeceras.Columns[11].Width = 200
+  GridCabeceras.Columns[12].Width = 200
+  GridCabeceras.Columns[13].Width = 200
+  GridCabeceras.Columns[14].Width = 200
+  GridCabeceras.Columns[15].Width = 200
+  GridCabeceras.Columns[16].Width = 200
+  GridCabeceras.Columns[17].Width = 150
+  GridCabeceras.Columns[18].Width = 200
+  GridCabeceras.Columns[19].Width = 200
+End
+
+'' Procedimiento para LLenar de datos el DataGrid Detalles<br>
+'' Parametros:<br>
+''    Tipo --> Tomara los siguientes valores<br>
+''        A -- Albaran.<br>
+''        F -- Factura.<br>
+''    Sql --> Setncia Sql para llenar el Data Grid<br>
+Private Sub Llenar_DataGrid_Detalles(Sql As String, Tipo As String)
+  Dim Result_Trabajo As Result
+  Dim Numero_fila As Integer
+  If GridDetalles.Rows.Count > 0 Then
+    GridDetalles.Rows.Remove(0, GridDetalles.Rows.Count)  
+  Endif  
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
+  Result_Trabajo.MoveFirst
+
+  
+  If Tipo = "F" Then
+    While Result_Trabajo.Available
+      Numero_fila = GridDetalles.Rows.Count
+      GridDetalles.Rows.Insert(Numero_fila, 1)
+      GridDetalles[Numero_fila, 0].Text = Result_Trabajo["L.numerofactura"]
+      GridDetalles[Numero_fila, 1].Text = Result_Trabajo["L.linea"]
+      GridDetalles[Numero_fila, 2].Text = Result_Trabajo["L.precio"]
+      GridDetalles[Numero_fila, 3].Text = Result_Trabajo["L.peso"]
+      GridDetalles[Numero_fila, 4].Text = Result_Trabajo["L.importe"]
+      GridDetalles[Numero_fila, 5].Text = Result_Trabajo["L.lote"]
+      GridDetalles[Numero_fila, 6].Text = Result_Trabajo["A.nombre"]
+      Result_Trabajo.MoveNext
+    Wend    
+  Else
+    While Result_Trabajo.Available
+      Numero_fila = GridDetalles.Rows.Count
+      GridDetalles.Rows.Insert(Numero_fila, 1)
+      GridDetalles[Numero_fila, 0].Text = Result_Trabajo["L.numeroalbaran"]
+      GridDetalles[Numero_fila, 1].Text = Result_Trabajo["L.linea"]
+      GridDetalles[Numero_fila, 2].Text = Result_Trabajo["L.precio"]
+      GridDetalles[Numero_fila, 3].Text = Result_Trabajo["L.peso"]
+      GridDetalles[Numero_fila, 4].Text = Result_Trabajo["L.importe"]
+      GridDetalles[Numero_fila, 5].Text = Result_Trabajo["L.lote"]
+      GridDetalles[Numero_fila, 6].Text = Result_Trabajo["A.nombre"]
+      Result_Trabajo.MoveNext
+    Wend    
+  Endif
+  FMain.Conexion_Base_Datos.Close
+  GridDetalles.Rows.Select(0, 1)
+  
+End
+
+'' Procedimiento para LLenar de datos el DataGrid Cabeceras<br>
+'' Parametros:<br>
+''    Tipo --> Tomara los siguientes valores<br>
+''        A -- Albaran.<br>
+''        F -- Factura.<br>
+''    Sql --> Setncia Sql para llenar el Data Grid<br>
+Private Sub Llenar_DataGrid_Cabeceras(Sql As String, Tipo As String)
+  Dim Result_Trabajo As Result
+  Dim Numero_fila As Integer
+  If GridCabeceras.Rows.Count > 0 Then
+    GridCabeceras.Rows.Remove(0, GridCabeceras.Rows.Count)  
+  Endif  
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
+  Result_Trabajo.MoveFirst
+
+  
+  If Tipo = "F" Then
+    While Result_Trabajo.Available
+      Numero_fila = GridCabeceras.Rows.Count
+      GridCabeceras.Rows.Insert(Numero_fila, 1)
+      GridCabeceras[Numero_fila, 0].Text = Result_Trabajo["F.numerofactura"]
+      GridCabeceras[Numero_fila, 1].Text = Result_Trabajo["F.fecha"]
+      GridCabeceras[Numero_fila, 2].Text = Result_Trabajo["F.hora"]
+      GridCabeceras[Numero_fila, 3].Text = Result_Trabajo["F.base"]
+      GridCabeceras[Numero_fila, 4].Text = Result_Trabajo["F.iva"]
+      GridCabeceras[Numero_fila, 5].Text = Result_Trabajo["F.recargo"]
+      GridCabeceras[Numero_fila, 6].Text = Result_Trabajo["F.importeiva"]
+      GridCabeceras[Numero_fila, 7].Text = Result_Trabajo["F.importerecargo"]
+      GridCabeceras[Numero_fila, 8].Text = Result_Trabajo["F.fechacobro"]
+      GridCabeceras[Numero_fila, 9].Text = Result_Trabajo["F.descuentopp"]
+      GridCabeceras[Numero_fila, 10].Text = Result_Trabajo["F.importedescuentopp"]
+      GridCabeceras[Numero_fila, 11].Text = Result_Trabajo["F.descuentoesp"]
+      GridCabeceras[Numero_fila, 12].Text = Result_Trabajo["F.importedescuentoesp"]
+      GridCabeceras[Numero_fila, 13].Text = Result_Trabajo["F.cobrada"]
+      GridCabeceras[Numero_fila, 14].Text = Result_Trabajo["F.formapago"]
+      GridCabeceras[Numero_fila, 15].Text = Result_Trabajo["F.vencimiento"]
+      GridCabeceras[Numero_fila, 16].Text = Result_Trabajo["F.contabilizada"]
+      GridCabeceras[Numero_fila, 17].Text = Result_Trabajo["F.total"]
+      GridCabeceras[Numero_fila, 18].Text = Result_Trabajo["C.razonsocial"]
+      GridCabeceras[Numero_fila, 19].Text = Result_Trabajo["V.nombre"]
+      Result_Trabajo.MoveNext
+    Wend    
+  Else
+    While Result_Trabajo.Available
+      Numero_fila = GridCabeceras.Rows.Count
+      GridCabeceras.Rows.Insert(Numero_fila, 1)
+      GridCabeceras[Numero_fila, 0].Text = Result_Trabajo["F.numeroalbaran"]
+      GridCabeceras[Numero_fila, 1].Text = Result_Trabajo["F.fecha"]
+      GridCabeceras[Numero_fila, 2].Text = Result_Trabajo["F.hora"]
+      GridCabeceras[Numero_fila, 3].Text = Result_Trabajo["F.base"]
+      GridCabeceras[Numero_fila, 4].Text = Result_Trabajo["F.iva"]
+      GridCabeceras[Numero_fila, 5].Text = Result_Trabajo["F.recargo"]
+      GridCabeceras[Numero_fila, 6].Text = Result_Trabajo["F.importeiva"]
+      GridCabeceras[Numero_fila, 7].Text = Result_Trabajo["F.importerecargo"]
+      GridCabeceras[Numero_fila, 8].Text = Result_Trabajo["F.fechacobro"]
+      GridCabeceras[Numero_fila, 9].Text = Result_Trabajo["F.descuentopp"]
+      GridCabeceras[Numero_fila, 10].Text = Result_Trabajo["F.importedescuentopp"]
+      GridCabeceras[Numero_fila, 11].Text = Result_Trabajo["F.descuentoesp"]
+      GridCabeceras[Numero_fila, 12].Text = Result_Trabajo["F.importedescuentoesp"]
+      GridCabeceras[Numero_fila, 13].Text = Result_Trabajo["F.pagado"]
+      GridCabeceras[Numero_fila, 14].Text = Result_Trabajo["F.formapago"]
+      GridCabeceras[Numero_fila, 15].Text = Result_Trabajo["F.vencimiento"]
+      GridCabeceras[Numero_fila, 16].Text = Result_Trabajo["F.facturado"]
+      GridCabeceras[Numero_fila, 17].Text = Result_Trabajo["F.total"]
+      GridCabeceras[Numero_fila, 18].Text = Result_Trabajo["C.razonsocial"]
+      GridCabeceras[Numero_fila, 19].Text = Result_Trabajo["V.nombre"]
+      Result_Trabajo.MoveNext
+    Wend    
+  Endif
+  FMain.Conexion_Base_Datos.Close
+  GridCabeceras.Rows.Select(0, 1)
+  
+End
+
+
+
+
+

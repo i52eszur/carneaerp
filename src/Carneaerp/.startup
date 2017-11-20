@@ -5,7 +5,7 @@ Carnea ERP
 0.0.1
 
 gb.image
-gb.gui
+gb.qt4
 gb.form
 gb.chart
 gb.data
@@ -17,6 +17,8 @@ gb.desktop
 gb.settings
 gb.form.mdi
 gb.form.stock
+gb.qt4.ext
+gb.qt4.webkit
 gb.report2
 gb.util
 

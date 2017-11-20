@@ -1,0 +1,196 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,132,102)
+  Icon = Picture["imagenes/32x32/facturacion.png"]
+  Resizable = False
+  { FrameFacturas Frame
+    MoveScaled(1,1,129,68)
+    Text = ("Facturas")
+    { PanelFacturaAlbaran Panel
+      MoveScaled(2,4,29,6)
+      Border = Border.Plain
+      { RdbFacturas RadioButton
+        MoveScaled(2,1,11,4)
+        Font = Font["Bold"]
+        Text = ("Facturas")
+      }
+      { RdbAlbaranes RadioButton
+        MoveScaled(14,1,13,4)
+        Font = Font["Bold"]
+        Text = ("Albaranes")
+      }
+    }
+    { LblNumero Label
+      MoveScaled(2,11,12,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Nº Factura :")
+    }
+    { CmbFacturaAlbaran ComboBox
+      MoveScaled(12,11,18,4)
+      MaxLength = 10
+    }
+    { FrameFiltrar Frame
+      MoveScaled(32,2,96,26)
+      Text = ("Filtrar Facturas")
+      { BtnQuitarFiltro Button
+        MoveScaled(80,22,14,3)
+        Font = Font["-2"]
+        Text = ("QUITAR FILTRO")
+        Picture = Picture["icon:/16/grid"]
+      }
+      { BtnFiltrar Button
+        MoveScaled(65,22,14,3)
+        Text = ("FILTRAR")
+        Picture = Picture["icon:/16/filter"]
+      }
+      { PanelCliente Panel
+        MoveScaled(44,8,42,5)
+        Enabled = False
+        Border = Border.Plain
+        { LblFClientes Label
+          MoveScaled(2,1,8,3)
+          Text = ("Cliente")
+        }
+        { CmbFCliente ComboBox
+          MoveScaled(9,1,32,3)
+          ReadOnly = True
+        }
+      }
+      { PanelFCreacion Panel
+        MoveScaled(22,2,21,17)
+        Enabled = False
+        Border = Border.Plain
+        { Label3 Label
+          MoveScaled(1,1,19,3)
+          Text = ("Fecha Inicio Creacion")
+        }
+        { Label4 Label
+          MoveScaled(2,8,18,4)
+          Text = ("Fecha Fin Creacion")
+        }
+        { DteFICreacion DateBox
+          MoveScaled(1,4,19,4)
+        }
+        { DteFFCreacion DateBox
+          MoveScaled(1,12,19,4)
+        }
+      }
+      { PanelFiltros Panel
+        MoveScaled(1,3,19,14)
+        Border = Border.Plain
+        { VBox5 VBox
+          MoveScaled(0,0,19,14)
+          { ChkFechaCreacionLote CheckBox
+            MoveScaled(1,1,18,3)
+            AutoResize = True
+            Text = ("Fecha Creacion")
+          }
+          { ChkCliente CheckBox
+            MoveScaled(1,4,16,3)
+            Text = ("Cliente")
+          }
+          { ChkVendedor CheckBox
+            MoveScaled(1,5,16,4)
+            Text = ("Vendedor")
+          }
+        }
+      }
+      { PanelVendedor Panel
+        MoveScaled(44,2,42,5)
+        Enabled = False
+        Border = Border.Plain
+        { LblFVendedor Label
+          MoveScaled(2,1,8,3)
+          Text = ("Vendedor")
+        }
+        { CmbFVendedor ComboBox
+          MoveScaled(10,0.75,28,3.25)
+          ReadOnly = True
+        }
+      }
+    }
+    { GridCabeceras GridView
+      MoveScaled(1,35,126,27)
+      Font = Font["Bold"]
+      Mode = Select.Single
+    }
+    { PanelBotonesGrid2 Panel
+      MoveScaled(1,62,126,4)
+      Border = Border.Plain
+      { HBox2 HBox
+        MoveScaled(1,95,138,5)
+      }
+      { BtnInicioCabecera Button
+        MoveScaled(3,0,3.25,3.25)
+        Picture = Picture["icon:/22/first"]
+      }
+      { BtnAnteriorCabecera Button
+        MoveScaled(6,0,3.25,3.25)
+        Picture = Picture["icon:/22/left"]
+      }
+      { BtnFinCabecera Button
+        MoveScaled(12,0,3.25,3.25)
+        Picture = Picture["icon:/22/last"]
+      }
+      { BtnSiguienteCabecera Button
+        MoveScaled(9,0,3.25,3.25)
+        Picture = Picture["icon:/22/next"]
+      }
+    }
+    { BtnSalirVisualizar Button
+      MoveScaled(111,29,16,5)
+      Foreground = Color.Red
+      Text = ("SALIR")
+      Picture = Picture["imagenes/32x32/salida.png"]
+    }
+    { BtnGenerar Button
+      MoveScaled(52,29,16,4)
+      Font = Font["Bold"]
+      Text = ("GENERAR")
+    }
+    { BtnEditar Button
+      MoveScaled(91,29,16,4)
+      Font = Font["Bold"]
+      Text = ("EDITAR")
+    }
+    { BtnBorrar Button
+      MoveScaled(72,29,16,4)
+      Font = Font["Bold"]
+      Text = ("BORRAR")
+    }
+  }
+  { FrameDetalleS Frame
+    MoveScaled(1,69,129,31)
+    Text = ("Detalle Facturas")
+    { GridDetalles GridView
+      MoveScaled(1,3,126,24)
+      Font = Font["Bold"]
+      Mode = Select.Single
+    }
+    { PanelBotonesGrid Panel
+      MoveScaled(1,27,126,4)
+      Border = Border.Plain
+      { HBox1 HBox
+        MoveScaled(1,95,138,5)
+      }
+      { BtnInicioDetalles Button
+        MoveScaled(3,0,3.25,3.25)
+        Picture = Picture["icon:/22/first"]
+      }
+      { BtnAnteriorDetalles Button
+        MoveScaled(6,0,3.25,3.25)
+        Picture = Picture["icon:/22/left"]
+      }
+      { BtnFinDetalles Button
+        MoveScaled(12,0,3.25,3.25)
+        Picture = Picture["icon:/22/last"]
+      }
+      { BtnSiguienteDetalles Button
+        MoveScaled(9,0,3.25,3.25)
+        Picture = Picture["icon:/22/next"]
+      }
+    }
+  }
+}

@@ -4,6 +4,7 @@
   MoveScaled(0,0,123,78)
   Font = Font["Loma"]
   Text = ("CARNEA ERP")
+  Icon = Picture["imagenes/imagenes/carneaico.png"]
   Resizable = False
   { MenuArchivo Menu
     Text = ("Archivo")
@@ -81,8 +82,8 @@
     }
   }
   { FrameGestion Frame
-    MoveScaled(5,4,73,22)
-    Background = Color.Background
+    MoveScaled(5,4,71,22)
+    Background = Color.ButtonBackground
     Text = ("Modulo de Gestion")
     { ButtonArticulos Button
       MoveScaled(6,7,9,9)
@@ -110,7 +111,6 @@
       MoveScaled(40,7,9,9)
       ToolTip = ("Proveedores")
       Picture = Picture["imagenes/64x64/proveedores.png"]
-      Default = True
     }
     { LabelProveedores Label
       MoveScaled(38,16,15,4)
@@ -222,7 +222,7 @@
     Text = ("TRAZABILIDAD")
   }
   { FrameUtilidades Frame
-    MoveScaled(76,30,39,22)
+    MoveScaled(76,30,40,22)
     Background = Color.Background
     Text = ("Modulo de Utilidades")
     { ButtonCopias Button

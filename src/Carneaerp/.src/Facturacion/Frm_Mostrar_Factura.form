@@ -1,0 +1,19 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,125,95)
+  { WebView WebView
+    MoveScaled(3,4,117,77)
+  }
+  { BtnSalirVisualizar Button
+    MoveScaled(39,85,16,5)
+    Foreground = Color.Red
+    Text = ("SALIR")
+    Picture = Picture["imagenes/32x32/salida.png"]
+  }
+  { BtnGenerar Button
+    MoveScaled(4,85,30,4)
+    Font = Font["Bold"]
+    Text = ("GENERAR PDF")
+  }
+}

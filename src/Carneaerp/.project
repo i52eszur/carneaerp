@@ -2,9 +2,10 @@
 # Compiled with Gambas 3.10.0
 Title=Carnea ERP
 Startup=FMain
+Icon=imagenes/imagenes/Logo.ico.png
 Version=0.0.1
 Component=gb.image
-Component=gb.gui
+Component=gb.qt4
 Component=gb.form
 Component=gb.chart
 Component=gb.data
@@ -16,10 +17,13 @@ Component=gb.desktop
 Component=gb.settings
 Component=gb.form.mdi
 Component=gb.form.stock
+Component=gb.qt4.ext
+Component=gb.qt4.webkit
 Component=gb.report2
 Component=gb.util
 Description="Proyecto Fin de Grado Ingenieria Informatica.\nUniversidad de Cordoba.\n\nSoftware para el control de empresas carnicas y aliemticias."
 Authors="Rafael Ernesto Escobar Zurita"
 TabSize=2
 Language=es_ES
+ControlPublic=1
 Packager=1

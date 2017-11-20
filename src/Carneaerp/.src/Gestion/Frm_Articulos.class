@@ -699,6 +699,7 @@ Public Sub BtnVisualizarComposicion_Click()
     BtnABorrarMP.Enabled = True
     CmbVisualizarComposicion.Visible = False
     CmbFamiliaArticulo.Index = -1
+    LtBKMPComposicion.Clear
     BtnVisualizarComposicion.text = "COMPOSICION ARTICULOS"
   Endif
 DtsArticulos.Table = "articulo"
@@ -941,6 +942,7 @@ Public Sub BtnVisualizarTarifa_Click()
   If CmbTarifaEditar.text = "" Then
     Balloon.Error("Debe elegir tarifa a visualizar.", CmbTarifaEditar)
   Else
+    CmbTarifaEditar.Enabled = True
     FrameTarifas.Enabled = True 
     FrameTTarifas.Enabled = False
     BtnSalirVisualizarTarifas.visible = True
@@ -989,6 +991,7 @@ Public Sub BtnSalirVisualizarTarifas_Click()
     BtnGuardarAT.Enabled = True
     CmbTArticulos.Enabled = True
     VlBPrecioArticulo.Enabled = True
+    CmbTarifaEditar.Enabled = False
     sql = "select T.tarifa,A.nombre,T.precio from articulo A, tarifaarticulo T where A.codigoarticulo=T.articulo order by T.tarifa" 
     DtsTarifa.table = sql 
     DtBTarifa.View.Columns[0].width = 200

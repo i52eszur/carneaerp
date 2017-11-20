@@ -1,11 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,145,84)
+  MoveScaled(0,0,145,85)
   Icon = Picture["imagenes/32x32/stock.png"]
   Resizable = False
   { FrameStock Frame
-    MoveScaled(1,-1,142,83)
+    MoveScaled(1,0,142,83)
     Text = ("Stock")
     { BtnFiltrar Button
       MoveScaled(101,2,19,5)
@@ -144,7 +144,7 @@
       Picture = Picture["icon:/64/top"]
     }
     { FrameColores Frame
-      MoveScaled(4,23,113,7)
+      MoveScaled(5,23,113,7)
       Text = ("Colores")
       { LblCuadradoNaranja Label
         MoveScaled(61,3,3,3)
@@ -184,7 +184,7 @@
       }
     }
     { LblStockFiltrado Label
-      MoveScaled(78,15,18,4)
+      MoveScaled(79,18,18,4)
       Visible = False
       Font = Font["Bold,+1"]
       Text = ("STOCK FILTRADO")

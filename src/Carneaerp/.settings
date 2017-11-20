@@ -5,17 +5,19 @@ Count=0
 Count=0
 
 [OpenFile]
-Active=8
-File[1]=".src/FMain.form"
-Count=9
-File[2]=".src/FMain.class:3.157"
-File[3]=".src/Almacen/Frm_Compras.form"
-File[4]=".src/Almacen/Frm_Compras.class:50.278"
-File[5]=".src/Utilidades/Utilidades.module:32.52"
-File[6]=".src/Lotes/Frm_Lotes.form"
-File[7]=".src/Lotes/Frm_Lotes.class:0.586"
-File[8]=".src/Lotes/Frm_ConsultaLotes.form"
-File[9]=".src/Lotes/Frm_ConsultaLotes.class:0.74"
+Active=11
+File[1]=".src/Facturacion/Frm_Edicion_Factura_Albaranes.form"
+Count=11
+File[2]=".src/Facturacion/Frm_Edicion_Factura_Albaranes.class:54.249"
+File[3]=".src/Utilidades/Utilidades.module:76.344"
+File[4]=".src/Lotes/Frm_Trazabilidad.form"
+File[5]=".src/Lotes/Frm_Trazabilidad.class:27.41"
+File[6]=".src/Lotes/Frm_Visualiza_Lote_Trazabilidad.form"
+File[7]=".src/Lotes/Frm_Visualiza_Lote_Trazabilidad.class:35.114"
+File[8]=".src/Facturacion/Frm_Averias.form"
+File[9]=".src/Facturacion/Frm_Averias.class:30.5"
+File[10]=".src/FMain.form"
+File[11]=".src/FMain.class:0.184"
 
 [Watches]
 Count=0

@@ -10,8 +10,7 @@ Public Sub In_Act_Bor(Sql As String)
   Try FMain.Conexion_Base_Datos.Open
   FMain.Conexion_Base_Datos.Exec(Sql)
   Catch
-    Message.Error("Error en Sentencia: " & sql)
-    
+    Message.Error("Error en Sentencia: " & sql) 
 End
 
 '' Funcion para comprobar que un dato existe en la base de datos.<br>
@@ -230,4 +229,144 @@ Public Function Fecha_Correcta(Fecha_Trabajo As String) As String
   Ano = Mid(Fecha_Trabajo, 7, 4)
   Fecha_Devuelta = Dia & "/" & Mes & "/" & Ano
   Return Fecha_Devuelta
+End
+
+'' Funcion que nos genera las facturas/albaranes para impresion<br>
+''  Parametros:<br>
+''    NumeroFactura --> Factura albaran que queremos impirimir.<br>
+Public Sub Generar_Factura_Albaran(NumeroFactura As String)
+
+  Dim Tipo As String
+  Dim cadena As String
+  Dim Sql As String
+  Dim Sql_Cabecera As String
+  Dim Sql_Linea As String
+  Dim Cabecera As Result
+  Dim Lineas As Result
+  ' Variables Cabecera.
+  Dim Domicilio As String
+  Dim Poblacion As String
+  Dim Provincia As String
+  Dim CodigoPostal As String
+  Dim RazonSocial As String
+  Dim Fecha As String
+  Dim Formapago As String
+  Dim Nif As String
+  Dim BaseImponible As String
+  Dim DescuentoPP As String
+  Dim DescuentoESP As String
+  Dim ImporteDPP As String
+  Dim ImporteDESP As String
+  Dim Basemenosdescuento As Float
+  Dim Iva As String
+  Dim RE As String
+  Dim ImporteIva As String
+  Dim ImporteRE As String
+  Dim Total As Float
+  ' Variables lineas detalle
+  Dim Articulo As String
+  Dim Cantidad As String
+  Dim Precio As String
+  Dim Importe As String
+  Dim Lote As String
+  Dim Ruta_Generar_Factura_Albaran As String
+  Tipo = Mid(NumeroFactura, 1, 1)
+  If Tipo = "F" Then
+    Sql_Cabecera = "select F.numerofactura,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
+    ",F.descuentoesp,F.importedescuentoesp,F.cobrada,F.formapago,F.vencimiento,F.contabilizada,F.total,C.razonsocial,V.nombre from facturas F left join clientes C on" &
+    " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor where F.numerofactura='" & NumeroFactura & "'"
+    Sql_Linea = "select L.numerofactura,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from facturasdetalles L left join articulo A on L.articulo=A.codigoarticulo" &
+      " where L.numerofactura='" & NumeroFactura & "'"
+  Else  
+    Sql_Cabecera = "select F.numeroalbaran,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
+    ",F.descuentoesp,F.importedescuentoesp,F.pagado,F.formapago,F.vencimiento,F.facturado,F.total,C.razonsocial,V.nombre from albaranes F left join clientes C on" &
+    " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor where F.numeroalbaran='" & NumeroFactura & "'"
+    Sql_Linea = "select L.numeroalbaran,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from albaranesdetalle L left join articulo A on L.articulo=A.codigoarticulo" &
+    " where L.numeroalbaran='" & NumeroFactura & "'"
+  Endif
+  
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  Cabecera = FMain.Conexion_Base_Datos.Exec(Sql_Cabecera)
+  BaseImponible = Cabecera["F.base"] 
+  DescuentoPP = Cabecera["F.descuentopp"] 
+  DescuentoESP = Cabecera["F.descuentoesp"] 
+  ImporteDPP = Cabecera["F.importedescuentopp"] 
+  ImporteDESP = Cabecera["F.importedescuentoesp"] 
+  Basemenosdescuento = CFloat(BaseImponible) - CFloat(ImporteDPP) - CFloat(ImporteDESP)
+  Iva = Cabecera["F.iva"] 
+  RE = Cabecera["F.recargo"]
+  ImporteIva = Cabecera["F.importeiva"]
+  ImporteRE = Cabecera["F.importerecargo"]
+  Total = Cabecera["F.total"]
+  RazonSocial = Cabecera["C.razonsocial"] 
+  fecha = Cabecera["F.fecha"]
+  Formapago = Cabecera["F.formapago"] 
+  sql = "select direccion from clientes where razonsocial='" & RazonSocial & "'"
+  Domicilio = Utilidades.Obtener_Campo_Tabla(sql, "direccion")
+  sql = "select localidad from clientes where razonsocial='" & RazonSocial & "'"
+  Poblacion = Utilidades.Obtener_Campo_Tabla(sql, "localidad")
+  sql = "select provincia from clientes where razonsocial='" & RazonSocial & "'"
+  provincia = Utilidades.Obtener_Campo_Tabla(sql, "provincia")
+  sql = "select codigopostal from clientes where razonsocial='" & RazonSocial & "'"
+  CodigoPostal = Utilidades.Obtener_Campo_Tabla(sql, "codigopostal")
+  sql = "select nif from clientes where razonsocial='" & RazonSocial & "'"
+  nif = Utilidades.Obtener_Campo_Tabla(sql, "nif")
+  cadena = "<html><body>"
+  cadena &= "<div><img src=\"" & FMain.CarpetaCarnea & "/logo/logo.png\" style=\" width:900px;height:200px;\"> </div><br><br>" 
+  If tipo = "F" Then
+    cadena &= "<div style=\"border:1px solid black; width:300px;float:left;\"><strong>&nbsp;&nbsp;&nbsp;&nbsp;FACTURA <br>Factura Numero : </strong> " & NumeroFactura & "<br>"
+  Else
+    cadena &= "<div style=\"border:1px solid black; width:300px;float:left;\"><strong>&nbsp;&nbsp;&nbsp;&nbsp;ALBARAN <br>Albaran Numero : </strong> " & NumeroFactura & "<br>"
+  Endif
+  cadena &= "<strong>Fecha :</strong> " & fecha & " <br>"
+  cadena &= "<strong>Forma Pago :</strong> " & Formapago & "</div>"
+  cadena &= "<div style=\" width:500px;float:right;\"><strong>Cliente : </strong> " & RazonSocial & "<br>"
+  cadena &= "<strong>Domicilio :</strong> " & Domicilio & " <br>"
+  cadena &= "<strong>Poblacion :</strong> " & Poblacion & " <strong>Codigo Postal : </strong> " & CodigoPostal & "<br>"
+  cadena &= "<strong>Provincia :</strong> " & provincia & " <br>"
+  cadena &= "<strong>Nif :</strong> " & nif & " <br></div><br><br><br><br><br><br>"
+  cadena &= "<br><br><div style=\" width:500px;clear:both;margin-top:.5em;\">"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Concepto</th><th>Cantidad</th><th>Precio</th><th>Importe</th><th>Lote</th></tr>"
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  Lineas = FMain.Conexion_Base_Datos.Exec(Sql_Linea)
+  Lineas.MoveFirst
+  While Lineas.Available
+    Articulo = Lineas["A.nombre"]
+    Precio = Lineas["L.precio"]
+    Cantidad = Lineas["L.peso"]
+    Importe = Lineas["L.importe"]
+    Lote = Lineas["L.lote"]
+    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Articulo & "</td><td>" & cantidad & "</td><td>" & Precio & "</td><td>" & Importe & "</td><td>" & lote & "</td></tr>"
+    lineas.MoveNext
+  Wend
+  cadena &= " </table></div><br><br><br><br><br><br><br><br><br><br>"
+  cadena &= "<div style=\"border:1px solid black; width:300px;float:right;\">"
+  cadena &= "Base Imponible :<strong> " & BaseImponible & "</strong> <br>"
+  cadena &= "DTO. PP :<strong> " & DescuentoPP & "</strong>%<strong>&nbsp;&nbsp;&nbsp;" & ImporteDPP & "</strong><br>"
+  cadena &= "DTO ESP :<strong> " & DescuentoESP & "</strong>%<strong>&nbsp;&nbsp;&nbsp;" & ImporteDESP & "</strong><br>"
+  cadena &= "Base - Descuentos :<strong> " & Basemenosdescuento & "</strong> <br>"
+  cadena &= "Iva :<strong> " & Iva & "</strong>%<strong>&nbsp;&nbsp;&nbsp;" & ImporteIva & "</strong><br>"
+  cadena &= "Recargo :<strong> " & RE & "</strong>%<strong>&nbsp;&nbsp;&nbsp;" & ImporteRE & "</strong><br>"
+  cadena &= "T O T A L :<strong> " & Total & " </strong><br>"
+  cadena &= "</div></body></html>"
+  If tipo = "F" Then
+    If Not Exist(FMain.Carpetafacturas & "/" & RazonSocial) Then Mkdir FMain.Carpetafacturas & "/" & RazonSocial
+    'If Not Exist(FMain.Carpetafacturas & "/" & RazonSocial & "/" & NumeroFactura) Then Mkdir FMain.Carpetafacturas & "/" & RazonSocial & "/" & NumeroFactura
+    Ruta_Generar_Factura_Albaran = FMain.Carpetafacturas & "/" & RazonSocial & "/" & NumeroFactura
+  Else
+    If Not Exist(FMain.Carpetaalbaranes & "/" & RazonSocial) Then Mkdir FMain.Carpetaalbaranes & "/" & RazonSocial
+    'If Not Exist(FMain.Carpetafacturas & "/" & RazonSocial & "/" & NumeroFactura) Then Mkdir FMain.Carpetafacturas & "/" & RazonSocial & "/" & NumeroFactura
+    Ruta_Generar_Factura_Albaran = FMain.Carpetafacturas & "/" & RazonSocial & "/" & NumeroFactura
+  Endif
+  
+  File.Save(Ruta_Generar_Factura_Albaran & ".html", cadena)
+  
+  'Exec ["wkhtmltopdf", Ruta_Generar_Factura_Albaran & ".html", Ruta_Generar_Factura_Albaran & ".pdf"] Wait
+  'Exec ["evince", Ruta_Generar_Factura_Albaran & ".pdf"]
+  FMain.FacturaAlbaranAMostrar = Ruta_Generar_Factura_Albaran 
+  Frm_Mostrar_Factura.Show
+  
+  FMain.Conexion_Base_Datos.Close
 End

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.5.4.1deb2ubuntu2
--- http://www.phpmyadmin.net
+-- version 4.6.6deb5
+-- https://www.phpmyadmin.net/
 --
--- Servidor: localhost
--- Tiempo de generación: 27-10-2017 a las 13:51:29
--- Versión del servidor: 5.7.20-0ubuntu0.16.04.1
--- Versión de PHP: 7.0.22-0ubuntu0.16.04.1
+-- Servidor: localhost:3306
+-- Tiempo de generación: 10-11-2017 a las 10:29:50
+-- Versión del servidor: 5.7.20-0ubuntu0.17.10.1
+-- Versión de PHP: 7.1.8-1ubuntu1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -31,14 +31,14 @@ USE `carnea`;
 DROP TABLE IF EXISTS `albaranes`;
 CREATE TABLE `albaranes` (
   `numeroalbaran` varchar(10) NOT NULL COMMENT 'Numero Albaran',
-  `fecha` varchar(10) NOT NULL COMMENT 'Fecha creacion factura',
-  `hora` varchar(10) NOT NULL COMMENT 'Hora creacion factura',
+  `fecha` varchar(10) NOT NULL COMMENT 'Fecha creacion albaran',
+  `hora` varchar(10) NOT NULL COMMENT 'Hora creacion albaran',
   `base` float NOT NULL COMMENT 'Base imponible',
-  `iva` int(11) NOT NULL COMMENT 'Iva que lleva la factura',
-  `recargo` int(11) NOT NULL COMMENT 'Recargo de la factura',
+  `iva` int(11) NOT NULL COMMENT 'Iva que lleva la albaran',
+  `recargo` int(11) NOT NULL COMMENT 'Recargo del albaran',
   `importeiva` float NOT NULL COMMENT 'Importe en euros de aplicar el iva a la base',
   `importerecargo` float NOT NULL COMMENT 'Importe en euros de aplicar el recargo a la base',
-  `fechacobro` varchar(10) NOT NULL COMMENT 'Fecha de cobro de la factura',
+  `fechacobro` varchar(10) NOT NULL COMMENT 'Fecha de cobro del albaran',
   `descuentopp` float DEFAULT NULL COMMENT 'Descuento pronto pago',
   `importedescuentopp` float DEFAULT NULL COMMENT 'Valor del descuento pronto pago',
   `descuentoesp` float DEFAULT NULL COMMENT 'Descuento especial',
@@ -47,9 +47,17 @@ CREATE TABLE `albaranes` (
   `formapago` varchar(20) DEFAULT NULL COMMENT 'Forma del pago del cliente',
   `vencimiento` varchar(10) DEFAULT NULL,
   `facturado` varchar(1) NOT NULL COMMENT 'Si se ha facturado',
+  `Total` float NOT NULL COMMENT 'Total del Albaran',
   `cliente` varchar(10) NOT NULL COMMENT 'Cliente de la factura',
   `vendedor` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `albaranes`
+--
+
+INSERT INTO `albaranes` (`numeroalbaran`, `fecha`, `hora`, `base`, `iva`, `recargo`, `importeiva`, `importerecargo`, `fechacobro`, `descuentopp`, `importedescuentopp`, `descuentoesp`, `importedescuentoesp`, `pagado`, `formapago`, `vencimiento`, `facturado`, `Total`, `cliente`, `vendedor`) VALUES
+('A170000001', '01/11/2017', '20:28:00', 100, 10, 0, 10, 0, '01/11/2017', 0, 0, 0, 0, '', 'CONTADO', '01/11/2017', 'N', 0, '0000000001', '0000000001');
 
 -- --------------------------------------------------------
 
@@ -67,6 +75,13 @@ CREATE TABLE `albaranesdetalle` (
   `lote` varchar(10) NOT NULL COMMENT 'Lote del articulo',
   `articulo` varchar(10) NOT NULL COMMENT 'Articulo'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `albaranesdetalle`
+--
+
+INSERT INTO `albaranesdetalle` (`numeroalbaran`, `linea`, `precio`, `peso`, `importe`, `lote`, `articulo`) VALUES
+('A170000001', 1, 10, 10, 100, '1', '001');
 
 -- --------------------------------------------------------
 
@@ -333,9 +348,18 @@ CREATE TABLE `facturas` (
   `formapago` varchar(20) DEFAULT NULL COMMENT 'Forma del pago del cliente',
   `vencimiento` varchar(10) DEFAULT NULL,
   `contabilizada` varchar(1) NOT NULL COMMENT 'Si se ha pasado a contablidad',
+  `Total` float NOT NULL COMMENT 'Total de la factura',
   `cliente` varchar(10) NOT NULL COMMENT 'Cliente de la factura',
   `vendedor` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Facturas';
+
+--
+-- Volcado de datos para la tabla `facturas`
+--
+
+INSERT INTO `facturas` (`numerofactura`, `fecha`, `hora`, `base`, `iva`, `recargo`, `importeiva`, `importerecargo`, `fechacobro`, `descuentopp`, `importedescuentopp`, `descuentoesp`, `importedescuentoesp`, `cobrada`, `formapago`, `vencimiento`, `contabilizada`, `Total`, `cliente`, `vendedor`) VALUES
+('F170000001', '01/11/2017', '20:22:00', 322.4, 10, 0, 32.24, 0, '01/11/2017', 0, 0, 0, 0, 'N', 'CONTADO', '01/11/2017', 'N', 355, '0000000001', '0000000001'),
+('F170000002', '01/11/2017', '20:27:00', 100, 10, 5, 9.5, 4.75, '01/11/2017', 5, 5, 0, 0, 'N', 'PAGARE', '16/12/2017', 'N', 0, '0000000002', '0000000002');
 
 -- --------------------------------------------------------
 
@@ -345,7 +369,7 @@ CREATE TABLE `facturas` (
 
 DROP TABLE IF EXISTS `facturasdetalles`;
 CREATE TABLE `facturasdetalles` (
-  `numerofacura` varchar(10) NOT NULL COMMENT 'Numero de factura a la que pertenece la linea detalle',
+  `numerofactura` varchar(10) NOT NULL COMMENT 'Numero de factura a la que pertenece la linea detalle',
   `linea` int(11) NOT NULL COMMENT 'Linea de la factura',
   `precio` float NOT NULL COMMENT 'Precio kilo del articulo',
   `peso` float NOT NULL COMMENT 'Peso del articulo',
@@ -353,6 +377,14 @@ CREATE TABLE `facturasdetalles` (
   `lote` varchar(10) NOT NULL COMMENT 'Lote del articulo',
   `articulo` varchar(10) NOT NULL COMMENT 'Articulo'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Lineas detalle de las facturas';
+
+--
+-- Volcado de datos para la tabla `facturasdetalles`
+--
+
+INSERT INTO `facturasdetalles` (`numerofactura`, `linea`, `precio`, `peso`, `importe`, `lote`, `articulo`) VALUES
+('F170000001', 1, 10, 10, 100, '1', '001'),
+('F170000001', 1, 10, 10, 100, '1', '003');
 
 -- --------------------------------------------------------
 
@@ -424,7 +456,6 @@ CREATE TABLE `lotedetalle` (
 --
 
 INSERT INTO `lotedetalle` (`codigolote`, `linea`, `cantidad`, `coste`, `numerolotecompra`, `proveedor`, `nfacturacompra`, `fechafacturacompra`, `materiaprima`) VALUES
-('1', 1, 10.2, 12.55, 'TCN123', '0000000003', '59434', '18/10/2017', '003'),
 ('2', 1, 5.3, 1.54, '4321', '0000000001', '1234', '20/10/2017', '008'),
 ('2', 2, 12.1, 4.84, '12341', '0000000004', 'TXS123', '21/10/2017', '007');
 
@@ -666,7 +697,7 @@ CREATE TABLE `stock` (
 
 INSERT INTO `stock` (`codigostock`, `materiaprima`, `cantidad`, `lotecompra`, `proveedor`, `nfacturacompra`, `ffacturacompra`, `precio`, `usado`) VALUES
 (17, '008', 89.7, '4321', '0000000001', '1234', '20/10/2017', 0.29, 'S'),
-(18, '003', 166.8, 'TCN123', '0000000003', '59434', '18/10/2017', 1.23, 'S'),
+(18, '003', 177, 'TCN123', '0000000003', '59434', '18/10/2017', 1.23, 'N'),
 (19, '007', 137.9, '12341', '0000000004', 'TXS123', '21/10/2017', 0.4, 'S'),
 (20, '025', 25, '12341', '0000000004', 'TXS123', '21/10/2017', 0.29, 'N'),
 (21, '007', 20, '111', '0000000004', '111', '17/10/2017', 0.4, 'N'),
@@ -764,7 +795,7 @@ CREATE TABLE `tipoiva` (
 --
 
 INSERT INTO `tipoiva` (`nombretipoiva`, `iva`, `recargo`) VALUES
-('TIPO 1', 10, 10);
+('TIPO 1', 10, 5);
 
 -- --------------------------------------------------------
 

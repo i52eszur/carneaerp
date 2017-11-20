@@ -1,6 +1,27 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,117,64)
+  MoveScaled(0,0,128,94)
   Icon = Picture["imagenes/32x32/trazabilidad.png"]
+  { WrkTrazabilidad Workspace
+    MoveScaled(4,11,122,81)
+    Expand = True
+  }
+  { BtnSalirTrazabilidad Button
+    MoveScaled(49,3,16,5)
+    Foreground = Color.Red
+    Text = ("SALIR")
+    Picture = Picture["imagenes/32x32/salida.png"]
+  }
+  { BtnVisualizar Button
+    MoveScaled(29,3,16,5)
+    Font = Font["Bold,+1"]
+    Text = ("GENERAR")
+  }
+  { CmbLotes ComboBox
+    MoveScaled(2,3,24,4)
+  }
+  { LtbLotes ListBox
+    MoveScaled(87,3,16,10)
+  }
 }

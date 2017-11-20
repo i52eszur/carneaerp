@@ -1,7 +1,7 @@
 ' Gambas class file
 
 
-Public Linea_lote_Detalle As Integer ' Variable para controlar la linea de posicion del DatagridLoteDetalle y  poder movernos con flechas.
+Public Linea_lote_Consulta As Integer ' Variable para controlar la linea de posicion del DatagridLoteDetalle y  poder movernos con flechas.
 Public Sub Form_Open()
 
   Me.Title = "CONSULTA DE LOTES"
@@ -20,23 +20,23 @@ End
 
 Public Sub BtnLDInicio_Click()
 
-  If GridLoteDetalle.Rows.Count > 0 Then
-      GridLoteDetalle.Rows.UnSelectAll
-      Linea_lote_Detalle = 0
-      GridLoteDetalle.Rows.Select(Linea_lote_Detalle, 1) 
+  If GridLoteDetalleConsulta.Rows.Count > 0 Then
+      GridLoteDetalleConsulta.Rows.UnSelectAll
+      Linea_lote_Consulta = 0
+      GridLoteDetalleConsulta.Rows.Select(Linea_lote_Consulta, 1) 
   Endif
   
 End
 
 Public Sub BtnLDPrevio_Click()
 
-  If GridLoteDetalle.Rows.Count > 0 Then
-    If Linea_lote_Detalle = 0 Then
-      GridLoteDetalle.Rows.Select(Linea_lote_Detalle, 1)
+  If GridLoteDetalleConsulta.Rows.Count > 0 Then
+    If Linea_lote_Consulta = 0 Then
+      GridLoteDetalleConsulta.Rows.Select(Linea_lote_Consulta, 1)
      Else  
-       GridLoteDetalle.Rows.UnSelectAll
-       Linea_lote_Detalle = Linea_lote_Detalle - 1
-       GridLoteDetalle.Rows.Select(Linea_lote_Detalle, 1)
+       GridLoteDetalleConsulta.Rows.UnSelectAll
+       Linea_lote_Consulta = Linea_lote_Consulta - 1
+       GridLoteDetalleConsulta.Rows.Select(Linea_lote_Consulta, 1)
     Endif
   Endif
 
@@ -44,13 +44,13 @@ End
 
 Public Sub BtnLDSiguiente_Click()
 
-    If GridLoteDetalle.Rows.Count > 0 Then
-    If Linea_lote_Detalle = GridLoteDetalle.Rows.Count - 1 Then
-      GridLoteDetalle.Rows.Select(Linea_lote_Detalle, 1)
+    If GridLoteDetalleConsulta.Rows.Count > 0 Then
+    If Linea_lote_Consulta = GridLoteDetalleConsulta.Rows.Count - 1 Then
+      GridLoteDetalleConsulta.Rows.Select(Linea_lote_Consulta, 1)
      Else  
-       GridLoteDetalle.Rows.UnSelectAll
-       Linea_lote_Detalle = Linea_lote_Detalle + 1
-       GridLoteDetalle.Rows.Select(Linea_lote_Detalle, 1)
+       GridLoteDetalleConsulta.Rows.UnSelectAll
+       Linea_lote_Consulta = Linea_lote_Consulta + 1
+       GridLoteDetalleConsulta.Rows.Select(Linea_lote_Consulta, 1)
     Endif
   Endif
 
@@ -58,10 +58,10 @@ End
 
 Public Sub BtnLDFin_Click()
 
-  If GridLoteDetalle.Rows.Count > 0 Then
-      GridLoteDetalle.Rows.UnSelectAll
-      Linea_lote_Detalle = GridLoteDetalle.Rows.Count - 1
-      GridLoteDetalle.Rows.Select(Linea_lote_Detalle, 1)
+  If GridLoteDetalleConsulta.Rows.Count > 0 Then
+      GridLoteDetalleConsulta.Rows.UnSelectAll
+      Linea_lote_Consulta = GridLoteDetalleConsulta.Rows.Count - 1
+      GridLoteDetalleConsulta.Rows.Select(Linea_lote_Consulta, 1)
   Endif
   
 End
@@ -133,18 +133,22 @@ Public Sub BtnConsultarLote_Click()
 
   Dim Sql As String
   If CmbLote.Text = "" Then
-    If GridLoteDetalle.Rows.Count > 0 Then
-      GridLoteDetalle.Rows.Remove(0, GridLoteDetalle.Rows.Count)
+    If GridLoteDetalleConsulta.Rows.Count > 0 Then
+      GridLoteDetalleConsulta.Rows.Remove(0, GridLoteDetalleConsulta.Rows.Count)
     Endif
-  Else
+    Limpiar_Campos()
+  Else If utilidades.Tabla_Vacia("select * from lotes where codigolote='" & UCase(CmbLote.Text) & "'") > 0
+    Visualizar_Campos_Lote(UCase(CmbLote.Text))
+    If GridLoteDetalleConsulta.Rows.Count > 0 Then
+      GridLoteDetalleConsulta.Rows.Remove(0, GridLoteDetalleConsulta.Rows.Count)
+    Endif
     If utilidades.Tabla_Vacia("select * from lotedetalle where codigolote='" & UCase(CmbLote.Text) & "'") > 0 Then
-      Visualizar_Campos_Lote(UCase(CmbLote.Text))
       sql = "select L.codigolote,L.linea,L.cantidad,L.coste,L.numerolotecompra,P.razonsocial,L.nfacturacompra,L.fechafacturacompra,M.nombre from lotedetalle L left join " &
       "proveedor P on L.proveedor = P.codigoproveedor left join materiaprima M on L.materiaprima = M.codigomateriaprima where L.codigolote='" & CmbLote.Text & "'"
       Llenar_Datagrid_LoteDetalle(sql)
-    Else
-      Balloon.Error("Lote no existe", CmbLote)
     Endif 
+  Else
+     Balloon.Error("Lote no existe.", CmbLote)
   Endif
 End
 
@@ -152,7 +156,7 @@ Private Sub Configurar_Objetos_Consulat_Lotes()
   
   'Utilidades.Llenar_Combobox("select * from articulo", CmbfArticulo, "nombre")
   'CmbfArticulo.Index = -1
-  Linea_lote_Detalle = 0
+  Linea_lote_Consulta = 0
   Utilidades.Llenar_Combobox("select * from lotes", CmbLote, "codigolote")
   CmbLote.Index = -1
   DteFICreacion.Value = Date(Year(Now), Month(Now), Day(Now))
@@ -163,26 +167,26 @@ End
 '' Configuramos Cabeceras de DataGridLotes
 Private Sub Configurar_Datagrid_LotesDetalles()
   Dim Sql As String
-  GridLoteDetalle.Columns.Count = 9
-  GridLoteDetalle.Header = GridLoteDetalle.Both
-  GridLoteDetalle.Columns[0].Title = "Codigo"
-  GridLoteDetalle.Columns[1].Title = "Linea"
-  GridLoteDetalle.Columns[2].Title = "Cantidad"
-  GridLoteDetalle.Columns[3].Title = "Coste"
-  GridLoteDetalle.Columns[4].Title = "N Lote Compra"
-  GridLoteDetalle.Columns[5].Title = "Proveedor"
-  GridLoteDetalle.Columns[6].Title = "N Factura Compra"
-  GridLoteDetalle.Columns[7].Title = "F Factura Compra"
-  GridLoteDetalle.Columns[8].Title = "Materia Prima"
-  GridLoteDetalle.Columns[0].Width = 100 
-  GridLoteDetalle.Columns[1].Width = 50
-  GridLoteDetalle.Columns[2].Width = 100 
-  GridLoteDetalle.Columns[3].Width = 100
-  GridLoteDetalle.Columns[4].Width = 150 
-  GridLoteDetalle.Columns[5].Width = 150
-  GridLoteDetalle.Columns[6].Width = 150
-  GridLoteDetalle.Columns[7].Width = 150 
-  GridLoteDetalle.Columns[8].Width = 200
+  GridLoteDetalleConsulta.Columns.Count = 9
+  GridLoteDetalleConsulta.Header = GridLoteDetalleConsulta.Both
+  GridLoteDetalleConsulta.Columns[0].Title = "Codigo"
+  GridLoteDetalleConsulta.Columns[1].Title = "Linea"
+  GridLoteDetalleConsulta.Columns[2].Title = "Cantidad"
+  GridLoteDetalleConsulta.Columns[3].Title = "Coste"
+  GridLoteDetalleConsulta.Columns[4].Title = "N Lote Compra"
+  GridLoteDetalleConsulta.Columns[5].Title = "Proveedor"
+  GridLoteDetalleConsulta.Columns[6].Title = "N Factura Compra"
+  GridLoteDetalleConsulta.Columns[7].Title = "F Factura Compra"
+  GridLoteDetalleConsulta.Columns[8].Title = "Materia Prima"
+  GridLoteDetalleConsulta.Columns[0].Width = 100 
+  GridLoteDetalleConsulta.Columns[1].Width = 50
+  GridLoteDetalleConsulta.Columns[2].Width = 100 
+  GridLoteDetalleConsulta.Columns[3].Width = 100
+  GridLoteDetalleConsulta.Columns[4].Width = 150 
+  GridLoteDetalleConsulta.Columns[5].Width = 150
+  GridLoteDetalleConsulta.Columns[6].Width = 150
+  GridLoteDetalleConsulta.Columns[7].Width = 150 
+  GridLoteDetalleConsulta.Columns[8].Width = 200
 
 End
 
@@ -192,28 +196,28 @@ End
 Private Sub Llenar_Datagrid_LoteDetalle(sql As String)
   Dim Result_Trabajo As Result
   Dim Numero_fila As Integer
-  If GridLoteDetalle.Rows.Count > 0 Then
-    GridLoteDetalle.Rows.Remove(0, GridLoteDetalle.Rows.Count)
+  If GridLoteDetalleConsulta.Rows.Count > 0 Then
+    GridLoteDetalleConsulta.Rows.Remove(0, GridLoteDetalleConsulta.Rows.Count)
   Endif
   FMain.Conexion_Base_Datos.Close
   FMain.Conexion_Base_Datos.Open
   Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
   Result_Trabajo.MoveFirst
   While Result_Trabajo.Available
-    Numero_fila = GridLoteDetalle.Rows.Count
-    GridLoteDetalle.Rows.Insert(Numero_fila, 1)
-    GridLoteDetalle[Numero_fila, 0].Text = Result_Trabajo["L.codigolote"]
-    GridLoteDetalle[Numero_fila, 1].Text = Result_Trabajo["L.linea"]
-    GridLoteDetalle[Numero_fila, 2].Text = Result_Trabajo["L.cantidad"]
-    GridLoteDetalle[Numero_fila, 3].Text = Result_Trabajo["L.coste"]
-    GridLoteDetalle[Numero_fila, 4].Text = Result_Trabajo["L.numerolotecompra"]
-    GridLoteDetalle[Numero_fila, 5].Text = Result_Trabajo["P.razonsocial"]
-    GridLoteDetalle[Numero_fila, 6].Text = Result_Trabajo["L.nfacturacompra"]
-    GridLoteDetalle[Numero_fila, 7].Text = Result_Trabajo["L.fechafacturacompra"]
-    GridLoteDetalle[Numero_fila, 8].Text = Result_Trabajo["M.nombre"]
+    Numero_fila = GridLoteDetalleConsulta.Rows.Count
+    GridLoteDetalleConsulta.Rows.Insert(Numero_fila, 1)
+    GridLoteDetalleConsulta[Numero_fila, 0].Text = Result_Trabajo["L.codigolote"]
+    GridLoteDetalleConsulta[Numero_fila, 1].Text = Result_Trabajo["L.linea"]
+    GridLoteDetalleConsulta[Numero_fila, 2].Text = Result_Trabajo["L.cantidad"]
+    GridLoteDetalleConsulta[Numero_fila, 3].Text = Result_Trabajo["L.coste"]
+    GridLoteDetalleConsulta[Numero_fila, 4].Text = Result_Trabajo["L.numerolotecompra"]
+    GridLoteDetalleConsulta[Numero_fila, 5].Text = Result_Trabajo["P.razonsocial"]
+    GridLoteDetalleConsulta[Numero_fila, 6].Text = Result_Trabajo["L.nfacturacompra"]
+    GridLoteDetalleConsulta[Numero_fila, 7].Text = Result_Trabajo["L.fechafacturacompra"]
+    GridLoteDetalleConsulta[Numero_fila, 8].Text = Result_Trabajo["M.nombre"]
     Result_Trabajo.MoveNext
   Wend
-  GridLoteDetalle.Rows.Select(Linea_lote_Detalle, 1)
+  GridLoteDetalleConsulta.Rows.Select(Linea_lote_Consulta, 1)
   FMain.Conexion_Base_Datos.Close
 End
 
@@ -241,5 +245,19 @@ Private Sub Visualizar_Campos_Lote(Codigo As String)
   TxtMerma.Text = Result_Trabajo["L.merma"]
   TxtArticulo.Text = Result_Trabajo["A.nombre"]
   FMain.Conexion_Base_Datos.Close
+  
+End
+
+' Limpiamos los datos
+Private Sub Limpiar_Campos()
+
+  TxtlCodigoLote.Text = ""
+  TxtFechaCreacion.Text = ""
+  TxtCantidad.Text = ""
+  TxtCoste.Text = ""
+  TxtCantidadBruta.Text = ""
+  TxtMerma.Text = ""
+  TxtArticulo.Text = ""
+  
   
 End

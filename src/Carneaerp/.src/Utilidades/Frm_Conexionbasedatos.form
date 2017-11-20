@@ -48,6 +48,7 @@
     }
     { TxtPassword TextBox
       MoveScaled(19,21,24,4)
+      Password = True
     }
     { TxtBaseDatos TextBox
       MoveScaled(30,27,24,4)

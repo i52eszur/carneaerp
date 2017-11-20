@@ -1,8 +1,81 @@
 ' Gambas class file
 
+Public Factura_Albaran As String
+Public Borrar_Factura_Albaran As String
 
 Public Sub Form_Open()
 
+  Dim Sql As String
+  
   Me.Title = "GESTION DE TRAZABILIDAD"
+  
+  sql = "select codigolote from lotes"
+  Utilidades.Llenar_Combobox(sql, cmblotes, "codigolote")
+  cmblotes.Index = -1
+  Borrar_Factura_Albaran = "" 
+    
+End
+
+Public Sub BtnSalirTrazabilidad_Click()
+
+  Me.Close
+
+End
+
+Public Sub BtnVisualizar_Click()
+ Dim Lote As Form
+ Dim i As Integer
+ Factura_Albaran = cmblotes.Text
+ If Borrar_Factura_Albaran = "" Then
+  
+ Else
+   For i = 0 To Ltblotes.Count - 1
+     If Ltblotes[i].Text = Borrar_Factura_Albaran Then
+        Ltblotes.Remove(i)  
+     Endif
+   Next
+ 
+ Endif
+ 
+
+ lote = New Frm_Visualiza_Lote_Trazabilidad 
+ 'wrktrazabilidad.Add(lote)
+  Ltblotes.Add(Factura_Albaran)
+  activar(lote)
+  cmblotes.Index = -1
+  Borrar_Factura_Albaran = ""
+End
+
+
+
+
+''*************************** Funciones privadas****************************
+''
+''**************************************************************************
+
+'' Procedimiento para Generar mostrar en el Workspace el lote seleccionado <br>
+'' Parametros:<br>
+''    elform --> formulario abrir
+Public Procedure activar(elform As Form)
+
+    Dim cont As Form
+    Dim lAbierto As Boolean
+
+    For Each cont In wrktrazabilidad.windows  'buscamos si ya hay habierto un formulario con el mismo nombre del que se quiere abrir, o sea, si ya está abierto.
+        'If cont.name = elform.Name And cont.text = elform.text Then
+  
+  
+        If cont.title = elform.title Then
+            lAbierto = True
+            'Break
+        Endif
+    Next
+    
+    If lAbierto Then
+        wrktrazabilidad.ActiveWindow = cont 'Si ya está  lo hacemos activo y eliminamos el que se quería abrir por ser un duplicidado
+        elform.Delete
+    Else
+        wrktrazabilidad.Add(elform)  'lo añadimos al workspace
+    Endif
 
 End

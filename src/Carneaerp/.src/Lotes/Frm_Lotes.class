@@ -30,7 +30,7 @@ Public Sub Form_Close()
   Dim Compra_Id As String
   Dim Compra_Precio As String
   Dim Compra_Cantidad As String
-  If GridLoteDetalle.Rows.Count > 0 Then
+  If GridLoteDetalle.Rows.Count > 0 And BtnAgregarLote.Text = "GRABAR" Then
     Numero_Lineas = GridLoteDetalle.Rows.Count
     For i = 0 To Numero_Lineas - 1
       Detalle_Codigo = GridLoteDetalle[i, 0].Text
@@ -303,7 +303,7 @@ Public Sub CmbCLMateriaPrima_Click()
         TxtCLProveedor.text = Utilidades.Obtener_Campo_Tabla("select * from proveedor where codigoproveedor='" & Codigo_Proveedor & "'", "razonsocial")
         TxtCLNumeroFactura.Text = Utilidades.Obtener_Campo_Tabla(sql, "nfacturacompra")
         TxtLStockMateriaPrima.Text = Format(Utilidades.Obtener_Campo_Tabla(sql, "cantidad"), "##0.00")
-        VlbCLCantidad.Text = Format(Val(TxtLStockMateriaPrima.Text), "##0.00")
+        VlbCLCantidad.Value = Format(Val(TxtLStockMateriaPrima.Text), "##0.00")
       Endif
       VlbCLCantidad.SetFocus
     Else
@@ -334,7 +334,7 @@ Public Sub CmbCLFechaFactura_Click()
     TxtCLProveedor.text = Utilidades.Obtener_Campo_Tabla("select * from proveedor where codigoproveedor='" & Codigo_Proveedor & "'", "razonsocial")
     TxtCLNumeroFactura.Text = Utilidades.Obtener_Campo_Tabla(sql, "nfacturacompra")
     TxtLStockMateriaPrima.Text = Format(Utilidades.Obtener_Campo_Tabla(sql, "cantidad"), "##0.00")
-    VlbCLCantidad.Text = Format(Val(TxtLStockMateriaPrima.Text), "##0.00")
+    VlbCLCantidad.Value = Format(Val(TxtLStockMateriaPrima.Text), "##0.00")
     VlbCLCantidad.SetFocus
     Else
       CmbCLNumeroLote.text = ""
@@ -358,7 +358,7 @@ Public Sub CmbCLNumeroLote_Click()
   TxtCLProveedor.text = Utilidades.Obtener_Campo_Tabla("select * from proveedor where codigoproveedor='" & Codigo_Proveedor & "'", "razonsocial")
   TxtCLNumeroFactura.Text = Utilidades.Obtener_Campo_Tabla(sql, "nfacturacompra")
   TxtLStockMateriaPrima.Text = Format(Utilidades.Obtener_Campo_Tabla(sql, "cantidad"), "##0.00")
-  VlbCLCantidad.Text = Val(TxtLStockMateriaPrima.Text)
+  VlbCLCantidad.Value = Val(TxtLStockMateriaPrima.Text)
   VlbCLCantidad.SetFocus
   
 End
@@ -571,7 +571,7 @@ Public Sub BtnEditarLote_Click()
     BtnBorrarLote.Enabled = False
     BtnConsultarLotes.Enabled = False
     TxtLote.Enabled = False
-    BtnSalirStock.Enabled = False
+    'BtnSalirStock.Enabled = False
   Else ' Actualizamos el lote si los datos son correctos.
     If Comprobar_Datos_Lotes("GRABAR") Then
       Actualizar_Lote()
@@ -647,7 +647,9 @@ Public Sub GridLote_DblClick()
 End
 Public Sub BtnConsultarLotes_Click()
 
-  Frm_ConsultaLotes.Show
+ 
+  Frm_ConsultaLotes.Showmodal()
+ 
 
 End
 
@@ -845,7 +847,7 @@ Private Function Comprobar_Datos_Lotes(Accion As String) As Boolean
       validar = False
     Endif
   Else If Accion = "DETALLES"
-    If CmbCLMateriaPrima.text = "" Then
+    If CmbCLMateriaPrima.text = "" Then 
       Balloon.Error("Debe elegir Materia Prima", CmbCLMateriaPrima)
       Validar = False
     Else If CmbCLFechaFactura.text = ""
@@ -858,7 +860,7 @@ Private Function Comprobar_Datos_Lotes(Accion As String) As Boolean
       Balloon.Error("Debe introducir una cantidad mayor que 0 ", VlbCLCantidad)
       Validar = False
       VlbCLCantidad.SetFocus
-    Else If Val(VlbCLcantidad.text) > Val(TxtLStockMateriaPrima.Text)
+    Else If Val(VlbCLcantidad.value) > Val(TxtLStockMateriaPrima.Text)
       Balloon.Error("La cantidad de Materia Prima es superior al Stock", VlbCLCantidad)
       Validar = False 
       VlbCLCantidad.SetFocus
@@ -893,18 +895,18 @@ End
 Private Sub limpiar_Datos_Lotes()
 
   TxtLote.Text = ""
-  VlbCantidadFabricada.text = ""
-  VlbCosteLoteTotal.text = ""
+  VlbCantidadFabricada.Value = ""
+  VlbCosteLoteTotal.Value = ""
   ChkTiempoTemp.Value = False
   PanelTeTi.Enabled = False
   VlbCantidadBruta.text = ""
   VlbMerma.text = ""
   TxtLKilosMerma.text = Format(0, "##0.00")
   TxtLStockMateriaPrima.Text = Format(0, "##0.00")
-  VlbTiempo1.text = ""
-  VlbTemperatura1.text = ""
-  VlbTiempo2.text = ""
-  VlbTemperatura2.text = ""
+  VlbTiempo1.Value = ""
+  VlbTemperatura1.Value = ""
+  VlbTiempo2.Value = ""
+  VlbTemperatura2.Value = ""
   DteFechaCreacion.Value = Date(Year(Now), Month(Now), Day(Now))
   VlbCantidadFabricada.Enabled = False
   VlbCosteLoteTotal.Enabled = False
@@ -919,22 +921,26 @@ Private Sub Calculo_Costes_Linea_Detalle()
   Codigo_Proveedor = Utilidades.Obtener_Campo_Tabla("select * from proveedor where razonsocial='" & TxtCLProveedor.Text & "'", "codigoproveedor")
   sql = "select * from stock where materiaprima='" & Codigo_MateriaPrima & "'and ffacturacompra='" & CmbCLFechaFactura.Text &
   "' and lotecompra='" & CmbCLNumeroLote.text & "' and proveedor='" & Codigo_Proveedor & "' and nfacturacompra='" & TxtCLNumeroFactura.text & "'"
-  TxtLStockMateriaPrima.Text = Format(Val(TxtLStockMateriaPrima.text) - Val(VlbCLCantidad.text), "##0.00")
-  VlbCantidadBruta.text = Format(Val(VlbCantidadBruta.text) + Val(VlbCLCantidad.text), "##0.00")
-  TxtCLCoste.text = Format(Val(VlbCLCantidad.text) * Val(Utilidades.Obtener_Campo_Tabla(sql, "precio")), "##0.00")
-  VlbCosteLoteTotal.Text = Format(Val(VlbCosteLoteTotal.Text) + Val(TxtCLCoste.Text), "##0.00")
+  TxtLStockMateriaPrima.Text = Format(Val(TxtLStockMateriaPrima.text) - Val(VlbCLCantidad.Value), "##0.00")
+  VlbCantidadBruta.Value = Format(Val(VlbCantidadBruta.value) + Val(VlbCLCantidad.Value), "##0.00")
+  TxtCLCoste.text = Format(Val(VlbCLCantidad.value) * Val(Utilidades.Obtener_Campo_Tabla(sql, "precio")), "##0.00")
+  VlbCosteLoteTotal.Value = Format(Val(VlbCosteLoteTotal.Value) + Val(TxtCLCoste.Text), "##0.00")
   
 End
 
 '' Procedimiento para el calculo de la merma
 Private Sub Calculo_Merma()
   Dim Merma As Float
-  If CInt(VlbMerma.text) > 0 Then
-    Merma = (CFloat(VlbCantidadBruta.text) * CFloat(VlbMerma.text)) / 100
-    VlbCantidadFabricada.text = Format(CFloat(VlbCantidadBruta.text) - Merma, "##0.00")
+  Dim Aux As Float
+  If CInt(VlbMerma.value) > 0 Then
+    Merma = (CFloat(VlbCantidadBruta.Value) * CFloat(VlbMerma.Value)) / 100
+    
+    Aux = CFloat(VlbCantidadBruta.Value) - Merma
+    VlbCantidadFabricada.Value = Format(Aux, "##0.00")
+    
     TxtLKilosMerma.text = Format(Merma, "##0.00")
   Else
-    VlbCantidadFabricada.text = Format(VlbCantidadBruta.text, "##0.00")
+    VlbCantidadFabricada.Value = Format(VlbCantidadBruta.Value, "##0.00")
     TxtLKilosMerma.text = Format(0, "##0.00")
   Endif
   
@@ -947,7 +953,7 @@ Private Sub Realiza_Grabado_Lote()
   Dim Codigo_Articulo As String
   Codigo_Articulo = Utilidades.Obtener_Campo_Tabla("select * from articulo where nombre='" & CmbArticulo.Text & "'", "codigoarticulo")
   Calculo_Merma()
-  If VlbCantidadBruta.Value = "" Then
+  If VlbCantidadBruta.Value = 0 Then
     VlbCantidadBruta.Value = VlbCantidadFabricada.Value
   Endif
   sql = "insert into lotes(codigolote,fecha,cantidad,coste,cantidadbruta,merma,articulo) values('" &
@@ -957,7 +963,7 @@ Private Sub Realiza_Grabado_Lote()
   ' Se se ha activado las temperatura.
   If ChkTiempoTemp.Value = True Then
     sql = "insert into tclote(codigolote,temperatura1,tiempo1,temperatura2,tiempo2) values('" &
-    UCase(TxtLote.Text) & "'," & VlbTemperatura1.Text & "," & VlbTiempo1.Text & "," & VlbTemperatura2.Text & "," & VlbTiempo2.Text & ")"
+    UCase(TxtLote.Text) & "'," & VlbTemperatura1.Value & "," & VlbTiempo1.Value & "," & VlbTemperatura2.Value & "," & VlbTiempo2.Value & ")"
     Utilidades.In_Act_Bor(sql)
   Endif
   
@@ -981,7 +987,7 @@ Private Sub Actualizar_Lote()
       ",tiempo2=" & VlbTiempo2.Value & " where codigolote='" & TxtLote.Text & "'"
     Else  ' si no existe registro lo añadimos
       sql = "insert into tclote(codigolote,temperatura1,tiempo1,temperatura2,tiempo2) values('" &
-      UCase(TxtLote.Text) & "'," & VlbTemperatura1.Text & "," & VlbTiempo1.Text & "," & VlbTemperatura2.Text & "," & VlbTiempo2.Text & ")"
+      UCase(TxtLote.Text) & "'," & VlbTemperatura1.Value & "," & VlbTiempo1.Value & "," & VlbTemperatura2.Value & "," & VlbTiempo2.Value & ")"
    Endif 
     Utilidades.In_Act_Bor(sql)
   Else ' si no tenemos marcado comprobamos si existe temperatura para ese lote y si existe  lo borramos
@@ -1005,7 +1011,7 @@ Private Sub Realiza_Grabado_Linea_Lote()
   Codigo_Proveedor = Utilidades.Obtener_Campo_Tabla("select * from proveedor where razonsocial='" & TxtCLProveedor.Text & "'", "codigoproveedor")
   ' Insertamos linea detalle
   sql = "insert into lotedetalle(codigolote,linea,cantidad,coste,numerolotecompra,proveedor,nfacturacompra,fechafacturacompra,materiaprima) values('" &
-  UCase(TxtLote.text) & "'," & Contador_Linea_Detalle_lote & "," & CFloat(VlbCLCantidad.text) & "," & CFloat(TxtCLCoste.Text) & ",'" & CmbCLNumeroLote.Text & "','" &
+  UCase(TxtLote.text) & "'," & Contador_Linea_Detalle_lote & "," & CFloat(VlbCLCantidad.value) & "," & CFloat(TxtCLCoste.Text) & ",'" & CmbCLNumeroLote.Text & "','" &
    Codigo_Proveedor & "','" & TxtCLNumeroFactura.Text & "','" & CmbCLFechaFactura.text & "','" & Codigo_MateriaPrima & "')"
   Utilidades.In_Act_Bor(sql)
   ' Actualizamos Stock

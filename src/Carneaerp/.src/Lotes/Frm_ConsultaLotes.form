@@ -161,7 +161,7 @@
         Alignment = Align.Center
       }
     }
-    { GridLoteDetalle GridView
+    { GridLoteDetalleConsulta GridView
       MoveScaled(1,17,112,20)
       Mode = Select.Single
     }

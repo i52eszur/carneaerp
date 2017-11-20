@@ -399,6 +399,7 @@
     }
     { CmbTarifaEditar ComboBox
       MoveScaled(69,3,24,4)
+      Enabled = False
       ReadOnly = True
       Sorted = True
     }

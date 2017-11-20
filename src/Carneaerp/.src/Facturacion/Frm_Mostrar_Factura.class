@@ -1,0 +1,21 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+  WebView.Url = FMain.FacturaAlbaranAMostrar & ".html"
+  Me.Title = "VISUALIZACION FACTURA/ALBARAN"
+End
+
+Public Sub BtnSalirVisualizar_Click()
+
+  Me.Close
+
+End
+
+Public Sub BtnGenerar_Click()
+
+  Exec ["wkhtmltopdf", FMain.FacturaAlbaranAMostrar & ".html", FMain.FacturaAlbaranAMostrar & ".pdf"] Wait
+  Exec ["evince", FMain.FacturaAlbaranAMostrar & ".pdf"]
+
+End

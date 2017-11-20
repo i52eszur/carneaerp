@@ -1,0 +1,150 @@
+' Gambas class file
+
+Public Lote_Actual As String
+
+Public Sub Form_Open()
+
+  Me.Title = "Lote :" & Frm_Trazabilidad.Factura_Albaran
+  Lote_Actual = Frm_Trazabilidad.Factura_Albaran
+  Generar_Trazabilidad()
+  
+End
+
+
+''*************************** Funciones privadas****************************
+''
+''**************************************************************************
+
+'' Procedimiento para generar un fichero html con la trazabilidad del lote elegido.
+
+Public Sub Generar_Trazabilidad()
+  
+  Dim Sql As String
+  Dim Cadena As String  
+  Dim Ruta_Generar_Trazabilidad As String
+  ' Result para obtener los datos.
+  Dim Lote As Result
+  Dim Composicion_Lote As Result
+  Dim Clientes_lote As Result
+    'Variables de los datos del Lote.
+  Dim Lote_Articulo As String
+  Dim Lote_Fecha As String
+  Dim Lote_Cantidad As String
+  Dim Lote_Coste As String
+  Dim Lote_Cantidadbruta As String
+  Dim Lote_Merma As String
+  'Variables para las lineas detalle lote.
+  Dim Lote_Detalle_Cantidad As String
+  Dim Lote_Detalle_Coste As String
+  Dim Lote_Detalle_NumeroLoteCompra As String
+  Dim Lote_Detalle_Proveedor As String
+  Dim Lote_Detalle_NumeroFacturaCompra As String
+  Dim Lote_Detalle_FechaFacturaCompra As String
+  Dim Lote_Detalle_Materiaprima As String 
+  ' Variables Cliente Factura
+  Dim Cliente As String
+  Dim Factura As String
+  
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  sql = "select L.codigolote,L.fecha,L.cantidad,L.coste,L.cantidadbruta,L.merma,A.nombre from lotes L left join " &
+      "articulo A on L.articulo = A.codigoarticulo where L.codigolote='" & Lote_Actual & "'"
+  Lote = FMain.Conexion_Base_Datos.Exec(Sql)
+  Lote_Articulo = Lote["A.nombre"]
+  Lote_Fecha = Lote["L.fecha"]
+  Lote_Cantidad = Lote["L.cantidad"]
+  Lote_Coste = Lote["L.coste"]
+  Lote_Cantidadbruta = Lote["L.cantidadbruta"]
+  Lote_Merma = Lote["L.merma"]
+  Ruta_Generar_Trazabilidad = FMain.CarpetaTrazabilidad & "/" & Lote_Actual
+  cadena = "<html><body>"
+  cadena &= "<div><img src=\"" & FMain.CarpetaCarnea & "/logo/logo.png\" style=\" width:900px;height:200px;\"> </div><br><br>" 
+  cadena &= "<div style=\"border:1px solid black; width:300px;float:left;\"><strong>&nbsp;&nbsp;&nbsp;&nbsp;TRAZABILIDAD DE LOTES <br>Lote Numero : </strong> " & Lote_Actual & "<br>"
+  cadena &= "<strong>Articulo :</strong> " & Lote_Articulo & " <br>"
+  cadena &= "<strong>Coste :</strong> " & Lote_Coste & " <br>"
+  cadena &= "<strong>Cantidad Bruta :</strong> " & Lote_Cantidadbruta & " <br>"
+  cadena &= "<strong>Merma :</strong> " & Lote_Merma & " <br>"
+  cadena &= "<strong>Cantidad Neta :</strong> " & Lote_Cantidad & " <br>"
+  cadena &= "<strong>Fecha :</strong> " & Lote_Fecha & "</div><br><br><br><br>"
+  cadena &= "<div style=\"width:900px;\"><br><br><br><br><center> <h1>COMPOSICION DEL LOTE</h1></center></div>"
+  cadena &= "<br><br><div style=\" width:500px;clear:both;\">"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Materia Prima</th><th>Cantidad</th><th>Coste</th>"
+  cadena &= "<th> Proveedor </th> <th>N Factura Compra </th> <th>N Lote Compra </th><th>Fecha Compra </th></tr>"
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  sql = "select L.codigolote,L.linea,L.cantidad,L.coste,L.numerolotecompra,P.razonsocial,L.nfacturacompra,L.fechafacturacompra,M.nombre from lotedetalle L left join " &
+        "proveedor P on L.proveedor = P.codigoproveedor left join materiaprima M on L.materiaprima = M.codigomateriaprima where L.codigolote='" & Lote_Actual & "'"
+  Composicion_Lote = FMain.Conexion_Base_Datos.Exec(Sql)
+  Composicion_Lote.MoveFirst
+  While Composicion_Lote.Available
+    Lote_Detalle_Cantidad = Composicion_Lote["L.cantidad"]
+    Lote_Detalle_Coste = Composicion_Lote["L.coste"]
+    Lote_Detalle_NumeroLoteCompra = Composicion_Lote["L.numerolotecompra"]
+    Lote_Detalle_Proveedor = Composicion_Lote["P.razonsocial"]
+    Lote_Detalle_NumeroFacturaCompra = Composicion_Lote["L.nfacturacompra"]
+    Lote_Detalle_FechaFacturaCompra = Composicion_Lote["L.fechafacturacompra"]
+    Lote_Detalle_Materiaprima = Composicion_Lote["M.nombre"]
+    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Lote_Detalle_Materiaprima & "</td><td>" & Lote_Detalle_Cantidad & "</td><td>" & Lote_Detalle_Coste & "</td><td>" 
+    cadena &= Lote_Detalle_Proveedor & "</td><td>" & Lote_Detalle_NumeroFacturaCompra & "</td><td>" & Lote_Detalle_NumeroLoteCompra & "</td><td>" & Lote_Detalle_FechaFacturaCompra & "</td></tr>"
+    Composicion_Lote.MoveNext
+  Wend
+  cadena &= " </table></div>"
+  cadena &= "<div style=\"width:900px;float:left;\"><br><br><br><br><center> <h1>CLIENTES</h1></center></div>"
+  cadena &= "<div style=\"width:900px;float:left;\"><center> <h2>FACTURAS</h2></center></div>"
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  'sql = "select C.razonsocial,F.numerofactura from facturas F,facturasdetalles D left join clientes C on F.cliente = C.codigocliente" &
+   '     "  where D.lote='" & Lote_Actual & "' and F.numerofactura=D.numerofactura"
+   sql = "select distinct C.razonsocial, F.numerofactura from facturas F,facturasdetalles D, clientes C where C.codigocliente = F.cliente and " &
+   "F.numerofactura=D.numerofactura and D.lote='" & Lote_Actual & "'"
+  Clientes_lote = FMain.Conexion_Base_Datos.Exec(Sql)
+  Clientes_lote.MoveFirst
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Cliente</th><th>N  Factura</th></tr>"
+  While Clientes_lote.Available
+    Cliente = Clientes_lote["C.razonsocial"]
+    Factura = Clientes_lote["F.numerofactura"]
+    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Cliente & "</td><td>" & Factura & "</td></tr>" 
+    Clientes_lote.MoveNext
+  Wend
+  cadena &= " </table></div>"
+  cadena &= "<div style=\"width:900px;float:left;\"><center> <h2>ALBARANES</h2></center></div>"
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Cliente</th><th>N  Albaran</th></tr>"
+  sql = "select distinct C.razonsocial, F.numeroalbaran from albaranes F,albaranesdetalle D, clientes C where C.codigocliente = F.cliente and " &
+   "F.numeroalbaran=D.numeroalbaran and D.lote='" & Lote_Actual & "'"
+  Clientes_lote = FMain.Conexion_Base_Datos.Exec(Sql)
+  Clientes_lote.MoveFirst
+  While Clientes_lote.Available
+    Cliente = Clientes_lote["C.razonsocial"]
+    Factura = Clientes_lote["F.numeroalbaran"]
+    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Cliente & "</td><td>" & Factura & "</td></tr>" 
+    Clientes_lote.MoveNext
+  Wend
+  cadena &= " </table></div>"
+  cadena &= "<br><br><br><br><br><br><br><br><br><br><br><br></body></html>"
+  
+  File.Save(Ruta_Generar_Trazabilidad & ".html", cadena)
+  WebTrazabilidad.Url = Ruta_Generar_Trazabilidad & ".html"
+End
+
+
+
+Public Sub Form_Close()
+
+  Frm_Trazabilidad.Borrar_Factura_Albaran = Lote_Actual
+  Kill FMain.CarpetaTrazabilidad & "/" & Lote_Actual & ".html"
+End
+
+Public Sub BtnSalirTrazabilidad_Click()
+
+  Me.close
+
+End
+
+Public Sub BtnGenerarPdf_Click()
+
+  Exec ["wkhtmltopdf", FMain.CarpetaTrazabilidad & "/" & Lote_Actual & ".html", FMain.CarpetaTrazabilidad & "/" & Lote_Actual & ".pdf"] Wait
+  Exec ["evince", FMain.CarpetaTrazabilidad & "/" & Lote_Actual & ".pdf"]
+
+End
