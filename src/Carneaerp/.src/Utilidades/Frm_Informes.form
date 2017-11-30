@@ -1,0 +1,47 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,184,86)
+  Text = ("Articulos")
+  { IconInformes IconPanel
+    MoveScaled(4,4,63,37)
+    Count = 4
+    Border = True
+    Index = 0
+    Text = ("Articulos")
+    Picture = Picture["imagenes/32x32/articulos.png"]
+    { RdbGeneralArticulos RadioButton
+      MoveScaled(1,2,12,4)
+      Text = ("Articulos")
+    }
+    { BtnArticulosGenerar Button
+      MoveScaled(1,30,16,4)
+      Font = Font["Bold,+1"]
+      Text = ("GENERAR")
+    }
+    { RdbClienteArticulos RadioButton
+      MoveScaled(1,6,24,4)
+      Text = ("Articulos Materia Prima")
+    }
+    Index = 1
+    Text = ("Clientes")
+    Picture = Picture["imagenes/32x32/clientes.png"]
+    Index = 2
+    Text = ("Proveedores")
+    Picture = Picture["imagenes/32x32/proveedores.png"]
+    Index = 3
+    Text = ("Vendedores")
+    Picture = Picture["imagenes/32x32/vendedores.png"]
+    Index = 0
+  }
+  { BtnSalirListados Button
+    MoveScaled(3,59,16,5)
+    Foreground = Color.Red
+    Text = ("SALIR")
+    Picture = Picture["imagenes/32x32/salida.png"]
+  }
+  { WrkInfome Workspace
+    MoveScaled(68,4,115,81)
+    Expand = True
+  }
+}

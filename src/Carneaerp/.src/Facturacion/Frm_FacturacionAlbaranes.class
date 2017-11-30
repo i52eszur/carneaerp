@@ -1,0 +1,724 @@
+' Gambas class file
+
+Public Linea_Albaran As Integer
+Public Linea_FacturasDetalle As Integer
+Public Linea As Integer
+
+Public Sub Form_Open()
+
+  Me.Title = "FACTURAR ALBARANES"
+  Configurar_Objetos_FacturacionAlbaranes()
+End
+
+
+Public Sub BtnSalirFacturarAlbaranes_Click()
+
+  Me.Close()
+
+End
+
+
+Public Sub BtnAgregarAlbaran_Click()
+  Dim Numero_fila As Integer
+  Dim Albaran As String
+  
+  If GridAlbaranes.Rows.Selection.Count > 0 Then
+    Numero_fila = GridAlbaranes.Rows.Selection[0]
+    Albaran = GridAlbaranes[Numero_fila, 0].Text
+    If Comprobar_Albaranes(Albaran) Then
+      ltbAlbaranes.Add(Albaran)
+      Agregar_LineaAlbaran_LineaFactura(Albaran)
+      TxtNumero.Enabled = False
+    Else
+      Balloon.Info("Albaran " & Albaran & " ya añadido", GridAlbaranes)
+    Endif
+      
+  Endif
+End
+
+Public Sub BtnAgregarTodosAlbaranes_Click()
+
+  Dim i As Integer
+  Dim Albaran As String
+  If GridAlbaranes.Rows.Selection.Count > 0 Then
+    If GridAlbaranes.Rows.Count = ltbAlbaranes.Count Then
+    Else  
+      For i = 0 To GridAlbaranes.Rows.Count - 1
+        albaran = GridAlbaranes[i, 0].Text
+        If Comprobar_Albaranes(albaran) Then
+          ltbAlbaranes.Add(albaran)
+          Agregar_LineaAlbaran_LineaFactura(albaran)
+        Endif
+      Next
+    Endif
+  Endif
+End
+Public Sub BtnBorrarAlbaran_Click()
+
+  Dim Contador As Integer
+  Dim i As Integer  
+  Dim j As Integer
+  Dim Albaran As String
+  Dim Contador2 As Integer
+
+  Contador = ltbAlbaranes.Count
+  For i = 0 To Contador - 1 
+    If ltbAlbaranes[i].Selected Then
+      albaran = ltbAlbaranes[i].Text
+      ltbAlbaranes.Remove(i)
+      contador2 = utilidades.Tabla_Vacia("select * from albaranesdetalle where numeroalbaran='" & albaran & "'")
+      For j = 1 To contador2
+        EliminarAlbaran(Albaran)  
+      Next
+    Endif
+  Next
+  If ltbAlbaranes.Count = 0 Then
+    TxtNumero.Enabled = True
+  Endif
+End
+Public Sub CmbCliente_Click()
+
+  Dim Sql As String
+  Dim Codigo_Cliente As String
+  Dim Iva As Integer
+  Dim RE As Integer
+  Dim Dias As Integer
+  If CmbCliente.Text = "" Then
+  Else
+    iva = Utilidades.Obtener_Campo_Tabla("select iva from tipoiva", "iva")
+    re = Utilidades.Obtener_Campo_Tabla("select recargo from tipoiva", "recargo")
+    Codigo_Cliente = Utilidades.Obtener_Campo_Tabla("select codigocliente from clientes where razonsocial='" & CmbCliente.Text & "'", "codigocliente")
+    CmbVendedor.Text = Utilidades.Obtener_Campo_Tabla("select vendedor from clientes where razonsocial='" & CmbCliente.Text & "'", "vendedor")
+    CmbFormaPago.Text = Utilidades.Obtener_Campo_Tabla("select formapago from clientes where razonsocial='" & CmbCliente.Text & "'", "formapago")
+    VlbDescuentoESP.Value = Utilidades.Obtener_Campo_Tabla("select descuentoesp from clientes where razonsocial='" & CmbCliente.Text & "'", "descuentoesp")
+    VlbDescuentoPP.Value = Utilidades.Obtener_Campo_Tabla("select descuentopp from clientes where razonsocial='" & CmbCliente.Text & "'", "descuentopp")
+    If Utilidades.Obtener_Campo_Tabla("select iva from clientes where razonsocial='" & CmbCliente.Text & "'", "iva") = "S" Then
+      VlbIva.Value = iva
+    Else
+      VlbIva.Value = 0
+    Endif
+    If Utilidades.Obtener_Campo_Tabla("select recargo from clientes where razonsocial='" & CmbCliente.Text & "'", "recargo") = "S" Then
+      VlbRecargo.Value = re
+    Else
+      VlbRecargo.Value = 0
+    Endif 
+    BtnFiltrar_Click()
+    ChkCobradaPagado.Value = False
+    'ChkEntreFechas.Value = False
+    'FrameFiltroEntreFechas.Enabled = False
+    DteFechaCreacion.Value = Date(Year(Now), Month(Now), Day(Now))
+    DteFechaInicio.Value = Date(Year(Now), Month(Now), Day(Now))
+    DteFechaFin.Value = Date(Year(Now), Month(Now), Day(Now))
+    DteFechaCobro.Value = Date(Year(Now), Month(Now), Day(Now))
+    ltbAlbaranes.Clear
+  Endif
+End
+Public Sub BtnFiltrar_Click()
+
+  Dim Sql As String
+  If CmbCliente.Text = "" Then
+  Else
+    sql = "select F.numeroalbaran,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
+      ",F.descuentoesp,F.importedescuentoesp,F.pagado,F.formapago,F.vencimiento,F.facturado,F.total,C.razonsocial,V.nombre from albaranes F left join clientes C on" &
+      " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor where C.razonsocial='" & CmbCliente.Text & "' and F.facturado='N'"
+    If ChkEntreFechas.value = True Then 
+      If DteFechaInicio.Value = DteFechaFin.value Then
+        sql &= " and F.fecha='" & utilidades.Fecha_Correcta(DteFechaInicio.value) & "'"
+      Else
+        sql &= " and F.fecha between '" & utilidades.Fecha_Correcta(DteFechaInicio.value) & "' and '" & utilidades.Fecha_Correcta(DteFechaFin.value) & "'"
+      Endif
+    Endif
+    Llenar_DataGrid_Albaran(sql)  
+  Endif
+  
+End
+Public Sub ChkEntreFechas_Click()
+
+  If ChkEntreFechas.Value = True Then
+    FrameFiltroEntreFechas.Enabled = True
+  Else  
+    FrameFiltroEntreFechas.Enabled = False
+  Endif
+
+End
+Public Sub ChkCobradaPagado_Click()
+
+  If ChkCobradaPagado.Value = True Then
+    DteFechaCobro.Enabled = True 
+     
+  Else
+    DteFechaCobro.Enabled = False
+  Endif
+
+End
+
+
+Public Sub CmbFormaPago_Click()
+  
+  Dim dias As Integer
+  diAs = CInt(Utilidades.Obtener_Campo_Tabla("select dias from formapago where nombreformapago='" & CmbFormaPago.Text & "'", "dias"))
+  If dias > 0 Then
+    DteFechavencimiento.Value = DateAdd(Now, gb.Day, dias)
+  Else
+    DteFechavencimiento.Value = Date(Year(Now), Month(Now), Day(Now))
+  Endif
+
+End
+
+Public Sub BtnGenerar_Click()
+
+  If GridFacturasDetalle.Rows.Count = 0 Then
+    Balloon.Info("No ha añadido ningun albaran debe añadir al menos un albaran.", ltbAlbaranes)
+  Else
+    Actualiza_Facturado_Albaran()
+    Grabar_DetalleFactura()
+    Grabar_Factura()
+    Limpiar_Datos_Factura()
+    TxtNumero.Text = Utilidades.Calculo_Numero_FA("F")
+    If ChkVisualizarFacturta.Value = True Then
+        Utilidades.Generar_Factura_Albaran(TxtNumero.text)
+    Endif
+  Endif
+  
+
+End
+
+''***************************INICIO ALBARANES GRID**************************
+''
+''**************************************************************************
+
+Public Sub BtnInicio_Click()
+
+  If GridAlbaranes.Rows.Count > 0 Then
+      GridAlbaranes.Rows.UnSelectAll
+      Linea_Albaran = 0
+      GridAlbaranes.Rows.Select(Linea_Albaran, 1) 
+  Endif
+
+End
+
+Public Sub BtnAnterior_Click()
+
+  If GridAlbaranes.Rows.Count > 0 Then
+    If Linea_Albaran = 0 Then
+      GridAlbaranes.Rows.Select(Linea_Albaran, 1)
+     Else  
+       GridAlbaranes.Rows.UnSelectAll
+       Linea_Albaran = Linea_Albaran - 1
+       GridAlbaranes.Rows.Select(Linea_Albaran, 1)
+    Endif
+  Endif
+
+End
+
+Public Sub BtnSiguiente_Click()
+
+  If GridAlbaranes.Rows.Count > 0 Then
+    If Linea_Albaran = GridAlbaranes.Rows.Count - 1 Then
+      GridAlbaranes.Rows.Select(Linea_Albaran, 1)
+     Else  
+       GridAlbaranes.Rows.UnSelectAll
+       Linea_Albaran = Linea_Albaran + 1
+       GridAlbaranes.Rows.Select(Linea_Albaran, 1)
+    Endif
+  Endif
+
+End
+
+Public Sub BtnFin_Click()
+
+  If GridAlbaranes.Rows.Count > 0 Then
+      GridAlbaranes.Rows.UnSelectAll
+      Linea_Albaran = GridAlbaranes.Rows.Count - 1
+      GridAlbaranes.Rows.Select(Linea_Albaran, 1)
+  Endif
+
+End
+
+
+''***************************FIN ALBARANES GRID*****************************
+''
+''**************************************************************************
+
+
+''***************************INICIO FACTURAS DETALLE GRID*******************
+''
+''**************************************************************************
+
+
+Public Sub BtnInicioFacturasDetalle_Click()
+
+  If GridFacturasDetalle.Rows.Count > 0 Then
+      GridFacturasDetalle.Rows.UnSelectAll
+      Linea_FacturasDetalle = 0
+      GridFacturasDetalle.Rows.Select(Linea_FacturasDetalle, 1) 
+  Endif
+
+End
+
+Public Sub BtnAnteriorFacturasDetalle_Click()
+
+  If GridFacturasDetalle.Rows.Count > 0 Then
+    If Linea_FacturasDetalle = 0 Then
+      GridFacturasDetalle.Rows.Select(Linea_FacturasDetalle, 1)
+     Else  
+       GridFacturasDetalle.Rows.UnSelectAll
+       Linea_FacturasDetalle = Linea_FacturasDetalle - 1
+       GridFacturasDetalle.Rows.Select(Linea_FacturasDetalle, 1)
+    Endif
+  Endif
+
+End
+
+Public Sub BtnSiguienteFacturasDetalle_Click()
+
+  If GridFacturasDetalle.Rows.Count > 0 Then
+    If Linea_FacturasDetalle = GridFacturasDetalle.Rows.Count - 1 Then
+      GridFacturasDetalle.Rows.Select(Linea_FacturasDetalle, 1)
+     Else  
+       GridFacturasDetalle.Rows.UnSelectAll
+       Linea_FacturasDetalle = Linea_FacturasDetalle + 1
+       GridFacturasDetalle.Rows.Select(Linea_FacturasDetalle, 1)
+    Endif
+  Endif
+
+End
+
+Public Sub BtnFinFacturasDetalle_Click()
+
+  If GridFacturasDetalle.Rows.Count > 0 Then
+      GridFacturasDetalle.Rows.UnSelectAll
+      Linea_FacturasDetalle = GridFacturasDetalle.Rows.Count - 1
+      GridFacturasDetalle.Rows.Select(Linea_FacturasDetalle, 1)
+  Endif
+
+End
+
+
+
+''***************************FIN FACTURAS DETALLE GRID**********************
+''
+''**************************************************************************
+
+
+
+
+''*************************** Funciones privadas****************************
+''
+''**************************************************************************
+
+'' Procedimiento para añadir las lineas de detalle al la factura<br>
+'' solo introduce los datos en el GridFacturasDetalle, si ya existe un <br>
+'' articulo le suma la cantidad y recalcula el total.<br>
+''  Parametros:<br>
+''    Albaran --> Numero Albaran que hay que añadir los elementos.<br>
+''   
+Private Sub Agregar_LineaAlbaran_LineaFactura(Albaran As String)
+  
+  Dim Result_Trabajo As Result
+  Dim Numero_fila As Integer
+  Dim Sql As String
+  Dim NombreArticulo As String
+  Dim Linea As Integer
+  ' Datos del Albaran
+  Dim Albaran_Peso As Float
+  Dim Albaran_Precio As Float
+  Dim Albaran_Lote As Float
+  Dim Albaran_Articulo As String
+  Dim Albaran_Importe As Float
+  linea = 1
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
+  sql = "select * from albaranesdetalle where numeroalbaran='" & Albaran & "'"
+  Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
+  Result_Trabajo.MoveFirst
+  While Result_Trabajo.Available
+    Albaran_Precio = Result_Trabajo["precio"]
+    Albaran_Peso = Result_Trabajo["peso"]
+    Albaran_Importe = Result_Trabajo["importe"]
+    Albaran_Lote = Result_Trabajo["lote"]
+    Albaran_Articulo = Result_Trabajo["articulo"]
+    NombreArticulo = utilidades.Obtener_Campo_Tabla("select nombre from articulo where codigoarticulo='" & Albaran_Articulo & "'", "nombre")
+    linea = CompruebaArticulo(NombreArticulo, Albaran_Lote)
+    If linea = 0 Then
+      Numero_fila = GridFacturasDetalle.Rows.Count
+      GridFacturasDetalle.Rows.Insert(Numero_fila, 1)
+      GridFacturasDetalle[Numero_fila, 0].Text = TxtNumero.Text
+      GridFacturasDetalle[Numero_fila, 1].Text = Albaran
+      GridFacturasDetalle[Numero_fila, 2].Text = Albaran_Precio
+      GridFacturasDetalle[Numero_fila, 3].Text = Albaran_Peso
+      GridFacturasDetalle[Numero_fila, 4].Text = Albaran_Importe
+      GridFacturasDetalle[Numero_fila, 5].Text = Albaran_Lote
+      GridFacturasDetalle[Numero_fila, 6].Text = NombreArticulo
+    Else
+      
+    Endif
+    VlbImporteBase.Value = VlbImporteBase.Value + CFloat(Albaran_Importe)
+    Result_Trabajo.MoveNext
+  Wend
+  Calculo_Descuentos_Ivas()
+End
+
+'' Eliminamos el albaran de la factura y recalculamos.<br>
+''  Parametros:<br>
+''    Albaran - - > Numero de albaran a eliminar<br>
+
+Private Sub EliminarAlbaran(Albaran As String)
+  
+  Dim i As Integer
+  Dim Total As Float
+  Dim Salir As Integer
+  salir = 0
+  i = 0
+  If GridFacturasDetalle.Rows.Count > 0 Then
+    While salir = 0  
+      If GridFacturasDetalle[i, 1].Text = Albaran Then
+        total = CFloat(GridFacturasDetalle[i, 5].Text)
+        VlbImporteBase.Value = VlbImporteBase.Value - total
+        GridFacturasDetalle.Rows.Remove(i)  
+        salir = 1
+      Endif
+      i = i + 1
+    Wend
+    Calculo_Descuentos_Ivas()
+  Endif
+End
+
+
+'' Funcion que comprueba si un articulo ya existe en el GridFacturasDetalle, debe coincidir nombre y lote<br>
+''  Parametros:<br>
+''    Articulo -- > Nombre del articulo a buscar<br>
+''    Lote -- > Lote del articulo a buscar<br>
+''  Devuelve:<br>
+''    Numero_Linea -- Si existe<br>
+''    0 -- Si no existe<br>
+Private Function CompruebaArticulo(Articulo As String, Lote As String) As Integer
+  
+  Dim Validar As Integer
+  Dim i As Integer
+  validar = 0
+  If GridFacturasDetalle.Rows.Count > 0 Then
+    For i = 0 To GridFacturasDetalle.Rows.Count - 1
+      If GridFacturasDetalle[i, 6].Text = Articulo And GridFacturasDetalle[i, 5].Text = Lote Then
+        validar = i
+      Endif
+    Next
+  Endif
+  Return validar
+End
+
+
+'' Configuracion de los objetos iniciales del formularios
+Private Sub Configurar_Objetos_FacturacionAlbaranes()
+  
+  Dim Error_Tablas_Vacias As String
+  Dim Error_V As Boolean
+  
+  error_V = False
+  
+  If Utilidades.Tabla_Vacia("select * from clientes") = 0 Then
+     Error_Tablas_Vacias = "Deber Cear Clientes"
+     Error_V = True
+  Else
+      CmbCliente.clear
+      Utilidades.Llenar_Combobox("select * from clientes", CmbCliente, "razonsocial")  
+      CmbCliente.Index = -1
+  Endif
+  If Utilidades.Tabla_Vacia("select * from vendedor") = 0 Then
+    If Error_Tablas_Vacias = "" Then
+      Error_Tablas_Vacias = "Deber Cear Vendedores"
+    Else
+      Error_Tablas_Vacias &= " y Crear Vendedores."
+    Endif  
+     Error_V = True
+  Else
+      CmbVendedor.clear
+      Utilidades.Llenar_Combobox("select * from vendedor", CmbVendedor, "nombre")  
+  Endif
+  If Utilidades.Tabla_Vacia("select * from formapago") = 0 Then
+    If Error_Tablas_Vacias = "" Then
+      Error_Tablas_Vacias = "Deber Cear Formas de Pago en Utilidades"
+    Else
+      Error_Tablas_Vacias &= " y Crear Formas de Pago en Utilidades."
+    Endif  
+     Error_V = True
+  Else
+      CmbFormaPago.clear
+      Utilidades.Llenar_Combobox("select * from formapago", CmbFormaPago, "nombreformapago")  
+      CmbFormaPago.Index = -1
+  Endif
+  If Error_V Then
+    'TxtErrorFacturacion.Visible = True
+    'TxtErrorFacturacion.text = Error_Tablas_Vacias
+  Endif
+  DteFechaCreacion.Value = Date(Year(Now), Month(Now), Day(Now))
+  DteFechaInicio.Value = Date(Year(Now), Month(Now), Day(Now))
+  DteFechaFin.Value = Date(Year(Now), Month(Now), Day(Now))
+  DteFechaCobro.Value = Date(Year(Now), Month(Now), Day(Now))
+  DteHora.Value = Format$(Now, "h:n:s")
+  Linea_Albaran = 0
+  Linea = 1
+  'LblTotalFactura.text = Format(0, "##0.00")
+  'VlbImporteBase.Value = Format(0, "##0.00")
+  TxtNumero.Text = Utilidades.Calculo_Numero_FA("F")
+  Configurar_DataGrid_Albaranes()
+  Configurar_DataGrid_FacturasDetalle()
+   
+End
+
+
+
+'' Procedimiento para configurar Grid LineasDetalle
+Private Sub Configurar_DataGrid_Albaranes()
+  
+  GridAlbaranes.Columns.Count = 20
+  GridAlbaranes.Header = GridAlbaranes.Both
+  GridAlbaranes.Columns[0].Title = "Numero"
+  GridAlbaranes.Columns[1].Title = "Fecha"
+  GridAlbaranes.Columns[2].Title = "Hora"
+  GridAlbaranes.Columns[3].Title = "Base"
+  GridAlbaranes.Columns[4].Title = "Iva"
+  GridAlbaranes.Columns[5].Title = "Recargo"
+  GridAlbaranes.Columns[6].Title = "Importe Iva"
+  GridAlbaranes.Columns[7].Title = "Importe RE"
+  GridAlbaranes.Columns[8].Title = "Fecha Cobro"
+  GridAlbaranes.Columns[9].Title = "Descuento PP"
+  GridAlbaranes.Columns[10].Title = "Importe DPP"
+  GridAlbaranes.Columns[11].Title = "Descuento ESP"
+  GridAlbaranes.Columns[12].Title = "Importe DESP"
+  GridAlbaranes.Columns[13].Title = "Pagado"
+  GridAlbaranes.Columns[14].Title = "Forma Pago"
+  GridAlbaranes.Columns[15].Title = "Vencimiento"
+  GridAlbaranes.Columns[16].Title = "Facturado"
+  GridAlbaranes.Columns[17].Title = "Total"
+  GridAlbaranes.Columns[18].Title = "Cliente"
+  GridAlbaranes.Columns[19].Title = "Vendedor"
+  GridAlbaranes.Columns[0].Width = 100 
+  GridAlbaranes.Columns[1].Width = 100
+  GridAlbaranes.Columns[2].Width = 100 
+  GridAlbaranes.Columns[3].Width = 100
+  GridAlbaranes.Columns[4].Width = 100 
+  GridAlbaranes.Columns[5].Width = 150
+  GridAlbaranes.Columns[6].Width = 200
+  GridAlbaranes.Columns[7].Width = 200
+  GridAlbaranes.Columns[8].Width = 200
+  GridAlbaranes.Columns[9].Width = 200
+  GridAlbaranes.Columns[10].Width = 200
+  GridAlbaranes.Columns[11].Width = 200
+  GridAlbaranes.Columns[12].Width = 200
+  GridAlbaranes.Columns[13].Width = 200
+  GridAlbaranes.Columns[14].Width = 200
+  GridAlbaranes.Columns[15].Width = 200
+  GridAlbaranes.Columns[16].Width = 200
+  GridAlbaranes.Columns[17].Width = 150
+  GridAlbaranes.Columns[18].Width = 200
+  GridAlbaranes.Columns[19].Width = 200
+  
+End
+'' Procedimiento para configurar Grid FacturasDetalle
+Private Sub Configurar_DataGrid_FacturasDetalle()
+  
+  GridFacturasDetalle.Columns.Count = 7
+  GridFacturasDetalle.Header = GridFacturasDetalle.Both
+  GridFacturasDetalle.Columns[0].Title = "Factura"
+  GridFacturasDetalle.Columns[1].Title = "Albaran"
+  GridFacturasDetalle.Columns[2].Title = "Precio"
+  GridFacturasDetalle.Columns[3].Title = "Peso"
+  GridFacturasDetalle.Columns[4].Title = "Importe"
+  GridFacturasDetalle.Columns[5].Title = "Lote"
+  GridFacturasDetalle.Columns[6].Title = "Articulo"
+  GridFacturasDetalle.Columns[0].Width = 100 
+  GridFacturasDetalle.Columns[1].Width = 100
+  GridFacturasDetalle.Columns[2].Width = 100
+  GridFacturasDetalle.Columns[3].Width = 100 
+  GridFacturasDetalle.Columns[4].Width = 150
+  GridFacturasDetalle.Columns[5].Width = 150
+  GridFacturasDetalle.Columns[6].Width = 200
+End
+
+'' Procedimiento para LLenar de datos el DataGrid Cabeceras<br>
+'' Parametros:<br>
+''    Sql --> Setncia Sql para llenar el Data Grid<br>
+Private Sub Llenar_DataGrid_Albaran(Sql As String)
+  Dim Result_Trabajo As Result
+  Dim Numero_fila As Integer
+  If GridAlbaranes.Rows.Count > 0 Then
+    GridAlbaranes.Rows.Remove(0, GridAlbaranes.Rows.Count)  
+  Endif  
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
+  Result_Trabajo.MoveFirst
+
+  While Result_Trabajo.Available
+    Numero_fila = GridAlbaranes.Rows.Count
+    GridAlbaranes.Rows.Insert(Numero_fila, 1)
+    GridAlbaranes[Numero_fila, 0].Text = Result_Trabajo["F.numeroalbaran"]
+    GridAlbaranes[Numero_fila, 1].Text = Result_Trabajo["F.fecha"]
+    GridAlbaranes[Numero_fila, 2].Text = Result_Trabajo["F.hora"]
+    GridAlbaranes[Numero_fila, 3].Text = Result_Trabajo["F.base"]
+    GridAlbaranes[Numero_fila, 4].Text = Result_Trabajo["F.iva"]
+    GridAlbaranes[Numero_fila, 5].Text = Result_Trabajo["F.recargo"]
+    GridAlbaranes[Numero_fila, 6].Text = Result_Trabajo["F.importeiva"]
+    GridAlbaranes[Numero_fila, 7].Text = Result_Trabajo["F.importerecargo"]
+    GridAlbaranes[Numero_fila, 8].Text = Result_Trabajo["F.fechacobro"]
+    GridAlbaranes[Numero_fila, 9].Text = Result_Trabajo["F.descuentopp"]
+    GridAlbaranes[Numero_fila, 10].Text = Result_Trabajo["F.importedescuentopp"]
+    GridAlbaranes[Numero_fila, 11].Text = Result_Trabajo["F.descuentoesp"]
+    GridAlbaranes[Numero_fila, 12].Text = Result_Trabajo["F.importedescuentoesp"]
+    GridAlbaranes[Numero_fila, 13].Text = Result_Trabajo["F.pagado"]
+    GridAlbaranes[Numero_fila, 14].Text = Result_Trabajo["F.formapago"]
+    GridAlbaranes[Numero_fila, 15].Text = Result_Trabajo["F.vencimiento"]
+    GridAlbaranes[Numero_fila, 16].Text = Result_Trabajo["F.facturado"]
+    GridAlbaranes[Numero_fila, 17].Text = Result_Trabajo["F.total"]
+    GridAlbaranes[Numero_fila, 18].Text = Result_Trabajo["C.razonsocial"]
+    GridAlbaranes[Numero_fila, 19].Text = Result_Trabajo["V.nombre"]
+    Result_Trabajo.MoveNext
+  Wend    
+
+  FMain.Conexion_Base_Datos.Close
+  GridAlbaranes.Rows.Select(0, 1)
+  
+End
+'' Comprueba que no ha sido añadido ya el albaran.<br>
+''  Parametros :<br>
+''    Albaran --> Albaran a comprobar.<br>
+''  Devuelve :<br>
+''    True --> Albaran no ha sido añadido.<br>
+''    False --> Albaran ha sido añadido.<br>
+Private Function Comprobar_Albaranes(Albaran As String) As Boolean
+  
+  Dim Validar As Boolean
+  Dim i As Integer
+  Dim contador As Integer
+  Validar = True
+  Contador = ltbAlbaranes.Count
+  For i = 0 To Contador - 1 
+    If ltbAlbaranes[i].Text = Albaran Then
+      validar = False
+    Endif
+  Next
+  Return Validar
+End
+
+'' Procedimiento para calcular Descuentos e Iva cuando añadimos o borramos una linea detalle.
+
+Private Sub Calculo_Descuentos_Ivas()
+  
+  Dim Descuento_PP As Float
+  Dim Descuento_ESP As Float
+  Dim Iva As Float
+  Dim RE As Float
+  Dim AuxBase As Float
+  If VlbDescuentoESP.Value > 0 Then
+    Descuento_ESP = (VlbImporteBase.Value * VlbDescuentoESP.Value) / 100
+  Else
+    Descuento_ESP = 0
+  Endif
+  If VlbDescuentoPP.Value > 0 Then
+    Descuento_PP = (VlbImporteBase.Value * VlbDescuentoPP.Value) / 100
+  Else  
+    Descuento_PP = 0
+  Endif
+  VlbImporteDescuentoESP.Value = Format(Descuento_ESP, "##0.00")
+  VlbImporteDescuentoPP.Value = Format(Descuento_PP, "##0.00")
+  auxbase = VlbImporteBase.Value - Descuento_ESP - Descuento_PP
+  If VlbIva.Value > 0 Then
+    iva = (auxbase * VlbIva.value) / 100
+  Else 
+    iva = 0
+  Endif  
+  If VlbRecargo.Value > 0 Then 
+    re = (auxbase * VlbRecargo.value) / 100
+  Else 
+    re = 0
+  Endif  
+  VlbImporteIva.Value = Format(iva, "##0.00")
+  VlbImporteRecargo.Value = Format(re, "##0.00")
+  LblTotalFactura.Text = Format(auxbase + iva + re, "##0.00")
+End
+
+'' Limpia los datos de la cabecera de la factura.
+Private Sub Limpiar_Datos_Factura()
+  TxtNumero.Enabled = True
+  linea = 1
+  ChkCobradaPagado.Value = False
+  DteFechaCreacion.Value = Date(Year(Now), Month(Now), Day(Now))
+  DteFechaCobro.Value = Date(Year(Now), Month(Now), Day(Now))
+  DteHora.Value = Format$(Now, "h:n:s")
+  LblTotalFactura.text = Format(0, "##0.00")
+  VlbDescuentoESP.Value = 0
+  VlbDescuentoPP.Value = 0
+  VlbImporteDescuentoESP.Value = 0
+  VlbImporteDescuentoPP.Value = 0
+  VlbIva.Value = 0
+  VlbImporteIva.Value = 0
+  VlbRecargo.Value = 0
+  VlbImporteRecargo.Value = 0
+  VlbImporteBase.value = 0
+  CmbCliente.Index = -1
+  CmbVendedor.Index = -1
+  CmbFormaPago.Index = -1
+  ltbAlbaranes.Clear
+  GridFacturasDetalle.Rows.Remove(0, GridFacturasDetalle.Rows.Count)  
+  GridAlbaranes.Rows.Remove(0, GridAlbaranes.Rows.Count)  
+End
+
+'' Graba la factura.
+Private Sub Grabar_Factura()
+  
+  Dim Codigo_Vendedor As String  
+  Dim Codigo_Cliente As String
+  Dim Sql As String
+  Dim Cobrado_Pagada As String
+  If ChkCobradaPagado.Value = True Then
+      Cobrado_Pagada = "S"
+  Else
+    Cobrado_Pagada = "N"
+  Endif
+  Codigo_Cliente = Utilidades.Obtener_Campo_Tabla("select codigocliente from clientes where razonsocial='" & CmbCliente.Text & "'", "codigocliente")
+  Codigo_Vendedor = Utilidades.Obtener_Campo_Tabla("select codigovendedor from vendedor where nombre='" & CmbVendedor.Text & "'", "codigovendedor")
+  sql = "insert into facturas(numerofactura,fecha,hora,base,iva,recargo,importeiva,importerecargo,fechacobro,descuentopp,importedescuentopp," &
+  "descuentoesp,importedescuentoesp,cobrada,formapago,vencimiento,contabilizada,total,cliente,vendedor)values( '" &
+  UCase(TxtNumero.Text) & "','" & Utilidades.Fecha_Correcta(DteFechaCreacion.Value) & "','" & DteHora.value & "'," & VlbImporteBase.Value & "," &
+  VlbIva.Value & "," & VlbRecargo.Value & "," & VlbImporteIva.Value & "," & VlbImporteRecargo.Value & ",'" & Utilidades.Fecha_Correcta(DteFechaCobro.Value) & "'," &
+  VlbDescuentoPP.Value & "," & VlbImporteDescuentoPP.Value & "," & VlbDescuentoESP.Value & "," & VlbImporteDescuentoESP.Value & ",'" & Cobrado_Pagada & "','" &
+  CmbFormaPago.Text & "','" & Utilidades.Fecha_Correcta(DteFechavencimiento.Value) & "','N'," & LblTotalFactura.Text & ",'" & Codigo_Cliente & "','" & Codigo_Vendedor & "')"
+  Utilidades.In_Act_Bor(sql)
+End
+
+'' Graba las lineas de detalle de la factura.
+Private Sub Grabar_DetalleFactura()
+  
+  Dim i As Integer
+  Dim Sql As String
+  Dim Codigo_Articulo As String
+  For i = 0 To GridFacturasDetalle.Rows.Count - 1
+    Codigo_Articulo = utilidades.Obtener_Campo_Tabla("select codigoarticulo from articulo where nombre='" & GridFacturasDetalle[i, 6].Text & "'", "codigoarticulo")
+    sql = "insert into facturasdetalles(numerofactura,linea,precio,peso,importe,lote,articulo) values('" &
+    UCase(TxtNumero.Text) & "'," & linea & "," & CFloat(GridFacturasDetalle[i, 2].Text) & "," & CFloat(GridFacturasDetalle[i, 3].Text) & "," & CFloat(GridFacturasDetalle[i, 4].Text) &
+    ",'" & UCase(GridFacturasDetalle[i, 5].Text) & "','" & Codigo_articulo & "')"
+    Utilidades.In_Act_Bor(sql)
+    linea = linea + 1
+  Next
+  
+End
+
+
+'' Actualiza los Albaranes a Facturados.
+Private Sub Actualiza_Facturado_Albaran()
+  
+  Dim i As Integer
+  Dim Sql As String
+  Dim Contador As Integer
+  Contador = ltbAlbaranes.Count
+  For i = 0 To Contador - 1 
+    sql = "update albaranes set facturado='S' where numeroalbaran='" & ltbAlbaranes[i].Text & "'"
+    Utilidades.In_Act_Bor(sql)
+  Next
+End
+
+
+
+

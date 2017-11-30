@@ -2,7 +2,7 @@ FMain
 Carnea ERP
 0
 0
-0.0.1
+1.0.0
 
 gb.image
 gb.qt4
@@ -14,6 +14,7 @@ gb.db.form
 gb.db.mysql
 gb.desktop.x11
 gb.desktop
+gb.form.dialog
 gb.settings
 gb.form.mdi
 gb.form.stock

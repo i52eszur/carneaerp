@@ -61,6 +61,7 @@
     }
     { BtnSalir Button
       MoveScaled(56,28,16,4)
+      Visible = False
       Font = Font["Bold"]
       Foreground = Color.Red
       ToolTip = ("Salir sin aceptar cambios")

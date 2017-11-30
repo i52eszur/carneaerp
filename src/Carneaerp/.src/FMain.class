@@ -7,6 +7,7 @@ Public Carpetafacturas As String = CarpetaCarnea & "/facturas"
 Public Carpetaalbaranes As String = CarpetaCarnea & "/albaranes"
 Public CarpetaLogo As String = CarpetaCarnea & "/logo"
 Public CarpetaTrazabilidad As String = CarpetaCarnea & "/tazabilidad"
+Public CarpetaCopiasSeguridad As String = CarpetaCarnea & "/copiasseguridad"
 Public DirConexion As String = User.home & "/.config/carnea/conexion"
 Public FicheroConexionBD As New Settings(DirConexion & "/conexion.conf")
 
@@ -52,6 +53,7 @@ Private Sub CrearDirectorios()
   If Not Exist(Carpetaalbaranes) Then Mkdir Carpetaalbaranes
   If Not Exist(CarpetaLogo) Then Mkdir CarpetaLogo
   If Not Exist(CarpetaTrazabilidad) Then Mkdir CarpetaTrazabilidad
+  If Not Exist(CarpetaCopiasSeguridad) Then Mkdir CarpetaCopiasSeguridad
   Wait 0.5
   If Not Exist(CarpetaLogo & "/logo.png") Then Copy "./imagenes/imagenes/logo.png" To CarpetaLogo & "/logo.png"
 End
@@ -75,6 +77,7 @@ End
 
 Public Sub ButtonSalir_Click()
  Settings.write(Me)
+ FMain.Conexion_Base_Datos.Close
   Me.close
 
 End
@@ -212,5 +215,59 @@ End
 Public Sub ButtonAverias_Click()
 
   Frm_Averias.Show()
+
+End
+
+Public Sub ButtonCopias_Click()
+
+  Frm_CopiasSeguridad.Show()
+
+End
+
+Public Sub MenuCopiasSeguridad_Click()
+
+    Frm_CopiasSeguridad.Show()
+
+End
+
+Public Sub ButtonInformes_Click()
+
+  Frm_Informes.Show()
+
+End
+
+Public Sub MenuInformes_Click()
+
+    Frm_Informes.Show()
+
+End
+
+Public Sub Form_Close()
+
+  FMain.Conexion_Base_Datos.Close
+
+End
+
+Public Sub MenuFacturacion3_Click()
+
+  Frm_Facturacion.ShowModal()
+
+End
+
+Public Sub MenuEdicionFactuasAlbaranes_Click()
+
+  Frm_Visualizar_Factura_Albaran.ShowModal()  
+
+End
+
+Public Sub MenuFacturarAlbaranes_Click()
+
+  Frm_FacturacionAlbaranes.ShowModal()
+
+End
+
+Public Sub MenuPasoContabilidad_Click()
+
+  Frm_PasoContabilidad.Show()
 
 End

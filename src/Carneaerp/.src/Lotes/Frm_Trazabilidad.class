@@ -1,7 +1,7 @@
 ' Gambas class file
 
 Public Factura_Albaran As String
-Public Borrar_Factura_Albaran As String
+
 
 Public Sub Form_Open()
 
@@ -12,7 +12,6 @@ Public Sub Form_Open()
   sql = "select codigolote from lotes"
   Utilidades.Llenar_Combobox(sql, cmblotes, "codigolote")
   cmblotes.Index = -1
-  Borrar_Factura_Albaran = "" 
     
 End
 
@@ -25,28 +24,14 @@ End
 Public Sub BtnVisualizar_Click()
  Dim Lote As Form
  Dim i As Integer
- Factura_Albaran = cmblotes.Text
- If Borrar_Factura_Albaran = "" Then
-  
- Else
-   For i = 0 To Ltblotes.Count - 1
-     If Ltblotes[i].Text = Borrar_Factura_Albaran Then
-        Ltblotes.Remove(i)  
-     Endif
-   Next
+ If ComprobarLote() Then
+    Factura_Albaran = cmblotes.Text
+    lote = New Frm_Visualiza_Lote_Trazabilidad 
+    activar(lote, cmblotes.Text)
+    cmblotes.Index = -1
+  Endif
  
- Endif
- 
-
- lote = New Frm_Visualiza_Lote_Trazabilidad 
- 'wrktrazabilidad.Add(lote)
-  Ltblotes.Add(Factura_Albaran)
-  activar(lote)
-  cmblotes.Index = -1
-  Borrar_Factura_Albaran = ""
 End
-
-
 
 
 ''*************************** Funciones privadas****************************
@@ -56,16 +41,17 @@ End
 '' Procedimiento para Generar mostrar en el Workspace el lote seleccionado <br>
 '' Parametros:<br>
 ''    elform --> formulario abrir
-Public Procedure activar(elform As Form)
+Public Procedure activar(elform As Form, lote As String)
 
     Dim cont As Form
     Dim lAbierto As Boolean
-
+    Dim Titulo As String
+    Titulo = "Lote :" & lote
     For Each cont In wrktrazabilidad.windows  'buscamos si ya hay habierto un formulario con el mismo nombre del que se quiere abrir, o sea, si ya está abierto.
         'If cont.name = elform.Name And cont.text = elform.text Then
   
   
-        If cont.title = elform.title Then
+        If cont.title = Titulo Then
             lAbierto = True
             'Break
         Endif
@@ -78,4 +64,23 @@ Public Procedure activar(elform As Form)
         wrktrazabilidad.Add(elform)  'lo añadimos al workspace
     Endif
 
+End
+'' comprobamos que se ha
+Private Function ComprobarLote() As Boolean
+  
+  Dim Validar As Boolean
+  Dim Sql As String
+  validar = True
+  sql = "select codigolote from lotes where codigolote='" & cmblotes.Text & "'"
+   If cmblotes.Text = "" Then
+    Balloon.Error("Introduzca Lote para ver Trazabilidad", cmblotes)
+    validar = False
+    cmblotes.SetFocus
+   Else If Not Utilidades.Comprobar_existe_dato(Sql) 
+      Balloon.Error("Lote  no existe", cmblotes)
+      Validar = False
+      cmblotes.SetFocus
+   Endif 
+  Return validar
+  
 End

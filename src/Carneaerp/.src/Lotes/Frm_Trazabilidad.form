@@ -8,20 +8,23 @@
     Expand = True
   }
   { BtnSalirTrazabilidad Button
-    MoveScaled(49,3,16,5)
+    MoveScaled(64,3,16,5)
     Foreground = Color.Red
     Text = ("SALIR")
     Picture = Picture["imagenes/32x32/salida.png"]
   }
   { BtnVisualizar Button
-    MoveScaled(29,3,16,5)
+    MoveScaled(44,3,16,5)
     Font = Font["Bold,+1"]
     Text = ("GENERAR")
   }
   { CmbLotes ComboBox
-    MoveScaled(2,3,24,4)
+    MoveScaled(17,3,24,4)
   }
-  { LtbLotes ListBox
-    MoveScaled(87,3,16,10)
+  { LblLote Label
+    MoveScaled(10,3,7,4)
+    Font = Font["Bold"]
+    AutoResize = True
+    Text = ("Lote :")
   }
 }

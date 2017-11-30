@@ -1,5 +1,143 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,118,76)
+  MoveScaled(0,0,128,68)
+  { FrameAverias Frame
+    MoveScaled(2,3,126,63)
+    Background = Color.Background
+    Text = ("Gestion averias")
+    { BtnSalirAverias Button
+      MoveScaled(108,53,16,5)
+      Foreground = Color.Red
+      Text = ("SALIR")
+      Picture = Picture["imagenes/32x32/salida.png"]
+    }
+    { TxtCodigoAveria TextBox
+      MoveScaled(14,5,13,4)
+      MaxLength = 10
+    }
+    { LblCodigoAveria Label
+      MoveScaled(3,5,12,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Nº Averia :")
+    }
+    { DteFecha DateBox
+      MoveScaled(36,5,17,4)
+    }
+    { LblFecha Label
+      MoveScaled(28,5,7,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Fecha :")
+    }
+    { CmbCliente ComboBox
+      MoveScaled(11,11,33,4)
+      ReadOnly = True
+    }
+    { LblVendedor Label
+      MoveScaled(44,11,10,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Vendedor :")
+    }
+    { CmbVendedor ComboBox
+      MoveScaled(54,11,21,4)
+      ReadOnly = True
+    }
+    { LblCliente Label
+      MoveScaled(3,11,9,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Cliente :")
+    }
+    { LblArticulo Label
+      MoveScaled(54,5,11,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Articulo :")
+    }
+    { CmbArticulo ComboBox
+      MoveScaled(64,5,22,4)
+      ReadOnly = True
+    }
+    { VlbPeso ValueBox
+      MoveScaled(93,5,9,4)
+    }
+    { LblPeso Label
+      MoveScaled(87,5,7,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Peso :")
+    }
+    { GridAverias GridView
+      MoveScaled(3,20,104,35)
+      Mode = Select.Single
+    }
+    { PanelBotonesGrid Panel
+      MoveScaled(3,55,104,5)
+      Border = Border.Plain
+      { HBox1 HBox
+        MoveScaled(1,95,138,5)
+      }
+      { BtnInicio Button
+        MoveScaled(3,0,4.5,4.5)
+        Picture = Picture["icon:/32/first"]
+      }
+      { BtnAnterior Button
+        MoveScaled(8,0,4.5,4.5)
+        Picture = Picture["icon:/32/left"]
+      }
+      { BtnFin Button
+        MoveScaled(18,0,4.5,4.5)
+        Picture = Picture["icon:/32/last"]
+      }
+      { BtnSiguiente Button
+        MoveScaled(13,0,4.5,4.5)
+        Picture = Picture["icon:/32/next"]
+      }
+    }
+    { BtnBorrarAveria Button
+      MoveScaled(108,36,16,4)
+      Font = Font["Bold,+1"]
+      Text = ("BORRAR")
+    }
+    { BtnEditarAveria Button
+      MoveScaled(108,43,16,4)
+      Font = Font["Bold,+1"]
+      Text = ("EDITAR")
+    }
+    { BtnAgregarAveria Button
+      MoveScaled(108,29,16,4)
+      Font = Font["Bold,+1"]
+      Text = ("AGREGAR")
+    }
+    { LblLote Label
+      MoveScaled(103,5,7,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Lote :")
+    }
+    { TxtLote TextBox
+      MoveScaled(109,5,13,4)
+      MaxLength = 10
+    }
+    { LblDescripcion Label
+      MoveScaled(75,11,13,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Descripcion :")
+    }
+    { TxtDescripcion TextBox
+      MoveScaled(87,11,37,4)
+      MaxLength = 200
+    }
+  }
+  { TxtErrorAveria TextLabel
+    MoveScaled(5,63,94,4)
+    Visible = False
+    Font = Font["Bold,+1"]
+    Foreground = Color.Red
+    Border = Border.Raised
+  }
 }

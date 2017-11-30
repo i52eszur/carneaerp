@@ -38,6 +38,22 @@
     { MenuFacturacion2 Menu
       Text = ("Facturacion")
       Picture = Picture["imagenes/32x32/facturacion.png"]
+      { MenuFacturacion3 Menu
+        Text = ("Facturar")
+        Picture = Picture["imagenes/32x32/facturacion.png"]
+      }
+      { MenuEdicionFactuasAlbaranes Menu
+        Text = ("Edicion Facturas/Albaranes")
+        Picture = Picture["imagenes/32x32/editarfactura.png"]
+      }
+      { MenuFacturarAlbaranes Menu
+        Text = ("Facturar Albaranes")
+        Picture = Picture["imagenes/32x32/facturaralbaranes.png"]
+      }
+      { MenuPasoContabilidad Menu
+        Text = ("Paso Contabilidad")
+        Picture = Picture["imagenes/32x32/pasocontabilidad.png"]
+      }
     }
     { MenuAverias Menu
       Text = ("Averias")

@@ -22,15 +22,28 @@ Public Sub BtnSalirFacturacion_Click()
 End
 Public Sub MenuSalir_Click()
 
-  Me.close
+  Me.close 
 
 End
+Public Sub MenuPasoContabilidad_Click()
+
+  Frm_PasoContabilidad.Show()
+
+End
+
+Public Sub MenuFacturarAlbaranes_Click()
+
+  Frm_FacturacionAlbaranes.ShowModal()
+
+End
+
 Public Sub RdbFacturas_Click()
 
   LblNumero.text = "Nº Factura :"
   ChkCobradaPagado.Text = "Factura Cobrada"
   FrameDetalles.Text = "Factura Detalle"
-  Calculo_Numero_FA("F")
+  LblTotal.Text = "Total Factura :"
+  TxtNumero.Text = Utilidades.Calculo_Numero_FA("F")
 End
 
 Public Sub RdbAlbaranes_Click()
@@ -38,7 +51,20 @@ Public Sub RdbAlbaranes_Click()
   LblNumero.text = "Nº Albaran :"
   ChkCobradaPagado.Text = "Albaran Pagado"
   FrameDetalles.Text = "Albaran Detalle"
-  Calculo_Numero_FA("A")
+  LblTotal.Text = "Total Albaran :"
+  TxtNumero.Text = Utilidades.Calculo_Numero_FA("A")
+End
+
+Public Sub CmbFormaPago_Click()
+  
+  Dim dias As Integer
+  diAs = CInt(Utilidades.Obtener_Campo_Tabla("select dias from formapago where nombreformapago='" & CmbFormaPago.Text & "'", "dias"))
+  If dias > 0 Then
+    DteFechavencimiento.Value = DateAdd(Now, gb.Day, dias)
+  Else
+    DteFechavencimiento.Value = Date(Year(Now), Month(Now), Day(Now))
+  Endif
+
 End
 
 Public Sub CmbCliente_Click()
@@ -95,7 +121,7 @@ Public Sub BtnAgregarFactura_Click()
   If Comprobar_Datos_Factura("NUEVO") Then
     If BtnAgregarFactura.text = "NUEVO" Then
       BtnAgregarFactura.text = "GRABAR"
-      FrameDetalles.Enabled = True & LblTotalFactura.Text & ",'"
+      FrameDetalles.Enabled = True 
       PanelFacturaAlbaran.Enabled = False
       TxtNumero.Enabled = False
       CmbCliente.Enabled = False
@@ -379,7 +405,7 @@ Private Sub Configurar_Objetos_Facturacion()
   DteHora.Value = Format$(Now, "h:n:s")
   LblTotalFactura.text = Format(0, "##0.00")
   VlbImporteBase.Value = Format(0, "##0.00")
-  Calculo_Numero_FA("F")
+  TxtNumero.Text = Utilidades.Calculo_Numero_FA("F")
   Configurar_DataGrid_LineasDetalle()
   Linea_Detalle = 0
   linea = 0
@@ -387,43 +413,10 @@ Private Sub Configurar_Objetos_Facturacion()
 End
 
 
-'' Procedimiento para calcular el numero de factura o albaran
-'' Parametros:<br>
-''    Tipo --> Tomara los siguientes valores<br>
-''        A -- Albaran.<br>
-''        F -- Factura.<br>
 
-Private Sub Calculo_Numero_FA(Tipo As String)
-  
-  
-  Dim Ano As String
-  Dim Numero As String
-  Dim Aux As Integer
-  ano = Format(Now, "yy")
-  
-  If tipo = "F" Then
-    If Utilidades.Tabla_Vacia("select * from facturas") > 0 Then
-      numero = Utilidades.Valor_Maximo("select * from facturas order by 1", "numerofactura")
-      aux = CInt(Mid(numero, 2, 9))
-      TxtNumero.Text = "F" & CInt(aux + 1)
-    Else
-      TxtNumero.Text = "F" & ano & "0000001"
-    Endif
-  Else
-    If Utilidades.Tabla_Vacia("select * from albaranes") > 0 Then
-      numero = Utilidades.Valor_Maximo("select * from albaranes order by 1", "numeroalbaran")
-      aux = CInt(Mid(numero, 2, 9))
-      TxtNumero.Text = "A" & CInt(aux + 1)
-    Else
-      TxtNumero.Text = "A" & ano & "0000001"
-    Endif
-  Endif
-  
-End
 
 '' Procedimiento para configurar Grid LineasDetalle
 Private Sub Configurar_DataGrid_LineasDetalle()
-  
   
   GridLineasDetalle.Columns.Count = 7
   GridLineasDetalle.Header = GridLineasDetalle.Both
@@ -631,12 +624,12 @@ Private Sub Grabar_Factura()
   Dim Cobrado_Pagada As String
   If ChkCobradaPagado.Value = True Then
       Cobrado_Pagada = "S"
-    Else
-      Cobrado_Pagada = "N"
-    Endif
+  Else
+    Cobrado_Pagada = "N"
+  Endif
+  Codigo_Cliente = Utilidades.Obtener_Campo_Tabla("select codigocliente from clientes where razonsocial='" & CmbCliente.Text & "'", "codigocliente")
+  Codigo_Vendedor = Utilidades.Obtener_Campo_Tabla("select codigovendedor from vendedor where nombre='" & CmbVendedor.Text & "'", "codigovendedor")
   If RdbFacturas.Value = True Then
-    Codigo_Cliente = Utilidades.Obtener_Campo_Tabla("select codigocliente from clientes where razonsocial='" & CmbCliente.Text & "'", "codigocliente")
-    Codigo_Vendedor = Utilidades.Obtener_Campo_Tabla("select codigovendedor from vendedor where nombre='" & CmbVendedor.Text & "'", "codigovendedor")
     sql = "insert into facturas(numerofactura,fecha,hora,base,iva,recargo,importeiva,importerecargo,fechacobro,descuentopp,importedescuentopp," &
     "descuentoesp,importedescuentoesp,cobrada,formapago,vencimiento,contabilizada,total,cliente,vendedor)values( '" &
     UCase(TxtNumero.Text) & "','" & Utilidades.Fecha_Correcta(DteFechaCreacion.Value) & "','" & DteHora.value & "'," & VlbImporteBase.Value & "," &
@@ -644,7 +637,7 @@ Private Sub Grabar_Factura()
     VlbDescuentoPP.Value & "," & VlbImporteDescuentoPP.Value & "," & VlbDescuentoESP.Value & "," & VlbImporteDescuentoESP.Value & ",'" & Cobrado_Pagada & "','" &
     CmbFormaPago.Text & "','" & Utilidades.Fecha_Correcta(DteFechavencimiento.Value) & "','N'," & LblTotalFactura.Text & ",'" & Codigo_Cliente & "','" & Codigo_Vendedor & "')"
     Utilidades.In_Act_Bor(sql)
-    Calculo_Numero_FA("F")
+    TxtNumero.Text = Utilidades.Calculo_Numero_FA("F")
   Endif
   
   If RdbAlbaranes.Value = True Then
@@ -655,7 +648,7 @@ Private Sub Grabar_Factura()
     VlbDescuentoPP.Value & "," & VlbImporteDescuentoPP.Value & "," & VlbDescuentoESP.Value & "," & VlbImporteDescuentoESP.Value & ",'" & Cobrado_Pagada & "','" &
     CmbFormaPago.Text & "','" & Utilidades.Fecha_Correcta(DteFechavencimiento.Value) & "','N'," & LblTotalFactura.Text & ",'" & Codigo_Cliente & "','" & Codigo_Vendedor & "')"
     Utilidades.In_Act_Bor(sql)
-    Calculo_Numero_FA("A")
+    TxtNumero.Text = Utilidades.Calculo_Numero_FA("A")
   Endif
 End
 
@@ -685,6 +678,10 @@ Private Sub Limpiar_Datos_Factura()
   CmbFormaPago.Index = -1
   GridLineasDetalle.Rows.Remove(0, GridLineasDetalle.Rows.Count)
 End
+
+
+
+
 
 
 

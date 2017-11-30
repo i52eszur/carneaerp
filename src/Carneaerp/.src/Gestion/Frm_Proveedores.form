@@ -3,19 +3,6 @@
 { Form Form
   MoveScaled(0,0,150,101)
   Icon = Picture["imagenes/32x32/proveedores.png"]
-  { MenuArchivo Menu
-    Action = "me.close"
-    Text = ("Archivo")
-    { MenuSalir Menu
-      Text = ("Salir")
-    }
-  }
-  { MenuConsultas Menu
-    Text = ("Consultas")
-    { MenuConsultaProveedor Menu
-      Text = ("Datos Proveedores")
-    }
-  }
   { FrameProveedores Frame
     MoveScaled(1,1,148,99)
     Text = ("Datos de Vendedores")
@@ -288,14 +275,5 @@
         Mode = Select.Single
       }
     }
-  }
-}
-
-# Gambas Action File 3.0
-
-{ Actions
-  { Action me.close
-    Text = "Archivo"
-    Shortcut = ""
   }
 }

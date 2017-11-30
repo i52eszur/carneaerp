@@ -1,14 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,118,86)
-  Expand = True
-  { BtnSalirTrazabilidad Button
-    MoveScaled(29,2,16,5)
-    Foreground = Color.Red
-    Text = ("CERRAR")
-    Picture = Picture["imagenes/32x32/salida.png"]
-  }
+  MoveScaled(0,0,122,81)
   { BtnGenerarPdf Button
     MoveScaled(5,2,21,5)
     Font = Font["Bold,+1"]
@@ -16,5 +9,11 @@
   }
   { WebTrazabilidad WebView
     MoveScaled(1,11,116,73)
+  }
+  { BtnSalirTrazabilidad Button
+    MoveScaled(29,2,16,5)
+    Foreground = Color.Red
+    Text = ("CERRAR")
+    Picture = Picture["imagenes/32x32/salida.png"]
   }
 }

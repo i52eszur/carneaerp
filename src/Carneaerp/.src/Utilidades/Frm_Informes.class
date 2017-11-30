@@ -1,0 +1,46 @@
+' Gambas class file
+
+
+Public Sub BtnSalirListados_Click()
+
+  Me.Close
+  
+End
+
+Public Sub Form_Open()
+  
+  Me.Title = "GENERACION DE INFORMES"
+  RdbGeneralArticulos.Value = True
+
+End
+
+
+
+''*************************** Funciones privadas****************************
+''
+''**************************************************************************
+
+'' Procedimiento para Generar mostrar en el Workspace el lote seleccionado <br>
+'' Parametros:<br>
+''    elform --> formulario abrir
+Public Procedure activar(elform As Form)
+
+    Dim cont As Form
+    Dim lAbierto As Boolean
+    
+    For Each cont In WrkInfome.windows  'buscamos si ya hay habierto un formulario con el mismo nombre del que se quiere abrir, o sea, si ya está abierto.
+        'If cont.name = elform.Name And cont.text = elform.text Then
+        If cont.title = elform.Title Then
+            lAbierto = True
+            'Break
+        Endif
+    Next
+    
+    If lAbierto Then
+        WrkInfome.ActiveWindow = cont 'Si ya está  lo hacemos activo y eliminamos el que se quería abrir por ser un duplicidado
+        elform.Delete
+    Else
+        WrkInfome.Add(elform)  'lo añadimos al workspace
+    Endif
+
+End

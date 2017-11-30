@@ -12,6 +12,11 @@ Public Sub BtnSalirVisualizar_Click()
   Me.Close
 
 End
+Public Sub BtnBorrar_Click()
+
+  
+
+End
 Public Sub BtnEditar_Click()
   
   Dim Sql As String
@@ -40,7 +45,8 @@ Public Sub BtnEditar_Click()
     CmbFacturaAlbaran.Index = -1
   Endif
 
-End
+End 
+
 Public Sub BtnGenerar_Click()
 
   If CmbFacturaAlbaran.Text = "" Then
@@ -570,6 +576,8 @@ Private Sub Llenar_DataGrid_Cabeceras(Sql As String, Tipo As String)
   GridCabeceras.Rows.Select(0, 1)
   
 End
+
+
 
 
 

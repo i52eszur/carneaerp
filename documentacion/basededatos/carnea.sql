@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 10-11-2017 a las 10:29:50
+-- Tiempo de generación: 22-11-2017 a las 11:00:28
 -- Versión del servidor: 5.7.20-0ubuntu0.17.10.1
 -- Versión de PHP: 7.1.8-1ubuntu1
 
@@ -57,7 +57,7 @@ CREATE TABLE `albaranes` (
 --
 
 INSERT INTO `albaranes` (`numeroalbaran`, `fecha`, `hora`, `base`, `iva`, `recargo`, `importeiva`, `importerecargo`, `fechacobro`, `descuentopp`, `importedescuentopp`, `descuentoesp`, `importedescuentoesp`, `pagado`, `formapago`, `vencimiento`, `facturado`, `Total`, `cliente`, `vendedor`) VALUES
-('A170000001', '01/11/2017', '20:28:00', 100, 10, 0, 10, 0, '01/11/2017', 0, 0, 0, 0, '', 'CONTADO', '01/11/2017', 'N', 0, '0000000001', '0000000001');
+('A170000001', '01/11/2017', '20:28:00', 100, 10, 0, 10, 0, '01/11/2017', 0, 0, 0, 0, 'N', 'CONTADO', '01/11/2017', 'N', 110, '0000000001', '0000000001');
 
 -- --------------------------------------------------------
 
@@ -157,6 +157,31 @@ INSERT INTO `articulomateriaprima` (`articulo`, `materiaprima`) VALUES
 ('006', '017'),
 ('007', '026'),
 ('008', '027');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `averia`
+--
+
+DROP TABLE IF EXISTS `averia`;
+CREATE TABLE `averia` (
+  `codigoaveria` varchar(10) NOT NULL,
+  `fecha` varchar(10) NOT NULL,
+  `vendedor` varchar(10) NOT NULL,
+  `cliente` varchar(10) NOT NULL,
+  `articulo` varchar(10) NOT NULL,
+  `lote` varchar(10) NOT NULL,
+  `peso` float NOT NULL,
+  `descripcion` varchar(200) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Averias';
+
+--
+-- Volcado de datos para la tabla `averia`
+--
+
+INSERT INTO `averia` (`codigoaveria`, `fecha`, `vendedor`, `cliente`, `articulo`, `lote`, `peso`, `descripcion`) VALUES
+('A170000001', '21/11/2017', '0000000002', '0000000001', '001', '22', 10, 'QQQ');
 
 -- --------------------------------------------------------
 
@@ -358,8 +383,8 @@ CREATE TABLE `facturas` (
 --
 
 INSERT INTO `facturas` (`numerofactura`, `fecha`, `hora`, `base`, `iva`, `recargo`, `importeiva`, `importerecargo`, `fechacobro`, `descuentopp`, `importedescuentopp`, `descuentoesp`, `importedescuentoesp`, `cobrada`, `formapago`, `vencimiento`, `contabilizada`, `Total`, `cliente`, `vendedor`) VALUES
-('F170000001', '01/11/2017', '20:22:00', 322.4, 10, 0, 32.24, 0, '01/11/2017', 0, 0, 0, 0, 'N', 'CONTADO', '01/11/2017', 'N', 355, '0000000001', '0000000001'),
-('F170000002', '01/11/2017', '20:27:00', 100, 10, 5, 9.5, 4.75, '01/11/2017', 5, 5, 0, 0, 'N', 'PAGARE', '16/12/2017', 'N', 0, '0000000002', '0000000002');
+('F170000001', '01/11/2017', '20:22:00', 322.4, 10, 0, 32.24, 0, '01/11/2017', 0, 0, 0, 0, 'N', 'CONTADO', '01/11/2017', 'N', 354.64, '0000000001', '0000000001'),
+('F170000002', '01/11/2017', '20:27:00', 441, 10, 5, 41.9, 20.95, '01/11/2017', 5, 22.05, 0, 0, 'N', 'PAGARE', '16/12/2017', 'N', 481.79, '0000000002', '0000000002');
 
 -- --------------------------------------------------------
 
@@ -384,7 +409,8 @@ CREATE TABLE `facturasdetalles` (
 
 INSERT INTO `facturasdetalles` (`numerofactura`, `linea`, `precio`, `peso`, `importe`, `lote`, `articulo`) VALUES
 ('F170000001', 1, 10, 10, 100, '1', '001'),
-('F170000001', 1, 10, 10, 100, '1', '003');
+('F170000001', 1, 10, 10, 100, '1', '003'),
+('F170000002', 1, 20, 17.05, 341, '2', '004');
 
 -- --------------------------------------------------------
 
@@ -863,6 +889,12 @@ ALTER TABLE `articulo`
 --
 ALTER TABLE `articulomateriaprima`
   ADD PRIMARY KEY (`articulo`,`materiaprima`);
+
+--
+-- Indices de la tabla `averia`
+--
+ALTER TABLE `averia`
+  ADD PRIMARY KEY (`codigoaveria`);
 
 --
 -- Indices de la tabla `clientefax`

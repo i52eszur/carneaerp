@@ -132,7 +132,7 @@ End
 
 Public Sub Form_Close()
 
-  Frm_Trazabilidad.Borrar_Factura_Albaran = Lote_Actual
+  
   Kill FMain.CarpetaTrazabilidad & "/" & Lote_Actual & ".html"
 End
 

@@ -1,0 +1,323 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,145,100)
+  { FrameFacturarAlbaranes Frame
+    MoveScaled(2,2,141,97)
+    Background = Color.Background
+    Text = ("Facturar Albaranes")
+    { TxtNumero TextBox
+      MoveScaled(13,4,13,4)
+      MaxLength = 10
+    }
+    { LblCliente Label
+      MoveScaled(26,4,9,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Cliente :")
+    }
+    { CmbCliente ComboBox
+      MoveScaled(34,4,33,4)
+      ReadOnly = True
+    }
+    { LblNumero Label
+      MoveScaled(2,4,12,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Nº Factura :")
+    }
+    { LblFecha Label
+      MoveScaled(54,9,7,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Fecha :")
+    }
+    { DteFechaCreacion DateBox
+      MoveScaled(61,9,17,4)
+    }
+    { DteHora DateBox
+      MoveScaled(74,4,10,4)
+      Mode = DateChooser.TimeOnly
+    }
+    { LblHora Label
+      MoveScaled(68,4,6,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Hora :")
+    }
+    { ChkCobradaPagado CheckBox
+      MoveScaled(2,9,23,4)
+      Font = Font["Bold"]
+      Text = ("Factura Cobrada")
+    }
+    { CmbVendedor ComboBox
+      MoveScaled(32,9,21,4)
+      ReadOnly = True
+    }
+    { LblVendedor Label
+      MoveScaled(22,9,10,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Vendedor :")
+    }
+    { FrameFiltroEntreFechas Frame
+      MoveScaled(87,4,33,11)
+      Enabled = False
+      { LblFechaInicio Label
+        MoveScaled(2,2,12,4)
+        Font = Font["Bold"]
+        Text = ("Fecha Inicio: ")
+      }
+      { LblFechaFin Label
+        MoveScaled(2,6,12,4)
+        Font = Font["Bold"]
+        Text = ("Fecha Fin: ")
+      }
+      { DteFechaInicio DateBox
+        MoveScaled(13,2,17,4)
+      }
+      { DteFechaFin DateBox
+        MoveScaled(13,6,17,4)
+      }
+    }
+    { GridAlbaranes GridView
+      MoveScaled(2,20,118,32)
+      Font = Font["Bold"]
+      Mode = Select.Single
+    }
+    { PanelBotonesGrid Panel
+      MoveScaled(2,52,118,5)
+      Border = Border.Plain
+      { HBox1 HBox
+        MoveScaled(1,95,138,5)
+      }
+      { BtnInicio Button
+        MoveScaled(3,0,4.5,4.5)
+        Picture = Picture["icon:/32/first"]
+      }
+      { BtnAnterior Button
+        MoveScaled(8,0,4.5,4.5)
+        Picture = Picture["icon:/32/left"]
+      }
+      { BtnFin Button
+        MoveScaled(18,0,4.5,4.5)
+        Picture = Picture["icon:/32/last"]
+      }
+      { BtnSiguiente Button
+        MoveScaled(13,0,4.5,4.5)
+        Picture = Picture["icon:/32/next"]
+      }
+    }
+    { BtnGenerar Button
+      MoveScaled(122,32,16,4)
+      Font = Font["Bold"]
+      Text = ("GENERAR")
+    }
+    { BtnSalirFacturarAlbaranes Button
+      MoveScaled(123,44,16,5)
+      Foreground = Color.Red
+      Text = ("SALIR")
+      Picture = Picture["imagenes/32x32/salida.png"]
+    }
+    { BtnBorrarAlbaran Button
+      MoveScaled(19,77,5,5)
+      ToolTip = ("Borra Albaran Selecionado.")
+      Picture = Picture["icon:/32/cancel"]
+    }
+    { BtnAgregarAlbaran Button
+      MoveScaled(121,19,5,5)
+      ToolTip = ("Agrega el Albaran Selecionado.")
+      Picture = Picture["icon:/32/apply"]
+    }
+    { LtbAlbaranes ListBox
+      MoveScaled(1,76,18,20)
+      ScrollBar = Scroll.Both
+      Sorted = True
+    }
+    { ChkVisualizarFacturta CheckBox
+      MoveScaled(121,39,18,4)
+      Font = Font["Bold"]
+      Text = ("Visualizar Factura")
+    }
+    { BtnAgregarTodosAlbaranes Button
+      MoveScaled(121,25,5,5)
+      ToolTip = ("Agrega todos los Albaranes.")
+      Picture = Picture["icon:/32/select-all"]
+    }
+    { ChkEntreFechas CheckBox
+      MoveScaled(88,1,24,4)
+      Font = Font["Bold"]
+      Text = ("Entre Fechas")
+    }
+    { DteFechaCobro DateBox
+      MoveScaled(16,15,17,4)
+      Enabled = False
+    }
+    { LblFormaPago Label
+      MoveScaled(34,15,16,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Forma de Pago :")
+    }
+    { CmbFormaPago ComboBox
+      MoveScaled(49,15,25,4)
+      ReadOnly = True
+    }
+    { LblFechaVencimiento Label
+      MoveScaled(76,15,20,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Fecha Vencimiento :")
+    }
+    { DteFechavencimiento DateBox
+      MoveScaled(96,15,17,4)
+    }
+    { LblFechaCobro Label
+      MoveScaled(2,15,14,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Fecha Cobro :")
+    }
+    { FrameDescuentos Frame
+      MoveScaled(1,58,151,6)
+      { LblDescuentoESP Label
+        MoveScaled(1,1,18,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("Decuento Especial :")
+      }
+      { LblDescuentoPP Label
+        MoveScaled(67,1,22,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("Decuento Pronto Pago :")
+      }
+      { VlbDescuentoESP ValueBox
+        MoveScaled(20,1,8,4)
+        ReadOnly = True
+      }
+      { VlbDescuentoPP ValueBox
+        MoveScaled(88,1,8,4)
+        ReadOnly = True
+      }
+      { LblImporteESP Label
+        MoveScaled(28,1,27,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("Importe Decuento Especial :")
+      }
+      { VlbImporteDescuentoESP ValueBox
+        MoveScaled(54,1,11,4)
+        ReadOnly = True
+      }
+      { LblImportePP Label
+        MoveScaled(97,1,28,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("Importe Decuento Pronto Pago :")
+      }
+      { VlbImporteDescuentoPP ValueBox
+        MoveScaled(127,1,11,4)
+        ReadOnly = True
+      }
+    }
+    { FrameDescuentos2 Frame
+      MoveScaled(2,64,151,6)
+      { LblIva Label
+        MoveScaled(1,1,6,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("IVA :")
+      }
+      { LblRecargo Label
+        MoveScaled(43,1,20,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("Recargo Equivalente :")
+      }
+      { VlbIva ValueBox
+        MoveScaled(6,1,8,4)
+        ReadOnly = True
+      }
+      { VlbRecargo ValueBox
+        MoveScaled(63,1,8,4)
+        ReadOnly = True
+      }
+      { LblImporteIva Label
+        MoveScaled(15,1,15,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("Importe IVA :")
+      }
+      { VlbImporteIva ValueBox
+        MoveScaled(28,1,14,4)
+        ReadOnly = True
+      }
+      { LblImporteRecargo Label
+        MoveScaled(72,1,17,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("Importe Recargo :")
+      }
+      { VlbImporteRecargo ValueBox
+        MoveScaled(89,1,14,4)
+        ReadOnly = True
+      }
+      { VlbImporteBase ValueBox
+        MoveScaled(110,1,14,4)
+        Font = Font["Bold"]
+        ReadOnly = True
+      }
+      { LblBase Label
+        MoveScaled(104,1,6,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("Base :")
+      }
+    }
+    { LblTotal Label
+      MoveScaled(3,70,13,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Total Factura :")
+      Alignment = Align.BottomLeft
+    }
+    { LblTotalFactura Label
+      MoveScaled(16,70,12,4)
+      Font = Font["Bold,+2"]
+      Text = ("12345.12")
+    }
+    { GridFacturasDetalle GridView
+      MoveScaled(28,73,111,19)
+      Font = Font["Bold"]
+    }
+    { PanelBotonesGrid2 Panel
+      MoveScaled(28,92,111,4)
+      Border = Border.Plain
+      { HBox2 HBox
+        MoveScaled(1,95,138,5)
+      }
+      { BtnInicioFacturasDetalle Button
+        MoveScaled(3,0,3.25,3.25)
+        Picture = Picture["icon:/22/first"]
+      }
+      { BtnAnteriorFacturasDetalle Button
+        MoveScaled(6,0,3.25,3.25)
+        Picture = Picture["icon:/22/left"]
+      }
+      { BtnFinFacturasDetalle Button
+        MoveScaled(12,0,3.25,3.25)
+        Picture = Picture["icon:/22/last"]
+      }
+      { BtnSiguienteFacturasDetalle Button
+        MoveScaled(9,0,3.25,3.25)
+        Picture = Picture["icon:/22/next"]
+      }
+    }
+    { BtnFiltrar Button
+      MoveScaled(121,8,13,4)
+      Font = Font["Bold"]
+      Text = ("FILTRAR")
+    }
+  }
+}

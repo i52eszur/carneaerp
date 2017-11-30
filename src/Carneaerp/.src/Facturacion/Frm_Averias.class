@@ -1,8 +1,393 @@
 ' Gambas class file
 
-
+Public Linea_Averia As Integer
 Public Sub Form_Open()
 
   Me.Title = "GESTION DE AVERIAS"
+  Configurar_Objetos_Averias()
+End
 
+Public Sub BtnSalirAverias_Click()
+
+  Me.Close
+End
+
+Public Sub BtnAgregarAveria_Click()
+
+  Dim Sql As String
+  Dim Codigo_Articulo As String
+  Dim Codigo_Vendedor As String
+  Dim Codigo_Cliente As String
+  Dim Fecha_Averia As String
+  If Comprobar_Datos_Averia("NUEVO") Then
+    sql = "select codigoarticulo from articulo where nombre='" & CmbArticulo.Text & "'"
+    Codigo_Articulo = Utilidades.Obtener_Campo_Tabla(sql, "codigoarticulo")
+    sql = "select codigocliente from clientes where razonsocial='" & CmbCliente.Text & "'"
+    Codigo_Cliente = Utilidades.Obtener_Campo_Tabla(sql, "codigocliente")
+    sql = "select codigovendedor from vendedor where nombre='" & CmbVendedor.Text & "'"
+    Codigo_Vendedor = Utilidades.Obtener_Campo_Tabla(sql, "codigovendedor")
+    Fecha_Averia = Utilidades.Fecha_Correcta(DteFecha.Value)
+    sql = "insert into averia(codigoaveria,fecha,vendedor,cliente,articulo,peso,lote, descripcion) values('" &
+    UCase(TxtCodigoAveria.Text) & "','" & Fecha_Averia & "','" & Codigo_Vendedor & "','" & Codigo_Cliente & 
+    "','" & Codigo_Articulo & "'," & vlbpeso.Value & ",'" & UCase(txtlote.Text) & "','" & UCase(txtDescripcion.Text) & "')"
+    Utilidades.In_Act_Bor(sql)
+    Calculo_Numero_Averia()
+    Borrar_Datos_Averias()
+    sql = "select A.codigoaveria,A.fecha,V.nombre,C.razonsocial,T.nombre,A.peso,A.lote,A.descripcion from averia A" &
+    " left join vendedor V on A.vendedor=V.codigovendedor left join clientes C on A.cliente=C.codigocliente left join " &
+    " articulo T on A.articulo=T.codigoarticulo"
+    Llenar_DataGrid_Averias(sql)
+  Endif
+
+End
+
+Public Sub BtnBorrarAveria_Click()
+
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Dim Respuesta As Integer
+  Dim Texto As String
+  If GridAverias.Rows.Selection.Count > 0 Then
+    Numero_fila = GridAverias.Rows.Selection[0]
+    Texto = "Desea borrar la Averia : <b>" & GridAverias[Numero_fila, 0].Text & "</b> y Articulo: <b>" & GridAverias[Numero_fila, 4].Text & "</b>"
+    Respuesta = Message.Delete(Texto, "Si", "No")
+    'Respuesta = Message.Delete("Desea Borrar Averia : " & GridAverias.View[Numero_fila, 0].Text, "Si", "No")
+    If respuesta = 1 Then
+      sql = "delete from averia where codigoaveria='" & GridAverias.View[Numero_fila, 0].Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      sql = "select A.codigoaveria,A.fecha,V.nombre,C.razonsocial,T.nombre,A.peso,A.lote,A.descripcion from averia A" &
+      " left join vendedor V on A.vendedor=V.codigovendedor left join clientes C on A.cliente=C.codigocliente left join " &
+      " articulo T on A.articulo=T.codigoarticulo"
+      Llenar_DataGrid_Averias(sql)
+    Endif
+  Endif
+
+End
+
+Public Sub BtnEditarAveria_Click()
+
+  Dim Sql As String
+  Dim Numero_fila As Integer
+  Dim Dia As String
+  Dim Mes As String
+  Dim Ano As String
+  Dim Fecha_Averia As String
+  Dim Codigo_Articulo As String
+  Dim Codigo_Vendedor As String
+  Dim Codigo_Cliente As String
+  If BtnEditarAveria.text = "EDITAR" And GridAverias.Rows.Count > 0 Then ' Cargamos los datos del lote seleccionado.
+    Numero_fila = GridAverias.Rows.Selection[0]
+    TxtCodigoAveria.text = GridAverias[Numero_fila, 0].Text
+    Dia = Mid(GridAverias[Numero_fila, 1].Text, 1, 2)
+    Mes = Mid(GridAverias[Numero_fila, 1].Text, 4, 2)
+    Ano = Mid(GridAverias[Numero_fila, 1].Text, 7, 4)
+    DteFecha.Value = Date(ano, mes, dia)
+    CmbVendedor.Text = GridAverias[Numero_fila, 2].Text
+    CmbCliente.Text = GridAverias[Numero_fila, 3].Text
+    CmbArticulo.Text = GridAverias[Numero_fila, 4].Text
+    vlbpeso.Value = GridAverias[Numero_fila, 5].Text
+    txtlote.Text = GridAverias[Numero_fila, 6].Text
+    txtDescripcion.Text = GridAverias[Numero_fila, 7].Text
+    BtnEditarAveria.text = "ACTUALIZAR"
+    TxtCodigoAveria.Enabled = False
+  Else
+    If Comprobar_Datos_Averia("EDITAR") Then
+      Fecha_Averia = Utilidades.Fecha_Correcta(DteFecha.Value)
+      sql = "select codigoarticulo from articulo where nombre='" & CmbArticulo.Text & "'"
+      Codigo_Articulo = Utilidades.Obtener_Campo_Tabla(sql, "codigoarticulo")
+      sql = "select codigocliente from clientes where razonsocial='" & CmbCliente.Text & "'"
+      Codigo_Cliente = Utilidades.Obtener_Campo_Tabla(sql, "codigocliente")
+      sql = "select codigovendedor from vendedor where nombre='" & CmbVendedor.Text & "'"
+      Codigo_Vendedor = Utilidades.Obtener_Campo_Tabla(sql, "codigovendedor")
+      sql = "update averia set fecha='" & Fecha_Averia & "',vendedor='" & Codigo_Vendedor & "',cliente='" & Codigo_Cliente &
+      "',articulo='" & Codigo_Articulo & "',peso=" & vlbpeso.Value & ",lote='" & UCase(txtlote.Text) & "',descripcion='" & UCase(txtDescripcion.Text) &
+      "' where codigoaveria='" & TxtCodigoAveria.Text & "'"
+      Utilidades.In_Act_Bor(Sql)
+      sql = "select A.codigoaveria,A.fecha,V.nombre,C.razonsocial,T.nombre,A.peso,A.lote,A.descripcion from averia A" &
+      " left join vendedor V on A.vendedor=V.codigovendedor left join clientes C on A.cliente=C.codigocliente left join " &
+      " articulo T on A.articulo=T.codigoarticulo"
+      Llenar_DataGrid_Averias(sql)
+      BtnEditarAveria.text = "EDITAR"
+      TxtCodigoAveria.Enabled = True
+      Borrar_Datos_Averias()
+      Calculo_Numero_Averia()
+    Endif 
+  Endif
+
+End
+
+
+
+
+
+''*************************** Botones GridAverias***************************
+''
+''**************************************************************************
+
+Public Sub BtnInicio_Click()
+
+  If GridAverias.Rows.Count > 0 Then
+      GridAverias.Rows.UnSelectAll
+      Linea_Averia = 0
+      GridAverias.Rows.Select(Linea_Averia, 1) 
+  Endif
+
+End
+
+Public Sub BtnAnterior_Click()
+
+   If GridAverias.Rows.Count > 0 Then
+    If Linea_Averia = 0 Then
+      GridAverias.Rows.Select(Linea_Averia, 1)
+     Else  
+       GridAverias.Rows.UnSelectAll
+       Linea_Averia = Linea_Averia - 1
+       GridAverias.Rows.Select(Linea_Averia, 1)
+    Endif
+  Endif  
+
+End
+
+Public Sub BtnSiguiente_Click()
+
+   If GridAverias.Rows.Count > 0 Then
+    If Linea_Averia = GridAverias.Rows.Count - 1 Then
+      GridAverias.Rows.Select(Linea_Averia, 1)
+     Else  
+       GridAverias.Rows.UnSelectAll
+       Linea_Averia = Linea_Averia + 1
+       GridAverias.Rows.Select(Linea_Averia, 1)
+    Endif
+  Endif
+
+End
+
+Public Sub BtnFin_Click()
+
+  If GridAverias.Rows.Count > 0 Then
+      GridAverias.Rows.UnSelectAll
+      Linea_Averia = GridAverias.Rows.Count - 1
+      GridAverias.Rows.Select(Linea_Averia, 1)
+      
+  Endif
+End
+
+
+''*************************** Funciones privadas****************************
+''
+''**************************************************************************
+
+Public Sub Configurar_Objetos_Averias()
+
+  Dim Error_Tablas_Vacias As String
+  Dim Error_V As Boolean
+  Dim Sql As String
+  
+  Error_V = False
+  If Utilidades.Tabla_Vacia("select * from articulo") = 0 Then
+     Error_Tablas_Vacias = "Deber Cear Articulos"
+     Error_V = True
+  Else
+      CmbArticulo.clear
+      Utilidades.Llenar_Combobox("select * from articulo", CmbArticulo, "nombre")  
+      CmbArticulo.Index = -1
+  Endif
+  If Utilidades.Tabla_Vacia("select * from vendedor") = 0 Then
+    If Error_Tablas_Vacias = "" Then
+      Error_Tablas_Vacias = "Deber Cear Vendedores"
+    Else
+      Error_Tablas_Vacias &= " y Crear Vendedores."
+    Endif  
+     Error_V = True
+  Else
+      CmbVendedor.clear
+      Utilidades.Llenar_Combobox("select * from vendedor", CmbVendedor, "nombre")  
+      CmbVendedor.Index = -1
+  Endif
+   If Utilidades.Tabla_Vacia("select * from clientes") = 0 Then
+     If Error_Tablas_Vacias = "" Then
+        Error_Tablas_Vacias = "Deber Cear Clientes"
+      Else
+        Error_Tablas_Vacias &= " y Crear Clientes."
+    Endif  
+     Error_V = True
+  Else
+      CmbCliente.clear
+      Utilidades.Llenar_Combobox("select * from clientes", CmbCliente, "razonsocial")  
+      CmbCliente.Index = -1
+  Endif
+  If Error_V Then
+    TxtErrorAveria.Visible = True
+    TxtErrorAveria.text = Error_Tablas_Vacias
+  Endif
+  Configurar_GridAveria()
+  Linea_Averia = 0
+  DteFecha.Value = Date(Year(Now), Month(Now), Day(Now))
+  Calculo_Numero_Averia()
+  sql = "select A.codigoaveria,A.fecha,V.nombre,C.razonsocial,T.nombre,A.peso,A.lote,A.descripcion from averia A" &
+    " left join vendedor V on A.vendedor=V.codigovendedor left join clientes C on A.cliente=C.codigocliente left join " &
+    " articulo T on A.articulo=T.codigoarticulo"
+    Llenar_DataGrid_Averias(sql)
+  
+End
+
+
+
+
+'' Configuracion de GridAveria
+Public Sub Configurar_GridAveria()
+  
+  Gridaverias.Columns.Count = 8
+  Gridaverias.Header = Gridaverias.Both
+  GridAverias.Columns[0].Title = "Codigo"
+  GridAverias.Columns[1].Title = "Fecha"
+  GridAverias.Columns[2].Title = "Cliente"
+  GridAverias.Columns[3].Title = "Vendedor"
+  GridAverias.Columns[4].Title = "Articulo"
+  GridAverias.Columns[5].Title = "Lote"
+  GridAverias.Columns[6].Title = "Peso"
+  GridAverias.Columns[7].Title = "Descripcion"
+  GridAverias.Columns[0].Width = 100 
+  GridAverias.Columns[1].Width = 100
+  GridAverias.Columns[2].Width = 150 
+  GridAverias.Columns[3].Width = 150
+  GridAverias.Columns[4].Width = 150 
+  GridAverias.Columns[5].Width = 90
+  GridAverias.Columns[6].Width = 90
+  GridAverias.Columns[7].Width = 250
+  
+End
+
+'' Funcion para comprobar los datos de las Averias.<br>
+'' Parametros:<br>
+''    Accion Tomara los siguientes valores<br>
+''        NUEVO -- Comprobar los datos para crear nueva Averia.<br>
+''        EDITAR -- Comprobar los datos antes Modificar una Averia.<br>
+'' Devuelve:<br>
+''   TRUE -- Datos corecctos<br>
+''   FALSE -- Datos erroneos  
+Private Function Comprobar_Datos_Averia(Accion As String) As Boolean
+  
+  Dim Validar As Boolean
+  Dim Sql As String
+  Validar = True
+  If Accion = "NUEVO" Then 
+    sql = "select * from averia where codigoaveria='" & UCase(TxtCodigoAveria.Text) & "'"
+    If TxtCodigoAveria.Text = "" Then
+      Balloon.Error("Debe introducir Numero Averia", TxtCodigoAveria)
+      Validar = False
+      TxtCodigoAveria.SetFocus
+    Else If Utilidades.Comprobar_existe_dato(Sql) 
+      Balloon.Error("Codigo  Averia ya exite", TxtCodigoAveria)
+      Validar = False
+      TxtCodigoAveria.SetFocus
+    Else If CmbCliente.Text = "" 
+      Balloon.Error("Debe elegir Cliente para crear Averia", CmbCliente)
+      Validar = False
+      CmbCliente.SetFocus
+    Else If CmbVendedor.Text = "" 
+      Balloon.Error("Debe elegir Vendedor para crear Averia", CmbVendedor)
+      Validar = False
+      CmbVendedor.SetFocus
+    Else If CmbArticulo.Text = "" 
+      Balloon.Error("Debe elegir Articulo para crear Averia", CmbArticulo)
+      Validar = False
+      CmbArticulo.SetFocus
+    Else If vlbpeso.Value = "0"
+      Balloon.Error("Debe introducir peso  para crear Averia", vlbpeso)
+      Validar = False
+      vlbpeso.SetFocus
+    Else If txtlote.Text = "" 
+      Balloon.Error("Debe introducir lote articulo para crear Averia", txtlote)
+      Validar = False
+      txtlote.SetFocus
+    Endif
+  Else If accion = "EDITAR"
+    If CmbCliente.Text = "" 
+      Balloon.Error("Debe elegir Cliente para crear Averia", CmbCliente)
+      Validar = False
+      CmbCliente.SetFocus
+    Else If CmbVendedor.Text = "" 
+      Balloon.Error("Debe elegir Vendedor para crear Averia", CmbVendedor)
+      Validar = False
+      CmbVendedor.SetFocus
+    Else If CmbArticulo.Text = "" 
+      Balloon.Error("Debe elegir Articulo para crear Averia", CmbArticulo)
+      Validar = False
+      CmbArticulo.SetFocus
+    Else If vlbpeso.Value = "0"
+      Balloon.Error("Debe introducir peso  para crear Averia", vlbpeso)
+      Validar = False
+      vlbpeso.SetFocus
+    Else If txtlote.Text = "" 
+      Balloon.Error("Debe introducir lote articulo para crear Averia", txtlote)
+      Validar = False
+      txtlote.SetFocus
+    Endif
+  Endif
+  Return Validar
+End
+
+
+'' Llenar DataGrid Averias <br>
+'' Parametros: <br>
+''  Sql --> Sentencia Sql con los datos a rellenar<br>
+
+Private Sub Llenar_DataGrid_Averias(sql As String)
+  
+  Dim Result_Trabajo As Result
+  Dim Numero_fila As Integer
+  If GridAverias.Rows.Count > 0 Then
+    GridAverias.Rows.Remove(0, GridAverias.Rows.Count)  
+  Endif  
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
+  Result_Trabajo.MoveFirst
+  While Result_Trabajo.Available
+     Numero_fila = GridAverias.Rows.Count
+     GridAverias.Rows.Insert(Numero_fila, 1)
+     GridAverias[Numero_fila, 0].Text = Result_Trabajo["A.codigoaveria"]
+     GridAverias[Numero_fila, 1].Text = Result_Trabajo["A.fecha"]
+     GridAverias[Numero_fila, 2].Text = Result_Trabajo["V.nombre"]
+     GridAverias[Numero_fila, 3].Text = Result_Trabajo["C.razonsocial"]
+     GridAverias[Numero_fila, 4].Text = Result_Trabajo["T.nombre"]
+     GridAverias[Numero_fila, 5].Text = Result_Trabajo["A.peso"]
+     GridAverias[Numero_fila, 6].Text = Result_Trabajo["A.lote"]
+     GridAverias[Numero_fila, 7].Text = Result_Trabajo["A.descripcion"]
+     Result_Trabajo.MoveNext
+  Wend
+  FMain.Conexion_Base_Datos.Close
+  GridAverias.Rows.Select(Linea_Averia, 1)
+  
+End
+
+'' Calculo automatico del numnero de Averia.
+Private Sub Calculo_Numero_Averia()
+  
+  Dim Ano As String
+  Dim Numero As String
+  Dim Aux As Integer
+  ano = Format(Now, "yy")
+   
+  If Utilidades.Tabla_Vacia("select * from averia") > 0 Then
+    numero = Utilidades.Valor_Maximo("select * from averia order by 1", "codigoaveria")
+    aux = CInt(Mid(numero, 2, 9))
+    TxtCodigoAveria.Text = "A" & CInt(aux + 1)
+  Else
+     TxtCodigoAveria.Text = "A" & ano & "0000001"
+  Endif
+  
+End
+'' Borramos los datos despues de dar de alta una averia.
+Private Sub Borrar_Datos_Averias()
+  
+  CmbArticulo.Index = -1
+  CmbCliente.Index = -1
+  CmbVendedor.Index = -1
+  txtlote.Text = ""
+  txtDescripcion.Text = ""
+  DteFecha.Value = Date(Year(Now), Month(Now), Day(Now))
+  vlbpeso.Value = 0
+  
 End

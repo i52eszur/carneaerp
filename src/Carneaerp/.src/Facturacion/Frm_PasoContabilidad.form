@@ -1,0 +1,100 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,83,64)
+  { BtnSalirPasoContabilidad Button
+    MoveScaled(20,6,16,5)
+    Foreground = Color.Red
+    Text = ("SALIR")
+    Picture = Picture["imagenes/32x32/salida.png"]
+  }
+  { BtnIniciar Button
+    MoveScaled(1,6,16,5)
+    Font = Font["Bold,+1"]
+    Text = ("INICIO")
+  }
+  { TxtVenta TextBox
+    MoveScaled(11,16,15,4)
+    Text = ("1234567")
+    Alignment = Align.Center
+    MaxLength = 7
+  }
+  { LblIva Label
+    MoveScaled(1,23,10,4)
+    Font = Font["Bold,+2"]
+    Text = ("Iva :")
+  }
+  { TxtIva TextBox
+    MoveScaled(11,23,15,4)
+    Text = ("1234567")
+    Alignment = Align.Center
+    MaxLength = 7
+  }
+  { LblIvaRe Label
+    MoveScaled(1,29,19,4)
+    Font = Font["Bold,+2"]
+    Text = ("Iva Repercutido :")
+  }
+  { TxtIvaRe TextBox
+    MoveScaled(22,29,15,4)
+    Text = ("1234567")
+    Alignment = Align.Center
+    MaxLength = 7
+  }
+  { LblRecargoE Label
+    MoveScaled(1,35,26,4)
+    Font = Font["Bold,+2"]
+    Text = ("Recargo Equivalente :")
+  }
+  { TxtRecargoE TextBox
+    MoveScaled(28,35,15,4)
+    Text = ("1234567")
+    Alignment = Align.Center
+    MaxLength = 7
+  }
+  { LblCobro Label
+    MoveScaled(1,41,10,4)
+    Font = Font["Bold,+2"]
+    Text = ("Cobro:")
+  }
+  { TxtCobro TextBox
+    MoveScaled(11,41,15,4)
+    Text = ("1234567")
+    Alignment = Align.Center
+    MaxLength = 7
+  }
+  { LblVenta Label
+    MoveScaled(1,17,10,4)
+    Font = Font["Bold,+2"]
+    Text = ("Venta :")
+  }
+  { DirPasoContabilidad DirBox
+    MoveScaled(2,50,44,4)
+  }
+  { LblAsientoscreados Label
+    MoveScaled(34,17,18,4)
+    Font = Font["Bold,+1"]
+    Text = ("Asientos Creados :")
+  }
+  { LcdAsientosCreados LCDLabel
+    MoveScaled(52,17,16,4)
+    Font = Font["Bold,+2"]
+    Foreground = Color.Blue
+    Text = ("0")
+    Alignment = Align.Center
+  }
+  { LblRuta Label
+    MoveScaled(2,45,27,4)
+    Font = Font["Bold,Underline,+1"]
+    Text = ("Ruta Guardardo Ficheros")
+  }
+  { LblProceso Label
+    MoveScaled(43,41,34,4)
+    Visible = False
+    Font = Font["Bold,+1"]
+    Foreground = Color.Blue
+    Text = ("PROCESO TERMINADO")
+    Alignment = Align.Center
+    Border = Border.Raised
+  }
+}

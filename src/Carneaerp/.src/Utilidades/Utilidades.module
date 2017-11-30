@@ -6,16 +6,16 @@
 
 Public Sub In_Act_Bor(Sql As String)
   
-  FMain.Conexion_Base_Datos.Close
-  Try FMain.Conexion_Base_Datos.Open
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
   FMain.Conexion_Base_Datos.Exec(Sql)
-  Catch
-    Message.Error("Error en Sentencia: " & sql) 
+  'FMain.Conexion_Base_Datos.Close
 End
 
 '' Funcion para comprobar que un dato existe en la base de datos.<br>
 '' Parametros:<br>
-''  Sql --> Sentencia select para comprobar la existencia del dato.<br>
+''  Sql --> Sentencia select para comprobar la existencia dehttps://github.com/belmotek/gambas-enhanced-controlsl dato.<br>
 '' Devuelve:<br>
 ''  True -->  Si existe el valor buscado<br>
 ''  False --> Si no esiste el valor buscado<br>
@@ -25,8 +25,10 @@ Public Function Comprobar_existe_dato(Sql As String) As Boolean
   Dim Resultado As Result
   Dim Validar As Boolean
   Validar = False
-  FMain.Conexion_Base_Datos.Close
-  FMain.Conexion_Base_Datos.Open
+ 
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
   
   Resultado = FMain.Conexion_Base_Datos.Exec(Sql)
   If Resultado.Count > 0 Then
@@ -34,7 +36,7 @@ Public Function Comprobar_existe_dato(Sql As String) As Boolean
   Endif
   
   Return Validar
-  
+  'FMain.Conexion_Base_Datos.Close
 End
 
 
@@ -48,8 +50,10 @@ Public Sub Llenar_Combobox(Sql As String, ByRef Combobox_Trabajo As ComboBox, Ca
   Dim Result_Trabajo As Result
   
   Combobox_Trabajo.Clear
-  FMain.Conexion_Base_Datos.Close
-  FMain.Conexion_Base_Datos.Open
+  'FMain.Conexion_Base_Datos.Close
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
   Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
   Result_Trabajo.MoveFirst
   'Combobox_Trabajo.Add("")
@@ -57,8 +61,9 @@ Public Sub Llenar_Combobox(Sql As String, ByRef Combobox_Trabajo As ComboBox, Ca
     Combobox_Trabajo.Add(Result_Trabajo[Campo])
     Result_Trabajo.MoveNext
   Wend
+  
   'Combobox_Trabajo.text = ""
-  FMain.Conexion_Base_Datos.Close
+  'FMain.Conexion_Base_Datos.Close
   
 End
 
@@ -74,8 +79,10 @@ Public Sub Llenar_Listbox(Sql As String, ByRef Listbox_Trabajo As ListBox, Campo
   
   Listbox_Trabajo.Clear
   
-  FMain.Conexion_Base_Datos.Close
-  FMain.Conexion_Base_Datos.Open
+  
+  If Not FMain.Conexion_Base_Datos.Opened Then
+     FMain.Conexion_Base_Datos.Open  
+  Endif
   
   Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
   Result_Trabajo.MoveFirst
@@ -83,7 +90,9 @@ Public Sub Llenar_Listbox(Sql As String, ByRef Listbox_Trabajo As ListBox, Campo
     Listbox_Trabajo.Add(Result_Trabajo[Campo])
     Result_Trabajo.MoveNext
   Wend
-  FMain.Conexion_Base_Datos.Close
+  
+  'FMain.Conexion_Base_Datos.Close
+  
   
 End
 
@@ -97,12 +106,15 @@ End
 Public Function Obtener_Campo_Tabla(sql As String, Campo As String) As String
   Dim Valor_A_Devolver As String
   Dim Result_Trabajo As Result
-  FMain.Conexion_Base_Datos.Close
-  FMain.Conexion_Base_Datos.Open
+
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
   Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
   Result_Trabajo.MoveFirst
   Valor_A_Devolver = Result_Trabajo[Campo]
-  FMain.Conexion_Base_Datos.Close
+  
+  'FMain.Conexion_Base_Datos.Close
   Return Valor_A_Devolver
 End
 
@@ -118,12 +130,14 @@ Public Function Tabla_Vacia(Sql As String) As Integer
   Dim N_filas As Integer
   Dim Result_Trabajo As Result
   N_filas = 0
-  FMain.Conexion_Base_Datos.Close
-  FMain.Conexion_Base_Datos.Open
+  
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
   Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
   N_filas = Result_Trabajo.Count
   Return N_filas
-  
+  'FMain.Conexion_Base_Datos.Close
 End
 
 '' Procediminento para eliminar un elemento de un combobox.<br>
@@ -159,12 +173,15 @@ End
 Public Function Valor_Maximo(Sql As String, Campo As String) As String
   Dim Valor_A_Devolver As String
   Dim Result_Trabajo As Result
-  FMain.Conexion_Base_Datos.Close
-  FMain.Conexion_Base_Datos.Open
+  
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
   Result_Trabajo = FMain.Conexion_Base_Datos.Exec(Sql)
   Result_Trabajo.MoveLast
   Valor_A_Devolver = Result_Trabajo[Campo]
-  FMain.Conexion_Base_Datos.Close
+  'FMain.Conexion_Base_Datos.Close
+  
   Return Valor_A_Devolver
   
 End
@@ -231,6 +248,42 @@ Public Function Fecha_Correcta(Fecha_Trabajo As String) As String
   Return Fecha_Devuelta
 End
 
+'' Funcion para calcular el numero de factura o albaran
+'' Parametros:<br>
+''    Tipo --> Tomara los siguientes valores<br>
+''        A -- Albaran.<br>
+''        F -- Factura.<br>
+'' Devudelve: <br>
+''      Numero De factura o albaran siguiente.
+
+Public Function Calculo_Numero_FA(Tipo As String) As String
+  
+  Dim Ano As String
+  Dim Numero As String
+  Dim Aux As Integer
+  Dim Nummero_Devuelto As String
+  ano = Format(Now, "yy")
+  
+  If tipo = "F" Then
+    If Utilidades.Tabla_Vacia("select * from facturas") > 0 Then
+      numero = Utilidades.Valor_Maximo("select * from facturas order by 1", "numerofactura")
+      aux = CInt(Mid(numero, 2, 9))
+      Nummero_Devuelto = "F" & CInt(aux + 1)
+    Else
+      Nummero_Devuelto = "F" & ano & "0000001"
+    Endif
+  Else
+    If Utilidades.Tabla_Vacia("select * from albaranes") > 0 Then
+      numero = Utilidades.Valor_Maximo("select * from albaranes order by 1", "numeroalbaran")
+      aux = CInt(Mid(numero, 2, 9))
+      Nummero_Devuelto = "A" & CInt(aux + 1)
+    Else
+      Nummero_Devuelto = "A" & ano & "0000001"
+    Endif
+  Endif
+  Return Nummero_Devuelto
+End
+
 '' Funcion que nos genera las facturas/albaranes para impresion<br>
 ''  Parametros:<br>
 ''    NumeroFactura --> Factura albaran que queremos impirimir.<br>
@@ -286,7 +339,10 @@ Public Sub Generar_Factura_Albaran(NumeroFactura As String)
   Endif
   
   FMain.Conexion_Base_Datos.Close
-  FMain.Conexion_Base_Datos.Open
+ ' If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  'Endif
+
   Cabecera = FMain.Conexion_Base_Datos.Exec(Sql_Cabecera)
   BaseImponible = Cabecera["F.base"] 
   DescuentoPP = Cabecera["F.descuentopp"] 
@@ -328,8 +384,11 @@ Public Sub Generar_Factura_Albaran(NumeroFactura As String)
   cadena &= "<strong>Nif :</strong> " & nif & " <br></div><br><br><br><br><br><br>"
   cadena &= "<br><br><div style=\" width:500px;clear:both;margin-top:.5em;\">"
   cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Concepto</th><th>Cantidad</th><th>Precio</th><th>Importe</th><th>Lote</th></tr>"
-  FMain.Conexion_Base_Datos.Close
+  fMain.Conexion_Base_Datos.Close
   FMain.Conexion_Base_Datos.Open
+  'If Not FMain.Conexion_Base_Datos.Opened Then
+   ' FMain.Conexion_Base_Datos.Open  
+  'Endif
   Lineas = FMain.Conexion_Base_Datos.Exec(Sql_Linea)
   Lineas.MoveFirst
   While Lineas.Available

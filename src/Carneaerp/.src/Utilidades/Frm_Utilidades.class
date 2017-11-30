@@ -81,8 +81,7 @@ Public Sub BtnAceptar_Click()
   Endif
   
   If validar Then
-    LblDatosActualizados.Visible = True
-   fmain.FicheroConexionBD["ConexionBD/Host"] = TxtHost.Text
+    fmain.FicheroConexionBD["ConexionBD/Host"] = TxtHost.Text
     fmain.FicheroConexionBD["ConexionBD/Puerto"] = TxtPuerto.text
     fmain.FicheroConexionBD["ConexionBD/Usuario"] = TxtUsuario.text
     fmain.FicheroConexionBD["ConexionBD/Password"] = Utilidades.cripto(1, TxtPassword.text)
@@ -93,6 +92,14 @@ Public Sub BtnAceptar_Click()
     fmain.Conexion_Base_Datos.User = TxtUsuario.Text
     fmain.Conexion_Base_Datos.Password = TxtPassword.Text
     fmain.Conexion_Base_Datos.Name = TxtBaseDatos.Text
+    Try fmain.Conexion_Base_Datos.Open
+      fmain.Conexion_Base_Datos.Close
+    If Error Then
+      Message.Error("Error en datos de conexion. Revise la configuracion.")
+    Else 
+      LblDatosActualizados.Visible = True
+      
+    Endif  
   Endif
 
 End

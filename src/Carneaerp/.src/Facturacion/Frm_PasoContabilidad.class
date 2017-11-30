@@ -1,0 +1,149 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+  Me.Title = "PASO A CONTABILIDAD CONTAPLUS"
+  Configurar_Cuentas_Contabilidad()
+  DirPasoContabilidad.Value = FMain.CarpetaCarnea
+End
+
+Public Sub BtnSalirPasoContabilidad_Click()
+
+  Me.Close
+
+End
+
+Public Sub BtnIniciar_Click()
+
+  Dim xDiario As File
+  Dim XSubCta As File
+  Dim RutaPasoContabilidad As String
+  Dim Facturas_NoContabilizadas As Result
+  Dim Asiento As Float
+  ' Lineas para montar los asientos
+  Dim Aux_Linea_Subcuenta As String
+  Dim Linea_Subcuenta As String
+  Dim Linea_Cliente As String
+  Dim Linea_Venta As String
+  Dim Linea_Iva As String
+  Dim Linea_Recargo As String
+  Dim Linea_Cobro As String
+  Dim Sql As String
+  ' Datos para pasar a contabilidad
+  Dim Cliente_Codigo As String
+  Dim Cliente_Recargo As String
+  Dim Cliente_Subcuenta As String
+  ' Datos Facturas
+  Dim Factura_Numero As String
+  Dim Factura_Fecha As String
+  Dim Factura_Base As String
+  Dim Factura_Iva As String
+  Dim Factura_Recargo As String
+  Dim Factura_ImporteIva As String
+  Dim Factura_ImporteRecargo As String
+  Dim Factura_Total As String
+  
+  Aux_Linea_Subcuenta = "\";;;;;;;;;;;;;;;;"
+  Asiento = 1.0
+  If DirPasoContabilidad.value = "" Then
+    Balloon.Error("Debe elegir directorio con permisos para poder realizar el paso a contabilidad.", DirPasoContabilidad)
+  Else
+    RutaPasoContabilidad = DirPasoContabilidad.Value
+    If Exist(RutaPasoContabilidad & "/xDiario.txt") Or Exist(RutaPasoContabilidad & "/xSubcta.txt") Then
+      Kill RutaPasoContabilidad & "/xSubcta.txt"
+      Kill RutaPasoContabilidad & "/xDiario.txt"
+      xDiario = Open RutaPasoContabilidad & "/xDiario.txt" For Write Append    
+      xSubCta = Open RutaPasoContabilidad & "/xSubcta.txt" For Write Append        
+    Else
+      xDiario = Open RutaPasoContabilidad & "/xDiario.txt" For Write Append    
+      xSubCta = Open RutaPasoContabilidad & "/xSubcta.txt" For Write Append    
+    Endif
+    FMain.Conexion_Base_Datos.Close
+    FMain.Conexion_Base_Datos.Open
+    sql = "select numerofactura,fecha,base,iva,recargo,importeiva,importerecargo,total,cliente from facturas where contabilizada='N'"
+    Facturas_NoContabilizadas = FMain.Conexion_Base_Datos.Exec(Sql)
+    Facturas_NoContabilizadas.MoveFirst
+    While Facturas_NoContabilizadas.Available
+   
+      Cliente_Codigo = Facturas_NoContabilizadas["cliente"]
+      Factura_Numero = Facturas_NoContabilizadas["numerofactura"]
+      Factura_Fecha = Facturas_NoContabilizadas["fecha"]
+      Factura_Base = Facturas_NoContabilizadas["base"]
+      Factura_Iva = Facturas_NoContabilizadas["iva"]
+      Factura_Recargo = Facturas_NoContabilizadas["recargo"]
+      Factura_ImporteIva = Facturas_NoContabilizadas["importeiva"]
+      Factura_ImporteRecargo = Facturas_NoContabilizadas["importerecargo"]
+      Factura_Total = Facturas_NoContabilizadas["total"]
+      Cliente_Recargo = Utilidades.Obtener_Campo_Tabla("select recargo from clientes where codigocliente='" & Cliente_Codigo & "'", "recargo") 
+      Cliente_Subcuenta = Utilidades.Obtener_Campo_Tabla("select subcuentaiva from clientes where codigocliente='" & Cliente_Codigo & "'", "subcuentaiva")
+	    Linea_Cliente = CStr(Asiento) & ";" & Factura_Fecha & ";\"" & Cliente_Subcuenta & "\";;;\"Fra-" & Factura_Numero & "\";;0.00;;0.00;0.00;;;;;;;;;;;;;;;;;" &
+      Factura_Total & ";0.00;0.00;;;;;;;;;;;;;;;;;"
+      Linea_Subcuenta = "\"" & Cliente_Subcuenta & Aux_Linea_Subcuenta
+	    Print #xDiario, Linea_Cliente
+      Print #xSubCta, Linea_Subcuenta
+      Linea_Venta = CStr(Asiento) & ";" & Factura_Fecha & ";\"" & TxtVenta.Text & "\";;;\"Fra-" & Factura_Numero & "\";;0.00;;0.00;0.00;;;;;;;;;;;;;;;;;0.00;" &
+      Factura_Base & ";0.00;;;;;;;;;;;;;;;;;"
+      Linea_Subcuenta = "\"" & TxtVenta.Text & Aux_Linea_Subcuenta
+      Print #xDiario, Linea_Venta
+      Print #xSubCta, Linea_Subcuenta 
+      Linea_Iva = CStr(Asiento) & ";" & Factura_Fecha & ";\"" & TxtIva.Text & "\";\"" & Cliente_Subcuenta & "\";;\"Fra-" & Factura_Numero & "\";;" &
+      Factura_Numero & ";;" & Factura_Iva & ";" & CStr(CFloat(Factura_Recargo)) & ";;;;;;;;;;;;;;;;;0.00;" & Factura_ImporteIva & ";" & Factura_Base & ";;;;;;;;;;;;;;;;" & Factura_Fecha & ";"
+      Print #xDiario, Linea_Iva
+      If Cliente_Recargo = "S" Then
+         Linea_Subcuenta = "\"" & TxtIvaRe.Text & Aux_Linea_Subcuenta
+         Print #xSubCta, Linea_Subcuenta
+         Linea_Recargo = CStr(Asiento) & ";" & Factura_Fecha & ";\"" & TxtRecargoE.Text & "\";\"" & Cliente_Subcuenta & "\";;\"Fra-" & Factura_Numero & "\";;" &
+         "0.00;;0.00;0.00;;;;;;;;;;;;;;;;;0.00;" & Factura_ImporteRecargo & ";0.00;;;;;;;;;;;;;;;;;"
+         Print #xDiario, Linea_Recargo
+         Linea_Subcuenta = "\"" & TxtRecargoE.Text & Aux_Linea_Subcuenta
+         Print #xSubCta, Linea_Subcuenta
+      Else
+        Linea_Subcuenta = "\"" & TxtIva.Text & Aux_Linea_Subcuenta
+        Print #xSubCta, Linea_Subcuenta
+      Endif
+      Asiento = Asiento + 1
+      Linea_Cobro = CStr(Asiento) & ";" & Factura_Fecha & ";\"" & TxtCobro.Text & "\";;;\"Fra-Cobro-" & Factura_Numero & "\";;0.00;;0.00;0.00;;;;;;;;;;;;;;;;;" &
+      Factura_Total & ";0.00;0.00;;;;;;;;;;;;;;;;;"
+      Linea_Subcuenta = "\"" & TxtCobro.Text & Aux_Linea_Subcuenta
+      Print #xDiario, Linea_Cobro
+      Print #xSubCta, Linea_Subcuenta
+      Linea_Cliente = CStr(Asiento) & ";" & Factura_Fecha & ";\"" & Cliente_Subcuenta & "\";;;\"Fra-Cobro-" & Factura_Numero & "\";;0.00;;0.00;0.00;;;;;;;;;;;;;;;;;0.00;" &
+      Factura_Total & ";0.00;;;;;;;;;;;;;;;;;"
+      Linea_Subcuenta = "\"" & TxtVenta.Text & Aux_Linea_Subcuenta
+      Print #xDiario, Linea_Cliente
+      Print #xSubCta, Linea_Subcuenta
+      Asiento = Asiento + 1
+      sql = "update facturas set contabilizada='S' where numerofactura='" & Factura_Numero & "'"
+      Utilidades.In_Act_Bor(sql)
+      Facturas_NoContabilizadas.MoveNext
+    Wend
+    
+    xSubCta.Close
+    xDiario.Close
+    FMain.Conexion_Base_Datos.Close
+    LcdAsientosCreados.Text = Asiento - 1
+    lblproceso.Visible = True 
+  Endif
+  FMain.Conexion_Base_Datos.Close
+End
+
+
+''*************************** Funciones privadas****************************
+''
+''**************************************************************************
+Private Sub Configurar_Cuentas_Contabilidad()
+  Dim Sql As String
+  
+  TxtVenta.Text = Utilidades.Obtener_Campo_Tabla("select * from cuentascontabilidad", "venta")
+  TxtIva.Text = Utilidades.Obtener_Campo_Tabla("select * from cuentascontabilidad", "iva")
+  TxtIvaRe.Text = Utilidades.Obtener_Campo_Tabla("select * from cuentascontabilidad", "ivare")
+  TxtRecargoE.Text = Utilidades.Obtener_Campo_Tabla("select * from cuentascontabilidad", "re")
+  TxtCobro.Text = Utilidades.Obtener_Campo_Tabla("select * from cuentascontabilidad", "cobro")
+End
+
+
+
+
+
+

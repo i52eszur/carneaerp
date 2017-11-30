@@ -21,6 +21,10 @@
       Text = ("Facturar Albaranes")
       Picture = Picture["imagenes/32x32/facturaralbaranes.png"]
     }
+    { MenuPasoContabilidad Menu
+      Text = ("Paso Contabilidad")
+      Picture = Picture["imagenes/32x32/pasocontabilidad.png"]
+    }
   }
   { FrameFacturacion2 Frame
     MoveScaled(1,1,157,84)

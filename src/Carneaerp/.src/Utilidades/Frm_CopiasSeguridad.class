@@ -1,0 +1,99 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+  Me.Title = "COPIAS DE SEGURIDAD"
+  DircopiaMysql.Value = FMain.CarpetaCopiasSeguridad
+  Txtfichero.Text = FMain.Conexion_Base_Datos.Name & Format(Now, "yyyymmddhhnnss") & ".sql"
+  dircopiatar.value = User.Home
+  lblrutatrabajo.Text = FMain.CarpetaCarnea
+  TxtHost.Text = FMain.Conexion_Base_Datos.Host
+  Txtpuerto.Text = FMain.Conexion_Base_Datos.Port
+  TxtUsuario.Text = FMain.Conexion_Base_Datos.User
+  TxtPassword.Text = FMain.Conexion_Base_Datos.Password
+  TxtBaseDatos.Text = FMain.Conexion_Base_Datos.Name
+  Txtficheroruta.Text = TxtBaseDatos.Text & Format(Now, "yyyymmddhhnnss") & ".tar.gz"
+  FileChooser.Root = FMain.CarpetaCarnea
+  FileChooser.Filter = ["*.sql", "Ficheros SQL"]
+  
+End
+
+Public Sub BtnSalirTrazabilidad_Click()
+
+  Me.Close
+
+End
+
+Public Sub BtnRealizaCopia_Click()
+  
+  Dim Copia_Mysql As String
+  Dim Comando As String
+  Dim Opciones As String 
+  Dim Conexion As New Connection
+  'mysqldump -h localhost -P 3306 -u gambas -pgambas --databases carnea --add-drop-database --add-drop-table > /home/rescobar/carnea/copiasseguridad/carnea.sql
+  Opciones = " --add-drop-database --add-drop-table"
+  Copia_Mysql = DircopiaMysql.Value & "/" & Txtfichero.Text
+  comando = "mysqldump -h " & TxtHost.Text & " -P " & Txtpuerto.Text & " -u " & TxtUsuario.Text & " -p" & TxtPassword.Text & " --databases " & TxtBaseDatos.Text &
+  " --add-drop-database --add-drop-table > " & Copia_Mysql
+  Conexion.Type = "mysql"
+  Conexion.Host = TxtHost.Text
+  Conexion.Port = Txtpuerto.Text
+  Conexion.User = TxtUsuario.Text
+  Conexion.Password = TxtPassword.Text
+  Conexion.Name = TxtBaseDatos.Text
+  Try Conexion.Open
+      Conexion.Close
+  If Error Then
+    Message.Error("Error en datos de conexion. Revise la configuracion.")
+  Else 
+    Shell Comando Wait
+      
+  Endif  
+  
+  'tar czfv carneaerp.tar.gz /home/rescobar/carneaerp
+  
+  comando = "tar czf " & dircopiatar.Value & "/" & Txtficheroruta.Text & " " & FMain.CarpetaCarnea
+  Shell Comando Wait
+  
+  
+  If (Not Exist(Copia_Mysql)) Or (Not Exist(dircopiatar.Value & "/" & Txtficheroruta.Text)) Then
+    textmensaje.Visible = True
+    textmensaje.Foreground = Color.Red
+    textmensaje.Text = "ERROR AL CREAR COPIA"
+  Else
+    textmensaje.Visible = True
+    textmensaje.Foreground = Color.Green
+    textmensaje.Text = "COPIA REALIZADA CON EXITO"
+  Endif
+End
+
+
+
+Public Sub BtnRestaurar_Click()
+  Dim Comando As String
+  Dim Conexion As New Connection
+  Conexion.Type = "mysql"
+  Conexion.Host = TxtHost.Text
+  Conexion.Port = Txtpuerto.Text
+  Conexion.User = TxtUsuario.Text
+  Conexion.Password = TxtPassword.Text
+  Conexion.Name = TxtBaseDatos.Text
+  If FileChooser.SelectedPath = "" Then
+    Balloon.Error("Debe elegir fichro para restaurar", FileChooser)
+  Else
+    Try Conexion.Open
+    Conexion.Close
+    If Error Then
+      Message.Error("Error en datos de conexion. Revise la configuracion.")
+    Else 
+      comando = "mysql -h " & TxtHost.Text & " -P " & Txtpuerto.Text & " -u " & TxtUsuario.Text & " -p" & TxtPassword.Text & "  < " & FileChooser.SelectedPath
+      Shell Comando Wait
+      TextInfoRestaurar.Enabled = True
+      TextInfoRestaurar.Text = "Restauracion realizada con exito."
+    Endif  
+  
+  Endif
+  
+
+End

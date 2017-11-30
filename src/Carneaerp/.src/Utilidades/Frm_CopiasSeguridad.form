@@ -1,0 +1,140 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,124,81)
+  Icon = Picture["imagenes/32x32/copia-de-seguridad.png"]
+  { TabCopias TabStrip
+    MoveScaled(3,3,114,70)
+    Count = 2
+    Index = 0
+    Text = ("COPIA SEGURIDAD")
+    { LblCopiaBDMsyql Label
+      MoveScaled(2,2,29,4)
+      Font = Font["Bold,+2"]
+      Text = ("Copia Base Datos MYSQL ")
+    }
+    { DirCopiaMysql DirBox
+      MoveScaled(3,9,44,4)
+    }
+    { TxtFichero TextBox
+      MoveScaled(48,9,40,4)
+    }
+    { LblRuta Label
+      MoveScaled(5,5,5,4)
+      Font = Font["Bold,Underline,+2"]
+      Text = ("Ruta ")
+    }
+    { LblNombreFichero Label
+      MoveScaled(49,5,18,4)
+      Font = Font["Bold,Underline,+2"]
+      Text = ("Nombre Fichero")
+    }
+    { BtnRealizaCopia Button
+      MoveScaled(49,56,16,4)
+      Font = Font["Bold"]
+      Text = ("REALIZAR COPIA")
+    }
+    { TxtHost TextBox
+      MoveScaled(13,14,24,4)
+    }
+    { LblPuertoConexion Label
+      MoveScaled(4,19,22,4)
+      Font = Font["+2,Bold"]
+      Text = ("Puerto Conexion  : ")
+    }
+    { TxtPuerto TextBox
+      MoveScaled(28,19,24,4)
+    }
+    { LblUsuario Label
+      MoveScaled(4,25,13,4)
+      Font = Font["Bold,+3"]
+      Text = ("Usuario :")
+    }
+    { TxtUsuario TextBox
+      MoveScaled(18,25,24,4)
+    }
+    { Lblpassword Label
+      MoveScaled(4,31,16,4)
+      Font = Font["Bold,+3"]
+      Text = ("Contraseña : ")
+    }
+    { TxtPassword TextBox
+      MoveScaled(22,31,24,4)
+      Password = True
+    }
+    { LblBaseDatos Label
+      MoveScaled(4,37,28,4)
+      Font = Font["Bold,+3"]
+      Text = ("Nombre Base Datos : ")
+    }
+    { TxtBaseDatos TextBox
+      MoveScaled(33,37,24,4)
+    }
+    { LblHost Label
+      MoveScaled(4,14,7,4)
+      Font = Font["+2,Bold"]
+      Text = ("Host : ")
+    }
+    { TextMensaje TextLabel
+      MoveScaled(60,21,40,15)
+      Visible = False
+      Font = Font["Bold,+1"]
+      Alignment = Align.Center
+      Border = Border.Sunken
+    }
+    { LblCopiaBDMsyql2 Label
+      MoveScaled(4,44,26,4)
+      Font = Font["Bold,+2"]
+      Text = ("Copia Directorio Trabajo")
+    }
+    { LblRutaTrabajo Label
+      MoveScaled(4,49,27,4)
+      Font = Font["Bold,+1"]
+    }
+    { DirCopiatar DirBox
+      MoveScaled(32,49,44,4)
+    }
+    { LblRuta2 Label
+      MoveScaled(33,45,5,4)
+      Font = Font["Bold,Underline,+2"]
+      Text = ("Ruta ")
+    }
+    { LblNombreFichero2 Label
+      MoveScaled(78,45,18,4)
+      Font = Font["Bold,Underline,+2"]
+      Text = ("Nombre Fichero")
+    }
+    { TxtFicheroRuta TextBox
+      MoveScaled(77,49,34,4)
+    }
+    Index = 1
+    Text = ("RESTAURAR COPIA")
+    { FileChooser FileChooser
+      MoveScaled(2,2,108,53)
+    }
+    { BtnRestaurar Button
+      MoveScaled(63,57,20,4)
+      Font = Font["Bold"]
+      Text = ("RESTAURAR COPIA")
+    }
+    { LblInfoConexion Label
+      MoveScaled(2,57,60,4)
+      Font = Font["Bold,+1"]
+      Text = ("Se usara los datos de conexion  de la pestaña copia de seguridad.")
+    }
+    { TextInfoRestaurar TextLabel
+      MoveScaled(3,61,57,4)
+      Enabled = False
+      Font = Font["Bold,+2"]
+      Foreground = Color.Blue
+      Alignment = Align.Center
+    }
+    Index = 0
+  }
+  { BtnSalirTrazabilidad Button
+    MoveScaled(52,74,16,5)
+    Foreground = Color.Red
+    Text = ("SALIR")
+    Picture = Picture["imagenes/32x32/salida.png"]
+  }
+}
