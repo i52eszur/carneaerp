@@ -1,0 +1,100 @@
+' Gambas class file
+
+
+Public Lote_Actual As String
+
+Public Sub Form_Open()
+
+  Me.Title = "Lote :" & Frm_ConsultaLotes.Lote_Generar
+  Lote_Actual = Frm_ConsultaLotes.Lote_Generar
+  Generar_Lote()
+  
+End
+Public Sub BtnSalirLote_Click()
+
+  Me.Close
+
+End
+
+Public Sub BtnGenerarPdf_Click()
+
+    Exec ["wkhtmltopdf", FMain.CarpetaTrazabilidad & "/" & Lote_Actual & ".html", FMain.CarpetaTrazabilidad & "/" & Lote_Actual & ".pdf"] Wait
+  Exec ["evince", FMain.CarpetaTrazabilidad & "/" & Lote_Actual & ".pdf"]
+
+End
+
+Private Sub Generar_Lote()
+  
+  Dim Tipo As String
+  Dim cadena As String
+  Dim Sql As String
+  Dim Linea_Detalles As Result
+  Dim Lote As String
+  Dim Aux As String
+  Dim NombreListado As String
+  Dim RutaListado As String
+  ' Cabecera Lote
+  Dim Fecha As String
+  Dim Coste As String
+  Dim Cantidad As String
+  Dim Merma As String
+  Dim Articulo_Codigo As String
+  Dim Articulo_Nombre As String
+  ' Linea Detalle Lote
+  Dim Linea_MateriaPrima As String
+  Dim Linea_Cantidad As String
+  Dim Linea_Coste As String
+  Dim Linea_Lotecompra As String
+  Dim Linea_Proveedor As String
+  Dim Linea_NfacturaCompra As String
+  Dim Linea_FechaFacturaCompra As String
+  
+  NombreListado = "Lote"
+  RutaListado = FMain.CarpetaListados & "/Lote"
+  Lote = Lote_Actual
+  Fecha = Utilidades.Obtener_Campo_Tabla("select fecha from lotes where codigolote='" & Lote & "'", "fecha")
+  Coste = Utilidades.Obtener_Campo_Tabla("select coste from lotes where codigolote='" & Lote & "'", "coste")
+  Cantidad = Utilidades.Obtener_Campo_Tabla("select cantidad from lotes where codigolote='" & Lote & "'", "cantidad")
+  Merma = Utilidades.Obtener_Campo_Tabla("select merma from lotes where codigolote='" & Lote & "'", "merma")
+  Articulo_Codigo = Utilidades.Obtener_Campo_Tabla("select articulo from lotes where codigolote='" & Lote & "'", "articulo")
+  Articulo_Nombre = Utilidades.Obtener_Campo_Tabla("select nombre from articulo where codigoarticulo='" & Articulo_Codigo & "'", "nombre")
+  cadena = cadena = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/></head><body>"
+  cadena &= "<style> table td {text-align:center;}  </style>"
+  cadena &= "<div><img src=\"" & FMain.CarpetaCarnea & "/logo/logo.png\" style=\" width:900px;height:200px;\"> </div><br><br>"
+  cadena &= "<div style=\"border:1px solid black; width:300px;float:left;\"><strong>&nbsp;&nbsp;&nbsp;&nbsp;LOTE <br>Lote Numero : </strong> " & Lote & "<br>"
+  cadena &= "<strong>Fecha :</strong> " & fecha & " <br>"
+  cadena &= "<strong>Coste :</strong> " & Coste & "<br>"
+  cadena &= "<strong>Cantidad : </strong> " & Cantidad & "<br>"
+  cadena &= "<strong>Merma :</strong> " & Merma & " <br>"
+  cadena &= "<strong>Articulo :</strong> " & Articulo_Nombre & "<br>"
+  
+  cadena &= " <br></div><br><br><br><br><br><br>"
+  cadena &= "<br><br><div style=\" width:500px;clear:both;margin-top:.5em;\">"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Materia Prima</th><th>Cantidad</th><th>Precio</th><th>Proveedor</th>"
+  cadena &= "<th>Lote Compra</th><th>Factura Compra</th><th>Fecha Compra</th></tr>"
+  sql = "select * from lotedetalle where codigolote='" & Lote & "'"
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
+  Linea_Detalles = FMain.Conexion_Base_Datos.Exec(Sql)
+  Linea_Detalles.MoveFirst
+  While Linea_Detalles.Available
+    aux = Linea_Detalles["materiaprima"]
+    Linea_MateriaPrima = Utilidades.Obtener_Campo_Tabla("select nombre from materiaprima where codigomateriaprima='" & aux & "'", "nombre")
+    Linea_Cantidad = Linea_Detalles["cantidad"]
+    Linea_Coste = Linea_Detalles["coste"]
+    Linea_Lotecompra = Linea_Detalles["numerolotecompra"]
+    aux = Linea_Detalles["proveedor"]
+    Linea_Proveedor = Utilidades.Obtener_Campo_Tabla("select razonsocial from proveedor where codigoproveedor='" & aux & "'", "razonsocial")
+    Linea_NfacturaCompra = Linea_Detalles["nfacturacompra"]
+    Linea_FechaFacturaCompra = Linea_Detalles["fechafacturacompra"]
+    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Linea_MateriaPrima & "</td><td>" & Linea_Cantidad & "</td><td>" & Linea_Coste & "</td><td>"
+    cadena &= Linea_Proveedor & "</td><td>" & Linea_Lotecompra & "</td><td>" & Linea_NfacturaCompra & "</td><td>" & Linea_FechaFacturaCompra & "</td></tr>"
+    Linea_Detalles.MoveNext
+  Wend
+
+  cadena &= " </table></div>"
+  cadena &= "<br><br><br><br><br><br><br><br><br><br><br><br></body></html>"
+  File.Save(RutaListado & ".html", cadena)
+  WebLote.Url = RutaListado & ".html"
+End

@@ -7,10 +7,10 @@
     Font = Font["Bold,+1"]
     Text = ("GENERAR PDF")
   }
-  { WebTrazabilidad WebView
+  { WebListado WebView
     MoveScaled(1,11,116,73)
   }
-  { BtnSalirTrazabilidad Button
+  { BtnSalirListado Button
     MoveScaled(29,2,16,5)
     Foreground = Color.Red
     Text = ("CERRAR")

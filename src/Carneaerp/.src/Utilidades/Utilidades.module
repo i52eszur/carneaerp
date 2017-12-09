@@ -368,7 +368,7 @@ Public Sub Generar_Factura_Albaran(NumeroFactura As String)
   CodigoPostal = Utilidades.Obtener_Campo_Tabla(sql, "codigopostal")
   sql = "select nif from clientes where razonsocial='" & RazonSocial & "'"
   nif = Utilidades.Obtener_Campo_Tabla(sql, "nif")
-  cadena = "<html><body>"
+  cadena = cadena = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/></head><body>"
   cadena &= "<div><img src=\"" & FMain.CarpetaCarnea & "/logo/logo.png\" style=\" width:900px;height:200px;\"> </div><br><br>" 
   If tipo = "F" Then
     cadena &= "<div style=\"border:1px solid black; width:300px;float:left;\"><strong>&nbsp;&nbsp;&nbsp;&nbsp;FACTURA <br>Factura Numero : </strong> " & NumeroFactura & "<br>"

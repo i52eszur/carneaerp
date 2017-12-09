@@ -49,8 +49,7 @@ Public Procedure activar(elform As Form, lote As String)
     Titulo = "Lote :" & lote
     For Each cont In wrktrazabilidad.windows  'buscamos si ya hay habierto un formulario con el mismo nombre del que se quiere abrir, o sea, si ya está abierto.
         'If cont.name = elform.Name And cont.text = elform.text Then
-  
-  
+    
         If cont.title = Titulo Then
             lAbierto = True
             'Break

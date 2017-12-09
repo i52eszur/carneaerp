@@ -5,15 +5,18 @@ Count=0
 Count=0
 
 [OpenFile]
-Active=2
-File[1]=".src/Utilidades/Utilidades.module:0.344"
-Count=7
-File[2]=".src/Facturacion/Frm_FacturacionAlbaranes.form"
-File[3]=".src/Facturacion/Frm_FacturacionAlbaranes.class:22.104"
-File[4]=".src/Facturacion/Frm_Facturacion.form"
-File[5]=".src/Facturacion/Frm_Facturacion.class:63.562"
-File[6]=".src/Gestion/Frm_Proveedores.form"
-File[7]=".src/Gestion/Frm_Proveedores.class:49.555"
+Active=10
+File[1]=".src/Utilidades/Utilidades.module:178.399"
+Count=10
+File[2]=".src/Utilidades/Frm_Informes.form"
+File[3]=".src/Utilidades/Frm_Informes.class:2.163"
+File[4]=".src/Utilidades/Frm_Listado.form"
+File[5]=".src/Utilidades/Frm_Listado.class:16.21"
+File[6]=".src/Lotes/Frm_Visualiza_Lote.form"
+File[7]=".src/Lotes/Frm_Visualiza_Lote.class:34.43"
+File[8]=".src/Lotes/Frm_ConsultaLotes.form"
+File[9]=".src/Lotes/Frm_ConsultaLotes.class:27.132"
+File[10]=".src/Facturacion/Frm_FacturacionAlbaranes.form"
 
 [Watches]
 Count=0

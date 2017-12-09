@@ -2,6 +2,7 @@
 
 
 Public Linea_lote_Consulta As Integer ' Variable para controlar la linea de posicion del DatagridLoteDetalle y  poder movernos con flechas.
+Public Lote_Generar As String
 Public Sub Form_Open()
 
   Me.Title = "CONSULTA DE LOTES"
@@ -123,11 +124,22 @@ End
 ''
 ''**************************************************************************
 
-''*************************** Funciones privadas****************************
-''
-''**************************************************************************
 
 
+
+Public Sub BtnGenerarLote_Click()
+
+  Dim Sql As String
+  If CmbLote.Text = "" Then
+     Balloon.Error("Lote no existe.", CmbLote)
+  Else If utilidades.Tabla_Vacia("select * from lotes where codigolote='" & UCase(CmbLote.Text) & "'") > 0
+    Lote_Generar = UCase(CmbLote.Text)
+    Frm_Visualiza_Lote.Show
+  Else
+     Balloon.Error("Lote no existe.", CmbLote)
+  Endif
+
+End
 
 Public Sub BtnConsultarLote_Click()
 
@@ -152,6 +164,9 @@ Public Sub BtnConsultarLote_Click()
   Endif
 End
 
+''*************************** Funciones privadas****************************
+''
+''**************************************************************************
 Private Sub Configurar_Objetos_Consulat_Lotes()
   
   'Utilidades.Llenar_Combobox("select * from articulo", CmbfArticulo, "nombre")
@@ -261,3 +276,5 @@ Private Sub Limpiar_Campos()
   
   
 End
+
+

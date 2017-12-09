@@ -2,6 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,145,100)
+  Resizable = False
   { FrameFacturarAlbaranes Frame
     MoveScaled(2,2,141,97)
     Background = Color.Background

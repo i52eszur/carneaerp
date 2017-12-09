@@ -1,2 +1,503 @@
 ' Gambas class file
 
+Public NombreListado As String
+Public RutaListado As String
+
+Public Sub BtnSalirListado_Click()
+
+  Me.Close
+
+End
+
+Public Sub BtnGenerarPdf_Click()
+
+  Exec ["wkhtmltopdf", FMain.CarpetaListados & "/" & NombreListado & ".html", FMain.CarpetaListados & "/" & NombreListado & ".pdf"] Wait
+  Exec ["evince", FMain.CarpetaListados & "/" & NombreListado & ".pdf"]
+
+End
+
+Public Sub Form_Open()
+
+  NombreListado = Frm_Informes.Accion_Realizar
+  RutaListado = FMain.CarpetaListados
+  If NombreListado = "RdbGeneralArticulos" Then
+    Me.Title = "LISTADO ARTICULOS"
+    GenberarInformeArticulos()
+  Else If NombreListado = "RdbArticuloMateriaprima"
+    Me.Title = "LISTADO MATERIAS PRIMAS ARTICULO"
+    GenberarInformeArticuloMateriasPrimas()
+  Else If NombreListado = "rdbClientes"
+    Me.Title = "LISTADO DE CLIENTES"
+    GenerarInformeClientes()
+  Else If NombreListado = "RdbClienteFacturas"
+    Me.Title = "LISTADO DEL FACTURAS Y ALBARANES"
+    GenerarInformeClientesFacturasAlbaranes()
+  Else If NombreListado = "RdbProveedor"
+    Me.Title = "LISTADO DE PROVEEDORES"
+    GenerarInformeProveedores()
+  Else If NombreListado = "RdbProveedorMateriaPrima"
+    Me.Title = "LISTADO MATERIAS PRIMAS PROVEEDOR"
+    GenerarInformeProveedorMateriaPrima()
+  Else If NombreListado = "RdbVendedor"
+    Me.Title = "LISTADO DE VENDEDORES"
+    GenerarInformeVendedores()
+  Else If NombreListado = "RdbVendedorClientes"
+    Me.Title = "LISTADO DE CLIENTES VENDEDOR"
+    GenerarInformeVendedorCliente()
+  Else If NombreListado = "GenerarLote"
+    Me.Title = "LOTE " & Frm_Informes.Lote_Generar
+    GenerarLote()
+  Endif 
+  
+End
+
+
+''*************************** Funciones privadas****************************
+''
+''**************************************************************************
+
+
+Private Sub GenberarInformeArticuloMateriasPrimas()  
+  Dim Sql As String
+  Dim Cadena As String  
+  Dim MateriasPrimas As Result
+  ' Datos de los articulos y materias primas
+  Dim Articulo As String
+  Dim Codigo_Articulo As String
+  Dim Nombre_MateriaPrima As String
+  Dim Codigo_MateriaPrima As String
+  NombreListado = "ListadoArticulosMateriaPrima"
+  RutaListado = RutaListado & "/ListadoArticulosMateriaPrima"
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
+  
+  Articulo = Frm_Informes.Articulo_MateriaPrima
+  Codigo_Articulo = Utilidades.Obtener_Campo_Tabla("select codigoarticulo from articulo where nombre='" & Articulo & "'", "codigoarticulo")
+  sql = "select M.codigomateriaprima,M.nombre from materiaprima M left join articulomateriaprima A on M.codigomateriaprima=A.materiaprima where A.articulo='" & Codigo_Articulo & "'"
+  MateriasPrimas = FMain.Conexion_Base_Datos.Exec(Sql)
+  cadena = cadena = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/></head><body>"
+  cadena &= "<style> table td {text-align:center;}  </style>"
+
+  cadena &= "<div><img src=\"" & FMain.CarpetaCarnea & "/logo/logo.png\" style=\" width:900px;height:200px;\"> </div><br><br>" 
+  cadena &= "<div style=\"width:900px;float:left\"><center><h1><strong>&nbsp;&nbsp;&nbsp;&nbsp;LISTADO MATERIAS PRIMAS ARTICULO: " & Articulo & " </strong></h1></center></div>"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Codigo Materia Prima</th><th>Nombre Materia Prima</th></tr>"
+  
+  While MateriasPrimas.Available
+    Codigo_MateriaPrima = MateriasPrimas["M.codigomateriaprima"]
+    Nombre_MateriaPrima = MateriasPrimas["M.nombre"]
+  
+   cadena &= " <tr style=\"border:1px solid black;\"><td>" & Codigo_MateriaPrima & "</td><td>" & Nombre_MateriaPrima & "</td></tr>"
+    MateriasPrimas.MoveNext
+  Wend
+  cadena &= " </table></div>"
+  cadena &= "<br><br><br><br><br><br><br><br><br><br><br><br></body></html>"
+  File.Save(RutaListado & ".html", cadena)
+  Weblistado.Url = RutaListado & ".html"
+  
+End
+
+
+Private Sub GenberarInformeArticulos()  
+  Dim Sql As String
+  Dim Cadena As String  
+  Dim Articulos As Result
+  ' Datos de los articulos
+  Dim Codigo_Articulo As String
+  Dim Nombre_Articulo As String
+  Dim Familia_Articulo As String
+  NombreListado = "ListadoArticulos"
+  RutaListado = RutaListado & "/ListadoArticulos"
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
+  sql = "select * from articulo"
+  Articulos = FMain.Conexion_Base_Datos.Exec(Sql)
+  
+  cadena = cadena = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/></head><body>"
+  cadena &= "<style> table td {text-align:center;}  </style>"
+
+  cadena &= "<div><img src=\"" & FMain.CarpetaCarnea & "/logo/logo.png\" style=\" width:900px;height:200px;\"> </div><br><br>" 
+  cadena &= "<div style=\"width:900px;float:left\"><center><h1><strong>&nbsp;&nbsp;&nbsp;&nbsp;LISTADO ARTICULOS </strong></h1></center></div>"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Codigo</th><th>Nombre</th><th>Familia</th></tr>"
+  While Articulos.Available
+    Codigo_Articulo = Articulos["codigoarticulo"]
+    Nombre_Articulo = Articulos["nombre"]
+    Familia_Articulo = Articulos["familia"]
+    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Codigo_Articulo & "</td><td>" & Nombre_Articulo & "</td><td>" & Familia_Articulo & "</td></tr>"
+    Articulos.MoveNext
+  Wend
+  cadena &= " </table></div>"
+  cadena &= "<br><br><br><br><br><br><br><br><br><br><br><br></body></html>"
+  File.Save(RutaListado & ".html", cadena)
+  Weblistado.Url = RutaListado & ".html"
+  
+End
+
+ Private Sub GenerarInformeClientes()
+  
+  Dim Sql As String
+  Dim Cadena As String  
+  Dim Clientes As Result
+  ' Datos de los clientes
+  Dim Codigo_Cliente As String
+  Dim Nombre_Cliente As String
+  Dim Direccion_Cliente As String
+  Dim Nif_Cliente As String
+  Dim Localidad_Cliente As String
+  Dim Vendedor_Cliente As String
+  
+  NombreListado = "ListadoClientes"
+  RutaListado = RutaListado & "/ListadoClientes"
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
+  sql = "select * from clientes"
+  Clientes = FMain.Conexion_Base_Datos.Exec(Sql)
+  
+  cadena = cadena = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/></head><body>"
+  cadena &= "<style> table td {text-align:center;}  </style>"
+
+  cadena &= "<div><img src=\"" & FMain.CarpetaCarnea & "/logo/logo.png\" style=\" width:900px;height:200px;\"> </div><br><br>" 
+  cadena &= "<div style=\"width:900px;float:left\"><center><h1><strong>&nbsp;&nbsp;&nbsp;&nbsp;LISTADO CLIENTES </strong></h1></center></div>"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Codigo</th><th>Nombre</th><th>Nif</th><th>Direccion</th>"
+  cadena &= "<th>Localidad</th><th>Vendedor</th></tr> "
+  While Clientes.Available
+    Codigo_Cliente = Clientes["codigocliente"]
+    Nombre_Cliente = Clientes["razonsocial"]
+    Direccion_Cliente = Clientes["direccion"]
+    Nif_Cliente = Clientes["nif"]
+    Localidad_Cliente = Clientes["localidad"]
+    Vendedor_Cliente = Clientes["vendedor"]
+    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Codigo_Cliente & "</td><td>" & Nombre_Cliente & "</td><td>" 
+    cadena &= Nif_Cliente & "</td><td>" & Direccion_Cliente & "</td><td>" & Localidad_Cliente & "</td><td>" & Vendedor_Cliente & "</td></tr>"
+    
+    Clientes.MoveNext
+  Wend
+  cadena &= " </table></div>"
+  cadena &= "<br><br><br><br><br><br><br><br><br><br><br><br></body></html>"
+  File.Save(RutaListado & ".html", cadena)
+  Weblistado.Url = RutaListado & ".html"
+  
+End
+
+Private Sub GenerarInformeClientesFacturasAlbaranes()
+  
+  Dim Sql As String
+  Dim Cadena As String  
+  Dim Facturas As Result
+  Dim Albaranes As Result
+  ' Datos de los clientes
+  Dim Codigo_Cliente As String
+  Dim Nombre_Cliente As String
+  'Datos Factura/Albaran
+  Dim Codigo As String
+  Dim Fecha As String
+  Dim Total As String
+  Dim Pagado As String
+  Dim Contabilizada As String
+  
+  NombreListado = "ListadoClienteFacturaAlbaran"
+  RutaListado = RutaListado & "/ListadoClienteFacturaAlbaran"
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
+  Nombre_Cliente = Frm_Informes.Cliente_FacturaAlbaran
+  Codigo_Cliente = Utilidades.Obtener_Campo_Tabla("select codigocliente from clientes where razonsocial='" & Nombre_Cliente & "'", "codigocliente")
+  sql = "select * from facturas where cliente='" & Codigo_Cliente & "'"
+  Facturas = FMain.Conexion_Base_Datos.Exec(Sql)
+
+  cadena = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/></head><body>"
+  cadena &= "<style> table td {text-align:center;}  </style>"
+  cadena &= "<div><img src=\"" & FMain.CarpetaCarnea & "/logo/logo.png\" style=\" width:900px;height:200px;\"> </div><br><br>" 
+  cadena &= "<div style=\"width:900px;float:left\"><center><h1><strong>&nbsp;&nbsp;&nbsp;&nbsp;LISTADO FACTURAS/ALBARANES DEL CLIENTE : " & Nombre_Cliente & " </strong></h1></center></div>"
+  cadena &= "<div style=\"width:900px;float:left;\"><center> <h2>FACTURAS</h2></center></div>"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Codigo</th><th>Fecha</th><th>Total</th><th>Cobrada</th>"
+  cadena &= "<th>Contabilizada</th></tr> "
+  While Facturas.Available
+    Codigo = Facturas["numerofactura"]
+    Fecha = Facturas["fecha"]
+    Total = Facturas["total"]
+    Pagado = Facturas["cobrada"]
+    Contabilizada = Facturas["contabilizada"]
+    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Codigo & "</td><td>" & Fecha & "</td><td>" 
+    cadena &= Total & "</td><td>" & Pagado & "</td><td>" & Contabilizada & "</td></tr>"
+    Facturas.MoveNext
+  Wend
+  cadena &= " </table></div>"
+   cadena &= "<div style=\"width:900px;float:left;\"><center> <h2>ALBARANES</h2></center></div>"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Codigo</th><th>Fecha</th><th>Total</th><th>Pagado</th>"
+  cadena &= "<th>Facturada</th></tr> "
+  sql = "select * from albaranes where cliente='" & Codigo_Cliente & "'"
+  FMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  Albaranes = FMain.Conexion_Base_Datos.Exec(Sql)
+  Albaranes.MoveFirst
+  While Albaranes.Available
+    Codigo = Albaranes["numeroalbaran"]
+    Fecha = Albaranes["fecha"]
+    Total = Albaranes["total"]
+    Pagado = Albaranes["pagado"]
+    Contabilizada = Albaranes["facturado"]
+    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Codigo & "</td><td>" & Fecha & "</td><td>" 
+    cadena &= Total & "</td><td>" & Pagado & "</td><td>" & Contabilizada & "</td></tr>"
+    Albaranes.MoveNext
+  Wend
+  cadena &= " </table></div>"
+  cadena &= "<br><br><br><br><br><br><br><br><br><br><br><br></body></html>"
+  File.Save(RutaListado & ".html", cadena)
+  Weblistado.Url = RutaListado & ".html"
+  
+End
+
+Private Sub GenerarInformeProveedores()
+  
+  Dim Sql As String
+  Dim Cadena As String  
+  Dim Proveedor As Result
+  ' Datos de los Proveedores
+  Dim Codigo_Proveedor As String
+  Dim Nombre_Proveedor As String
+  Dim Direccion_Proveedor As String
+  Dim Nif_Proveedor As String
+  Dim Localidad_Proveedor As String
+  Dim Provincia_Proveedor As String
+  NombreListado = "ListadoProveedores"
+  RutaListado = RutaListado & "/ListadoProveedores"
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
+  sql = "select * from proveedor"
+  Proveedor = FMain.Conexion_Base_Datos.Exec(Sql)
+  cadena = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/></head><body>"
+  cadena &= "<style> table td {text-align:center;}  </style>"
+  cadena &= "<div><img src=\"" & FMain.CarpetaCarnea & "/logo/logo.png\" style=\" width:900px;height:200px;\"> </div><br><br>" 
+  cadena &= "<div style=\"width:900px;float:left\"><center><h1><strong>&nbsp;&nbsp;&nbsp;&nbsp;LISTADO PROVEEDORES </strong></h1></center></div>"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Codigo</th><th>Nombre</th><th>Nif</th><th>Direccion</th>"
+  cadena &= "<th>Localidad</th><th>Provincia</th></tr> "
+  While Proveedor.Available
+    Codigo_Proveedor = Proveedor["codigoproveedor"]
+    Nombre_Proveedor = Proveedor["razonsocial"]
+    Direccion_Proveedor = Proveedor["direccion"]
+    Nif_Proveedor = Proveedor["nif"]
+    Localidad_Proveedor = Proveedor["localidad"]
+    Provincia_Proveedor = Proveedor["provincia"]
+    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Codigo_Proveedor & "</td><td>" & Nombre_Proveedor & "</td><td>" 
+    cadena &= Nif_Proveedor & "</td><td>" & Direccion_Proveedor & "</td><td>" & Localidad_Proveedor & "</td><td>" & Provincia_Proveedor & "</td></tr>"
+    Proveedor.MoveNext
+  Wend
+  cadena &= " </table></div>"
+  cadena &= "<br><br><br><br><br><br><br><br><br><br><br><br></body></html>"
+  File.Save(RutaListado & ".html", cadena)
+  Weblistado.Url = RutaListado & ".html"
+  
+End
+  
+
+
+Private Sub GenerarInformeProveedorMateriaPrima()
+  
+  Dim Sql As String
+  Dim Cadena As String  
+  Dim MateriasPrimas As Result
+  ' Datos de los articulos y materias primas
+  Dim Proveedor As String
+  Dim Codigo_Proveedor As String
+  Dim Nombre_MateriaPrima As String
+  Dim Codigo_MateriaPrima As String
+  NombreListado = "ListadoProveedorMateriaPrima"
+  RutaListado = RutaListado & "/ListadoProveedorMateriaPrima"
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
+  
+  Proveedor = Frm_Informes.Proveedor_MateriaPrima
+  Codigo_Proveedor = Utilidades.Obtener_Campo_Tabla("select codigoproveedor from proveedor where razonsocial='" & Proveedor & "'", "codigoproveedor")
+  sql = "select M.codigomateriaprima,M.nombre from materiaprima M left join proveedormateriaprima A on M.codigomateriaprima=A.materiaprima where A.proveedor='" & Codigo_Proveedor & "'"
+  MateriasPrimas = FMain.Conexion_Base_Datos.Exec(Sql)
+  cadena = cadena = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/></head><body>"
+  cadena &= "<style> table td {text-align:center;}  </style>"
+
+  cadena &= "<div><img src=\"" & FMain.CarpetaCarnea & "/logo/logo.png\" style=\" width:900px;height:200px;\"> </div><br><br>" 
+  cadena &= "<div style=\"width:900px;float:left\"><center><h1><strong>&nbsp;&nbsp;&nbsp;&nbsp;LISTADO MATERIAS PRIMAS PROVEEDOR: " & Proveedor & " </strong></h1></center></div>"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Codigo Materia Prima</th><th>Nombre Materia Prima</th></tr>"
+  
+  While MateriasPrimas.Available
+    Codigo_MateriaPrima = MateriasPrimas["M.codigomateriaprima"]
+    Nombre_MateriaPrima = MateriasPrimas["M.nombre"]
+  
+   cadena &= " <tr style=\"border:1px solid black;\"><td>" & Codigo_MateriaPrima & "</td><td>" & Nombre_MateriaPrima & "</td></tr>"
+    MateriasPrimas.MoveNext
+  Wend
+  cadena &= " </table></div>"
+  cadena &= "<br><br><br><br><br><br><br><br><br><br><br><br></body></html>"
+  File.Save(RutaListado & ".html", cadena)
+  Weblistado.Url = RutaListado & ".html"
+
+End
+
+Private Sub GenerarInformeVendedores()
+  
+  Dim Sql As String
+  Dim Cadena As String  
+  Dim Vendedor As Result
+  ' Datos del Vendedor
+  Dim Codigo_Vendedor As String
+  Dim Nombre_Vendedor As String
+  Dim Direccion_Vendedor As String
+  Dim Nif_Vendedor As String
+  Dim Localidad_Vendedor As String
+  Dim Provincia_Vendedor As String
+  NombreListado = "ListadoVendedores"
+  RutaListado = RutaListado & "/ListadoVendedores"
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
+  sql = "select * from vendedor"
+  Vendedor = FMain.Conexion_Base_Datos.Exec(Sql)
+  cadena = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/></head><body>"
+  cadena &= "<style> table td {text-align:center;}  </style>"
+  cadena &= "<div><img src=\"" & FMain.CarpetaCarnea & "/logo/logo.png\" style=\" width:900px;height:200px;\"> </div><br><br>" 
+  cadena &= "<div style=\"width:900px;float:left\"><center><h1><strong>&nbsp;&nbsp;&nbsp;&nbsp;LISTADO VENDEDORES </strong></h1></center></div>"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Codigo</th><th>Nombre</th><th>Nif</th><th>Direccion</th>"
+  cadena &= "<th>Localidad</th><th>Provincia</th></tr> "
+  While Vendedor.Available
+    Codigo_Vendedor = Vendedor["codigovendedor"]
+    Nombre_Vendedor = Vendedor["nombre"]
+    Direccion_Vendedor = Vendedor["direccion"]
+    Nif_Vendedor = Vendedor["nif"]
+    Localidad_Vendedor = Vendedor["localidad"]
+    Provincia_Vendedor = Vendedor["provincia"]
+    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Codigo_Vendedor & "</td><td>" & Nombre_Vendedor & "</td><td>" 
+    cadena &= Nif_Vendedor & "</td><td>" & Direccion_Vendedor & "</td><td>" & Localidad_Vendedor & "</td><td>" & Provincia_Vendedor & "</td></tr>"
+    Vendedor.MoveNext
+  Wend
+  cadena &= " </table></div>"
+  cadena &= "<br><br><br><br><br><br><br><br><br><br><br><br></body></html>"
+  File.Save(RutaListado & ".html", cadena)
+  Weblistado.Url = RutaListado & ".html"
+ 
+End
+
+Private Sub GenerarInformeVendedorCliente()
+  
+  Dim Sql As String
+  Dim Cadena As String  
+  Dim Clientes As Result
+  ' Datos Vendedor
+  Dim Vendedor As String
+  Dim Codigo_Cliente As String
+  Dim Nombre_Cliente As String
+  Dim Direccion_Cliente As String
+  Dim Nif_Cliente As String
+  Dim Localidad_Cliente As String
+  
+  NombreListado = "ListadoVendedorClientes"
+  RutaListado = RutaListado & "/ListadoVendedorClientes"
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
+  
+  Vendedor = Frm_Informes.Vendedor_Clientes
+  sql = "select * from clientes where vendedor='" & Vendedor & "'"
+  Clientes = FMain.Conexion_Base_Datos.Exec(Sql)
+  cadena = cadena = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/></head><body>"
+  cadena &= "<style> table td {text-align:center;}  </style>"
+
+  cadena &= "<div><img src=\"" & FMain.CarpetaCarnea & "/logo/logo.png\" style=\" width:900px;height:200px;\"> </div><br><br>" 
+  cadena &= "<div style=\"width:900px;float:left\"><center><h1><strong>&nbsp;&nbsp;&nbsp;&nbsp;LISTADO CLIENTES DEL VENDEDOR: " & Vendedor & " </strong></h1></center></div>"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Codigo</th><th>Nombre</th><th>Nif</th><th>Direccion</th>"
+  cadena &= "<th>Localidad</th></tr> "
+  While Clientes.Available
+    Codigo_Cliente = Clientes["codigocliente"]
+    Nombre_Cliente = Clientes["razonsocial"]
+    Direccion_Cliente = Clientes["direccion"]
+    Nif_Cliente = Clientes["nif"]
+    Localidad_Cliente = Clientes["localidad"]
+    
+    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Codigo_Cliente & "</td><td>" & Nombre_Cliente & "</td><td>" 
+    cadena &= Nif_Cliente & "</td><td>" & Direccion_Cliente & "</td><td>" & Localidad_Cliente & "</td></tr>"
+    
+    Clientes.MoveNext
+  Wend
+  cadena &= " </table></div>"
+  cadena &= "<br><br><br><br><br><br><br><br><br><br><br><br></body></html>"
+  File.Save(RutaListado & ".html", cadena)
+  Weblistado.Url = RutaListado & ".html"
+
+End
+
+Private Sub GenerarLote()
+  
+  Dim Tipo As String
+  Dim cadena As String
+  Dim Sql As String
+  Dim Linea_Detalles As Result
+  Dim Aux As String
+  ' Cabecera Lote
+  Dim Lote As String
+  Dim Fecha As String
+  Dim Coste As String
+  Dim Cantidad As String
+  Dim Merma As String
+  Dim Articulo_Codigo As String
+  Dim Articulo_Nombre As String
+  ' Linea Detalle Lote
+  Dim Linea_MateriaPrima As String
+  Dim Linea_Cantidad As String
+  Dim Linea_Coste As String
+  Dim Linea_Lotecompra As String
+  Dim Linea_Proveedor As String
+  Dim Linea_NfacturaCompra As String
+  Dim Linea_FechaFacturaCompra As String
+  
+  NombreListado = "ListadoLote"
+  RutaListado = RutaListado & "/ListadoLote"
+  Lote = Frm_Informes.Lote_Generar
+  Fecha = Utilidades.Obtener_Campo_Tabla("select fecha from lotes where codigolote='" & Lote & "'", "fecha")
+  Coste = Utilidades.Obtener_Campo_Tabla("select coste from lotes where codigolote='" & Lote & "'", "coste")
+  Cantidad = Utilidades.Obtener_Campo_Tabla("select cantidad from lotes where codigolote='" & Lote & "'", "cantidad")
+  Merma = Utilidades.Obtener_Campo_Tabla("select merma from lotes where codigolote='" & Lote & "'", "merma")
+  Articulo_Codigo = Utilidades.Obtener_Campo_Tabla("select articulo from lotes where codigolote='" & Lote & "'", "articulo")
+  Articulo_Nombre = Utilidades.Obtener_Campo_Tabla("select nombre from articulo where codigoarticulo='" & Articulo_Codigo & "'", "nombre")
+  cadena = cadena = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/></head><body>"
+  cadena &= "<style> table td {text-align:center;}  </style>"
+  cadena &= "<div><img src=\"" & FMain.CarpetaCarnea & "/logo/logo.png\" style=\" width:900px;height:200px;\"> </div><br><br>"
+  cadena &= "<div style=\"border:1px solid black; width:300px;float:left;\"><strong>&nbsp;&nbsp;&nbsp;&nbsp;LOTE <br>Lote Numero : </strong> " & Lote & "<br>"
+  cadena &= "<strong>Fecha :</strong> " & fecha & " <br>"
+  cadena &= "<strong>Coste :</strong> " & Coste & "<br>"
+  cadena &= "<strong>Cantidad : </strong> " & Cantidad & "<br>"
+  cadena &= "<strong>Merma :</strong> " & Merma & " <br>"
+  cadena &= "<strong>Articulo :</strong> " & Articulo_Nombre & "<br>"
+  
+  cadena &= " <br></div><br><br><br><br><br><br>"
+  cadena &= "<br><br><div style=\" width:500px;clear:both;margin-top:.5em;\">"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Materia Prima</th><th>Cantidad</th><th>Precio</th><th>Proveedor</th>"
+  cadena &= "<th>Lote Compra</th><th>Factura Compra</th><th>Fecha Compra</th></tr>"
+  sql = "select * from lotedetalle where codigolote='" & Lote & "'"
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
+  Linea_Detalles = FMain.Conexion_Base_Datos.Exec(Sql)
+  Linea_Detalles.MoveFirst
+  While Linea_Detalles.Available
+    aux = Linea_Detalles["materiaprima"]
+    Linea_MateriaPrima = Utilidades.Obtener_Campo_Tabla("select nombre from materiaprima where codigomateriaprima='" & aux & "'", "nombre")
+    Linea_Cantidad = Linea_Detalles["cantidad"]
+    Linea_Coste = Linea_Detalles["coste"]
+    Linea_Lotecompra = Linea_Detalles["numerolotecompra"]
+    aux = Linea_Detalles["proveedor"]
+    Linea_Proveedor = Utilidades.Obtener_Campo_Tabla("select razonsocial from proveedor where codigoproveedor='" & aux & "'", "razonsocial")
+    Linea_NfacturaCompra = Linea_Detalles["nfacturacompra"]
+    Linea_FechaFacturaCompra = Linea_Detalles["fechafacturacompra"]
+    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Linea_MateriaPrima & "</td><td>" & Linea_Cantidad & "</td><td>" & Linea_Coste & "</td><td>"
+    cadena &= Linea_Proveedor & "</td><td>" & Linea_Lotecompra & "</td><td>" & Linea_NfacturaCompra & "</td><td>" & Linea_FechaFacturaCompra & "</td></tr>"
+    Linea_Detalles.MoveNext
+  Wend
+
+  cadena &= " </table></div>"
+  cadena &= "<br><br><br><br><br><br><br><br><br><br><br><br></body></html>"
+  File.Save(RutaListado & ".html", cadena)
+  Weblistado.Url = RutaListado & ".html"
+  
+End

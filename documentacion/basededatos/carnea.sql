@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 22-11-2017 a las 11:00:28
+-- Tiempo de generación: 02-12-2017 a las 18:18:23
 -- Versión del servidor: 5.7.20-0ubuntu0.17.10.1
--- Versión de PHP: 7.1.8-1ubuntu1
+-- Versión de PHP: 7.1.11-0ubuntu0.17.10.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -47,7 +47,7 @@ CREATE TABLE `albaranes` (
   `formapago` varchar(20) DEFAULT NULL COMMENT 'Forma del pago del cliente',
   `vencimiento` varchar(10) DEFAULT NULL,
   `facturado` varchar(1) NOT NULL COMMENT 'Si se ha facturado',
-  `Total` float NOT NULL COMMENT 'Total del Albaran',
+  `total` float NOT NULL COMMENT 'Total del Albaran',
   `cliente` varchar(10) NOT NULL COMMENT 'Cliente de la factura',
   `vendedor` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -56,8 +56,11 @@ CREATE TABLE `albaranes` (
 -- Volcado de datos para la tabla `albaranes`
 --
 
-INSERT INTO `albaranes` (`numeroalbaran`, `fecha`, `hora`, `base`, `iva`, `recargo`, `importeiva`, `importerecargo`, `fechacobro`, `descuentopp`, `importedescuentopp`, `descuentoesp`, `importedescuentoesp`, `pagado`, `formapago`, `vencimiento`, `facturado`, `Total`, `cliente`, `vendedor`) VALUES
-('A170000001', '01/11/2017', '20:28:00', 100, 10, 0, 10, 0, '01/11/2017', 0, 0, 0, 0, 'N', 'CONTADO', '01/11/2017', 'N', 110, '0000000001', '0000000001');
+INSERT INTO `albaranes` (`numeroalbaran`, `fecha`, `hora`, `base`, `iva`, `recargo`, `importeiva`, `importerecargo`, `fechacobro`, `descuentopp`, `importedescuentopp`, `descuentoesp`, `importedescuentoesp`, `pagado`, `formapago`, `vencimiento`, `facturado`, `total`, `cliente`, `vendedor`) VALUES
+('A170000001', '01/11/2017', '20:28:00', 100, 10, 0, 10, 0, '01/11/2017', 0, 0, 0, 0, 'N', 'CONTADO', '01/11/2017', 'S', 110, '0000000001', '0000000001'),
+('A170000002', '29/11/2017', '09:32:00', 110, 10, 5, 10.45, 5.23, '29/11/2017', 5, 5.5, 0, 0, 'N', 'PAGARE', '13/01/2018', 'N', 120.17, '0000000002', '0000000002'),
+('A170000003', '29/11/2017', '09:33:00', 25, 10, 5, 2.38, 1.19, '29/11/2017', 5, 1.25, 0, 0, 'N', 'CONTADO', '29/11/2017', 'N', 27.31, '0000000002', '0000000002'),
+('A170000004', '29/11/2017', '10:43:00', 20, 10, 5, 1.9, 0.95, '29/11/2017', 5, 1, 0, 0, 'N', 'PAGARE', '13/01/2018', 'N', 21.85, '0000000002', '0000000002');
 
 -- --------------------------------------------------------
 
@@ -81,7 +84,13 @@ CREATE TABLE `albaranesdetalle` (
 --
 
 INSERT INTO `albaranesdetalle` (`numeroalbaran`, `linea`, `precio`, `peso`, `importe`, `lote`, `articulo`) VALUES
-('A170000001', 1, 10, 10, 100, '1', '001');
+('A170000001', 1, 10, 10, 100, '1', '001'),
+('A170000002', 1, 0.2, 10, 2, '1', '001'),
+('A170000002', 2, 10, 10, 100, '12', '002'),
+('A170000002', 3, 2, 4, 8, '1', '003'),
+('A170000003', 1, 1, 1, 1, '2', '003'),
+('A170000003', 2, 12, 2, 24, '123', '004'),
+('A170000004', 1, 1, 20, 20, '23', '007');
 
 -- --------------------------------------------------------
 
@@ -373,7 +382,7 @@ CREATE TABLE `facturas` (
   `formapago` varchar(20) DEFAULT NULL COMMENT 'Forma del pago del cliente',
   `vencimiento` varchar(10) DEFAULT NULL,
   `contabilizada` varchar(1) NOT NULL COMMENT 'Si se ha pasado a contablidad',
-  `Total` float NOT NULL COMMENT 'Total de la factura',
+  `total` float NOT NULL COMMENT 'Total de la factura',
   `cliente` varchar(10) NOT NULL COMMENT 'Cliente de la factura',
   `vendedor` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Facturas';
@@ -382,9 +391,10 @@ CREATE TABLE `facturas` (
 -- Volcado de datos para la tabla `facturas`
 --
 
-INSERT INTO `facturas` (`numerofactura`, `fecha`, `hora`, `base`, `iva`, `recargo`, `importeiva`, `importerecargo`, `fechacobro`, `descuentopp`, `importedescuentopp`, `descuentoesp`, `importedescuentoesp`, `cobrada`, `formapago`, `vencimiento`, `contabilizada`, `Total`, `cliente`, `vendedor`) VALUES
+INSERT INTO `facturas` (`numerofactura`, `fecha`, `hora`, `base`, `iva`, `recargo`, `importeiva`, `importerecargo`, `fechacobro`, `descuentopp`, `importedescuentopp`, `descuentoesp`, `importedescuentoesp`, `cobrada`, `formapago`, `vencimiento`, `contabilizada`, `total`, `cliente`, `vendedor`) VALUES
 ('F170000001', '01/11/2017', '20:22:00', 322.4, 10, 0, 32.24, 0, '01/11/2017', 0, 0, 0, 0, 'N', 'CONTADO', '01/11/2017', 'N', 354.64, '0000000001', '0000000001'),
-('F170000002', '01/11/2017', '20:27:00', 441, 10, 5, 41.9, 20.95, '01/11/2017', 5, 22.05, 0, 0, 'N', 'PAGARE', '16/12/2017', 'N', 481.79, '0000000002', '0000000002');
+('F170000002', '01/11/2017', '20:27:00', 441, 10, 5, 41.9, 20.95, '01/11/2017', 5, 22.05, 0, 0, 'N', 'PAGARE', '16/12/2017', 'N', 481.79, '0000000002', '0000000002'),
+('F170000003', '30/11/2017', '10:30:00', 100, 10, 0, 10, 0, '30/11/2017', 0, 0, 0, 0, 'N', 'CONTADO', '30/11/2017', 'N', 110, '0000000001', '0000000001');
 
 -- --------------------------------------------------------
 
@@ -410,7 +420,8 @@ CREATE TABLE `facturasdetalles` (
 INSERT INTO `facturasdetalles` (`numerofactura`, `linea`, `precio`, `peso`, `importe`, `lote`, `articulo`) VALUES
 ('F170000001', 1, 10, 10, 100, '1', '001'),
 ('F170000001', 1, 10, 10, 100, '1', '003'),
-('F170000002', 1, 20, 17.05, 341, '2', '004');
+('F170000002', 1, 20, 17.05, 341, '2', '004'),
+('F170000003', 1, 10, 10, 100, '1', '001');
 
 -- --------------------------------------------------------
 

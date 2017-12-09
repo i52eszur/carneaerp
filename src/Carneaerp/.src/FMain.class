@@ -8,6 +8,7 @@ Public Carpetaalbaranes As String = CarpetaCarnea & "/albaranes"
 Public CarpetaLogo As String = CarpetaCarnea & "/logo"
 Public CarpetaTrazabilidad As String = CarpetaCarnea & "/tazabilidad"
 Public CarpetaCopiasSeguridad As String = CarpetaCarnea & "/copiasseguridad"
+Public CarpetaListados As String = CarpetaCarnea & "/listados"
 Public DirConexion As String = User.home & "/.config/carnea/conexion"
 Public FicheroConexionBD As New Settings(DirConexion & "/conexion.conf")
 
@@ -54,6 +55,8 @@ Private Sub CrearDirectorios()
   If Not Exist(CarpetaLogo) Then Mkdir CarpetaLogo
   If Not Exist(CarpetaTrazabilidad) Then Mkdir CarpetaTrazabilidad
   If Not Exist(CarpetaCopiasSeguridad) Then Mkdir CarpetaCopiasSeguridad
+  If Not Exist(CarpetaListados) Then Mkdir CarpetaListados
+  
   Wait 0.5
   If Not Exist(CarpetaLogo & "/logo.png") Then Copy "./imagenes/imagenes/logo.png" To CarpetaLogo & "/logo.png"
 End

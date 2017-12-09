@@ -1,5 +1,11 @@
 ' Gambas class file
 
+Public Accion_Realizar As String
+Public Articulo_MateriaPrima As String
+Public Cliente_FacturaAlbaran As String
+Public Proveedor_MateriaPrima As String
+Public Vendedor_Clientes As String
+Public Lote_Generar As String
 
 Public Sub BtnSalirListados_Click()
 
@@ -10,10 +16,161 @@ End
 Public Sub Form_Open()
   
   Me.Title = "GENERACION DE INFORMES"
-  RdbGeneralArticulos.Value = True
+  Configurar_Objetos_Informmes()
+End
+
+''*************************** Funciones Articulos****************************
+''
+''**************************************************************************
+Public Sub RdbArticuloMateriaprima_Click()
+
+  cmbarticulos.Enabled = True
+
+End
+Public Sub RdbGeneralArticulos_Click()
+
+  cmbarticulos.Enabled = False
+
+End
+Public Sub BtnArticulosGenerar_Click()
+
+  If RdbGeneralArticulos.Value = True Then
+    GenerarListadoArticulos()
+  Else If RdbArticuloMateriaprima.Value = True
+    If cmbarticulos.Text = "" Then
+      Balloon("Debe elegir Articulo para ver su composicion.", cmbarticulos)
+      Else
+        Articulo_MateriaPrima = cmbarticulos.Text
+        GenerarListadoArticulosMateriaprima() 
+    Endif
+    
+  Endif
+End
+Public Sub Form_Close()
+
+  'Kill FMain.CarpetaListados & "/*.html" 
+  Dim nombrearchivo As String
+  For Each nombrearchivo In Dir(FMain.CarpetaListados, "*.*", GB.File).Sort()
+    Kill FMain.CarpetaListados & "/" & nombrearchivo
+   Next
+  
+End
+
+''*************************** Funciones Clientes****************************
+''
+''**************************************************************************
+
+Public Sub BtnClientesGenerar_Click()
+
+  If rdbClientes.value = True Then
+    GenerarListadoClientes()
+  Else If RdbClienteFacturas.Value = True
+    If cmbclientes.Text = "" Then
+      Balloon("Debe elegir Cliente para ver las Factuas/Albaranes.", cmbclientes)
+    Else
+      Cliente_FacturaAlbaran = cmbclientes.Text
+      GenerarListadoClientesFacturasAlbaranes()
+    Endif
+  Endif
+  
+
+End
+Public Sub RdbClienteFacturas_Click()
+
+  cmbclientes.Enabled = True
 
 End
 
+Public Sub RdbClientes_Click()
+
+  cmbclientes.Enabled = False
+
+End
+
+
+
+
+''*************************** Funciones Proveedores*************************
+''
+''**************************************************************************
+
+
+Public Sub BtnProveedorGenerar_Click()
+
+  If RdbProveedor.Value = True Then
+    GenerarListadoProveedores()
+  Else If RdbProveedorMateriaPrima.Value = True
+    If cmbproveedor.Text = "" Then
+      Balloon("Debe elegir Proveedor para ver Materias Primas.", cmbproveedor)
+    Else
+      Proveedor_MateriaPrima = cmbproveedor.Text
+      GenerarListadoProveedoresMateriaPrima()
+    Endif
+  Endif
+
+End
+
+
+Public Sub RdbProveedor_Click()
+
+  cmbproveedor.Enabled = False
+
+End
+
+Public Sub RdbProveedorMateriaPrima_Click()
+
+  cmbproveedor.Enabled = True 
+
+End
+
+
+''*************************** Funciones Vendedores**************************
+''
+''**************************************************************************
+
+Public Sub BtnVendedoresGenerar_Click()
+
+  If RdbVendedor.Value = True Then
+    GenerarListadoVendedores()
+  Else If RdbVendedorClientes.Value = True
+    If cmbvendedor.Text = "" Then
+      Balloon("Debe elegir Vendedor para ver Clientes", cmbvendedor)
+    Else
+      Vendedor_Clientes = cmbvendedor.Text
+      GenerarListadoVendedorClientes()
+    Endif
+  Endif
+
+End
+
+Public Sub RdbVendedor_Click()
+
+  cmbvendedor.Enabled = False
+
+End
+
+Public Sub RdbVendedorClientes_Click()
+
+  cmbvendedor.Enabled = True
+
+End
+
+''*************************** Funciones Lotes ******************************
+''
+''**************************************************************************
+
+Public Sub BtnLotesGenerar_Click()
+
+  If cmblote.text = "" Then
+    Balloon("Debe elgir Lote", cmblote)
+  Else If Not Utilidades.Comprobar_existe_dato("select * from lotes where codigolote='" & cmblote.Text & "'")
+    Balloon("Lote no existe", cmblote)
+  Else
+    Lote_Generar = UCase(cmblote.Text)
+    GenerarLote()
+  Endif
+
+End
 
 
 ''*************************** Funciones privadas****************************
@@ -44,3 +201,115 @@ Public Procedure activar(elform As Form)
     Endif
 
 End
+
+
+'' Configuracion de los objetos del formulario
+Private Sub Configurar_Objetos_Informmes()
+  
+  RdbGeneralArticulos.Value = True
+  rdbClientes.Value = True
+  RdbProveedor.Value = True
+  RdbVendedor.Value = True
+  Utilidades.Llenar_Combobox("select nombre from articulo", cmbarticulos, "nombre")
+  Utilidades.Llenar_Combobox("select razonsocial from clientes", cmbclientes, "razonsocial")
+  Utilidades.Llenar_Combobox("select razonsocial from proveedor", cmbproveedor, "razonsocial")
+  Utilidades.Llenar_Combobox("select nombre from vendedor", cmbvendedor, "nombre")
+  Utilidades.Llenar_Combobox("select codigolote from lotes", cmblote, "codigolote")
+  cmbclientes.Index = -1
+  cmbarticulos.Index = -1
+  cmbproveedor.Index = -1
+  cmbvendedor.Index = -1
+  cmblote.Index = -1
+  
+End
+
+  
+  '' Procedimiento para generar el listado de los articulos
+Private Sub GenerarListadoArticulos()
+  Dim Listado As Form
+  Accion_Realizar = "RdbGeneralArticulos"
+  listado = New Frm_Listado 
+  activar(listado)
+End
+
+'' Procedimiento para generar el listado de las materias primas de un articulo.
+Private Sub GenerarListadoArticulosMateriaprima()
+  
+  Dim Listado As Form
+  Accion_Realizar = "RdbArticuloMateriaprima"
+  listado = New Frm_Listado 
+  activar(listado)
+  
+End
+
+'' Procedimiento para generar el listado de los Clientes.
+Private Sub GenerarListadoClientes()
+  
+  Dim Listado As Form
+  Accion_Realizar = "rdbClientes"
+  listado = New Frm_Listado 
+  activar(listado)
+  
+End
+
+'' Procedimiento para generar el listado de las Facturas/Albaranes por Cliente.
+Private Sub GenerarListadoClientesFacturasAlbaranes()
+  
+  Dim Listado As Form
+  Accion_Realizar = "RdbClienteFacturas"
+  listado = New Frm_Listado 
+  activar(listado)
+  
+End
+
+'' Procedimiento para generar el Listado de Proveedores
+
+Private Sub GenerarListadoProveedores()
+  
+  Dim Listado As Form
+  Accion_Realizar = "RdbProveedor"
+  listado = New Frm_Listado 
+  activar(listado)
+  
+End
+'' Procedimiento para generar el Listado de las Materias Primas del Proveedor
+
+Private Sub GenerarListadoProveedoresMateriaPrima()
+  
+  Dim Listado As Form
+  Accion_Realizar = "RdbProveedorMateriaPrima"
+  listado = New Frm_Listado 
+  activar(listado)
+  
+End
+'' Procedimiento para generar el Listado de Vendedores
+Private Sub GenerarListadoVendedores()
+  
+  Dim Listado As Form
+  Accion_Realizar = "RdbVendedor"
+  listado = New Frm_Listado 
+  activar(listado)
+  
+End
+
+'' Procedimiento para generar el Listado de los Clientes del Vendedor
+Private Sub GenerarListadoVendedorClientes()
+  
+  Dim Listado As Form
+  Accion_Realizar = "RdbVendedorClientes"
+  listado = New Frm_Listado 
+  activar(listado)
+  
+End
+
+Private Sub GenerarLote()
+  
+  Dim Listado As Form
+  Accion_Realizar = "GenerarLote"
+  listado = New Frm_Listado 
+  activar(listado)
+  
+End
+
+
+

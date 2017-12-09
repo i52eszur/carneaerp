@@ -5,7 +5,7 @@
   Text = ("Articulos")
   { IconInformes IconPanel
     MoveScaled(4,4,63,37)
-    Count = 4
+    Count = 5
     Border = True
     Index = 0
     Text = ("Articulos")
@@ -19,19 +19,94 @@
       Font = Font["Bold,+1"]
       Text = ("GENERAR")
     }
-    { RdbClienteArticulos RadioButton
-      MoveScaled(1,6,24,4)
+    { RdbArticuloMateriaprima RadioButton
+      MoveScaled(1,6,26,4)
       Text = ("Articulos Materia Prima")
+    }
+    { CmbArticulos ComboBox
+      MoveScaled(11,15,27,4)
+      Enabled = False
+      ReadOnly = True
     }
     Index = 1
     Text = ("Clientes")
     Picture = Picture["imagenes/32x32/clientes.png"]
+    { BtnClientesGenerar Button
+      MoveScaled(1,30,16,4)
+      Font = Font["Bold,+1"]
+      Text = ("GENERAR")
+    }
+    { RdbClientes RadioButton
+      MoveScaled(1,2,24,4)
+      Text = ("Clientes")
+    }
+    { RdbClienteFacturas RadioButton
+      MoveScaled(1,6,31,4)
+      Text = ("Facturas/Albaranes de Cliente")
+    }
+    { CmbClientes ComboBox
+      MoveScaled(1,15,33,4)
+      Enabled = False
+      ReadOnly = True
+    }
     Index = 2
     Text = ("Proveedores")
     Picture = Picture["imagenes/32x32/proveedores.png"]
+    { RdbProveedor RadioButton
+      MoveScaled(1,2,24,4)
+      Text = ("Proveedores")
+    }
+    { RdbProveedorMateriaPrima RadioButton
+      MoveScaled(1,6,24,4)
+      Text = ("Materia Prima Proveedor")
+    }
+    { CmbProveedor ComboBox
+      MoveScaled(0,15,33,4)
+      Enabled = False
+      ReadOnly = True
+    }
+    { BtnProveedorGenerar Button
+      MoveScaled(1,30,16,4)
+      Font = Font["Bold,+1"]
+      Text = ("GENERAR")
+    }
     Index = 3
     Text = ("Vendedores")
     Picture = Picture["imagenes/32x32/vendedores.png"]
+    { RdbVendedorClientes RadioButton
+      MoveScaled(1,6,24,4)
+      Text = ("Clientes del Vendedor")
+    }
+    { RdbVendedor RadioButton
+      MoveScaled(1,2,24,4)
+      Text = ("Vendedores")
+    }
+    { BtnVendedoresGenerar Button
+      MoveScaled(1,30,16,4)
+      Font = Font["Bold,+1"]
+      Text = ("GENERAR")
+    }
+    { CmbVendedor ComboBox
+      MoveScaled(0,15,33,4)
+      Enabled = False
+      ReadOnly = True
+    }
+    Index = 4
+    Text = ("Lotes")
+    Picture = Picture["imagenes/32x32/lotes.png"]
+    { BtnLotesGenerar Button
+      MoveScaled(1,30,16,4)
+      Font = Font["Bold,+1"]
+      Text = ("GENERAR")
+    }
+    { LblLoteGenerar Label
+      MoveScaled(12,3,18,4)
+      Font = Font["Bold,+2"]
+      Text = ("Lote  a Generar")
+    }
+    { CmbLote ComboBox
+      MoveScaled(9,9,24,4)
+    }
     Index = 0
   }
   { BtnSalirListados Button
