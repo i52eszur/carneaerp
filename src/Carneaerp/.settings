@@ -5,9 +5,9 @@ Count=0
 Count=0
 
 [OpenFile]
-Active=10
+Active=16
 File[1]=".src/Utilidades/Utilidades.module:178.399"
-Count=10
+Count=16
 File[2]=".src/Utilidades/Frm_Informes.form"
 File[3]=".src/Utilidades/Frm_Informes.class:2.163"
 File[4]=".src/Utilidades/Frm_Listado.form"
@@ -17,6 +17,12 @@ File[7]=".src/Lotes/Frm_Visualiza_Lote.class:34.43"
 File[8]=".src/Lotes/Frm_ConsultaLotes.form"
 File[9]=".src/Lotes/Frm_ConsultaLotes.class:27.132"
 File[10]=".src/Facturacion/Frm_FacturacionAlbaranes.form"
+File[11]=".src/Utilidades/Frm_Utilidades.form"
+File[12]=".src/Utilidades/Frm_Utilidades.class:0.678"
+File[13]=".src/Facturacion/Frm_Mostrar_Factura.form"
+File[14]=".src/Facturacion/Frm_Mostrar_Factura.class:0.0"
+File[15]=".src/Almacen/Frm_Stock.form"
+File[16]=".src/Gestion/Frm_Proveedores.form"
 
 [Watches]
 Count=0

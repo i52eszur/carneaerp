@@ -5,7 +5,7 @@
   Icon = Picture["imagenes/32x32/proveedores.png"]
   { FrameProveedores Frame
     MoveScaled(1,1,148,99)
-    Text = ("Datos de Vendedores")
+    Text = ("Datos de Proveedores")
     { BtnSalirProveedores Button
       MoveScaled(123,87,16,5)
       Foreground = Color.Red
