@@ -4,10 +4,13 @@ Count=0
 [DebugWindow]
 Count=0
 
+[Executable]
+Path="Carneaerp.gambas"
+
 [OpenFile]
-Active=16
+Active=17
 File[1]=".src/Utilidades/Utilidades.module:178.399"
-Count=16
+Count=17
 File[2]=".src/Utilidades/Frm_Informes.form"
 File[3]=".src/Utilidades/Frm_Informes.class:2.163"
 File[4]=".src/Utilidades/Frm_Listado.form"
@@ -23,6 +26,7 @@ File[13]=".src/Facturacion/Frm_Mostrar_Factura.form"
 File[14]=".src/Facturacion/Frm_Mostrar_Factura.class:0.0"
 File[15]=".src/Almacen/Frm_Stock.form"
 File[16]=".src/Gestion/Frm_Proveedores.form"
+File[17]=".src/Gestion/Frm_Articulos.form"
 
 [Watches]
 Count=0
