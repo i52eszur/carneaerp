@@ -2,6 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,125,95)
+  Icon = Picture["imagenes/32x32/facturacion.png"]
   { WebView WebView
     MoveScaled(3,4,117,77)
   }

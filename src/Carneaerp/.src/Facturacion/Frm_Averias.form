@@ -2,6 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,128,68)
+  Icon = Picture["imagenes/32x32/averias.png"]
   { FrameAverias Frame
     MoveScaled(2,3,126,63)
     Background = Color.Background

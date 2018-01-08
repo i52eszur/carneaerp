@@ -2,6 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,122,81)
+  Icon = Picture["imagenes/32x32/informes.png"]
   { BtnGenerarPdf Button
     MoveScaled(5,2,21,5)
     Font = Font["Bold,+1"]

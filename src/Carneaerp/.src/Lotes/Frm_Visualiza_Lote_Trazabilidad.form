@@ -3,6 +3,7 @@
 { Form Form
   MoveScaled(0,0,118,86)
   Expand = True
+  Icon = Picture["imagenes/32x32/trazabilidad.png"]
   { BtnSalirTrazabilidad Button
     MoveScaled(29,2,16,5)
     Foreground = Color.Red

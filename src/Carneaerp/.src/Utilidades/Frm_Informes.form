@@ -3,6 +3,7 @@
 { Form Form
   MoveScaled(0,0,184,86)
   Text = ("Articulos")
+  Icon = Picture["imagenes/32x32/informes.png"]
   { IconInformes IconPanel
     MoveScaled(4,4,63,37)
     Count = 5

@@ -2,6 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,145,100)
+  Icon = Picture["imagenes/32x32/facturaralbaranes.png"]
   Resizable = False
   { FrameFacturarAlbaranes Frame
     MoveScaled(2,2,141,97)

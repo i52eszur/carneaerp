@@ -2,6 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,85,48)
+  Icon = Picture["imagenes/32x32/utilidades.png"]
   Arrangement = Arrange.Fill
   { FrameConexion Frame
     MoveScaled(4,4,74,38)

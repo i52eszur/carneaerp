@@ -2,6 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,118,86)
+  Icon = Picture["imagenes/32x32/lotes.png"]
   { BtnSalirLote Button
     MoveScaled(29,1,16,5)
     Foreground = Color.Red

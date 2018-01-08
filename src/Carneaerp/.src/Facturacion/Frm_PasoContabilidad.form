@@ -2,6 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,83,64)
+  Icon = Picture["imagenes/32x32/pasocontabilidad.png"]
   Resizable = False
   { BtnSalirPasoContabilidad Button
     MoveScaled(20,6,16,5)
