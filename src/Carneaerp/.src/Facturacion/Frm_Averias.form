@@ -111,7 +111,7 @@
     { BtnAgregarAveria Button
       MoveScaled(108,29,16,4)
       Font = Font["Bold,+1"]
-      Text = ("AGREGAR")
+      Text = ("CREAR")
     }
     { LblLote Label
       MoveScaled(103,5,7,4)

@@ -52,7 +52,7 @@ Public Sub BtnGenerar_Click()
   If CmbFacturaAlbaran.Text = "" Then
     Balloon.Error("Debe elegir una Factura a Generar.", CmbFacturaAlbaran)
   Else
-    Utilidades.Generar_Factura_Albaran(CmbFacturaAlbaran.Text)
+    Utilidades.Generar_Factura_Albaran(UCase(CmbFacturaAlbaran.Text))
   Endif
 
 End
@@ -124,7 +124,7 @@ Public Sub BtnInicioCabecera_Click()
         Llenar_DataGrid_Detalles(sql, "A")  
       Endif
   Endif
-
+CmbFacturaAlbaran.Text = GridCabeceras[Linea_Cabeceras, 0].Text
 End
 
 Public Sub BtnAnteriorCabecera_Click()
@@ -134,7 +134,7 @@ Public Sub BtnAnteriorCabecera_Click()
       GridCabeceras.Rows.Select(Linea_Cabeceras, 1)
      Else  
        GridCabeceras.Rows.UnSelectAll
-       Linea_Detalles = Linea_Detalles - 1
+       Linea_Cabeceras = Linea_Cabeceras - 1
        GridCabeceras.Rows.Select(Linea_Cabeceras, 1)
     Endif
     If RdbFacturas.Value = True Then
@@ -147,7 +147,7 @@ Public Sub BtnAnteriorCabecera_Click()
         Llenar_DataGrid_Detalles(sql, "A")  
       Endif
   Endif
-
+CmbFacturaAlbaran.Text = GridCabeceras[Linea_Cabeceras, 0].Text
 End
 
 Public Sub BtnSiguienteCabecera_Click()
@@ -164,13 +164,15 @@ Public Sub BtnSiguienteCabecera_Click()
         sql = "select L.numerofactura,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from facturasdetalles L left join articulo A on L.articulo=A.codigoarticulo" &
         " where L.numerofactura='" & GridCabeceras[Linea_Cabeceras, 0].Text & "'"
         Llenar_DataGrid_Detalles(sql, "F")  
+       
       Else
         sql = "select L.numeroalbaran,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from albaranesdetalle L left join articulo A on L.articulo=A.codigoarticulo" &
         " where L.numeroalbaran='" & GridCabeceras[Linea_Cabeceras, 0].Text & "'"
         Llenar_DataGrid_Detalles(sql, "A")  
+        
       Endif
   Endif
-
+ CmbFacturaAlbaran.Text = GridCabeceras[Linea_Cabeceras, 0].Text 
 End
 
 Public Sub BtnFinCabecera_Click()
@@ -189,7 +191,7 @@ Public Sub BtnFinCabecera_Click()
         Llenar_DataGrid_Detalles(sql, "A")  
       Endif
   Endif
-
+CmbFacturaAlbaran.Text = GridCabeceras[Linea_Cabeceras, 0].Text
 End
 
 ''***************************FIN CABECERAS *********************************
@@ -293,6 +295,20 @@ Public Sub ChkVendedor_Click()
   Else 
     PanelVendedor.Enabled = False
   Endif
+
+End
+
+
+
+Public Sub BtnFiltrar_Click()
+
+  
+
+End
+
+Public Sub BtnQuitarFiltro_Click()
+
+  
 
 End
 
@@ -576,6 +592,8 @@ Private Sub Llenar_DataGrid_Cabeceras(Sql As String, Tipo As String)
   GridCabeceras.Rows.Select(0, 1)
   
 End
+
+
 
 
 

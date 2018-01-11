@@ -1,3 +1,6 @@
+[Bookmarks]
+Frm_Visualizar_Factura_Albaran=[]
+
 [Breakpoints]
 Count=0
 
@@ -8,9 +11,19 @@ Count=0
 Path="Carneaerp.gambas"
 
 [OpenFile]
-Active=1
-File[1]=".src/Utilidades/Utilidades.module:178.399"
-Count=1
+Active=3
+File[1]=".src/Utilidades/Utilidades.module:37.346"
+Count=11
+File[2]=".src/Almacen/Frm_Compras.form"
+File[3]=".src/Almacen/Frm_Compras.class:2.171"
+File[4]=".src/Gestion/Frm_Articulos.form"
+File[5]=".src/Gestion/Frm_Proveedores.form"
+File[6]=".src/Facturacion/Frm_Facturacion.form"
+File[7]=".src/Facturacion/Frm_Visualizar_Factura_Albaran.form"
+File[8]=".src/Facturacion/Frm_Visualizar_Factura_Albaran.class:19.130"
+File[9]=".src/Facturacion/Frm_PasoContabilidad.form"
+File[10]=".src/Facturacion/Frm_PasoContabilidad.class:2.18"
+File[11]=".src/Facturacion/Frm_Averias.form"
 
 [Watches]
 Count=0
