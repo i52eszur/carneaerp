@@ -6,6 +6,8 @@ Public Cliente_FacturaAlbaran As String
 Public Proveedor_MateriaPrima As String
 Public Vendedor_Clientes As String
 Public Lote_Generar As String
+Public Cliente_Averia As String
+Public Articulo_Averia As String
 
 Public Sub BtnSalirListados_Click()
 
@@ -172,6 +174,54 @@ Public Sub BtnLotesGenerar_Click()
 
 End
 
+''*************************** Funciones Averias ****************************
+''
+''**************************************************************************
+
+
+Public Sub RdbTodasAverias_Click()
+
+  CmbClienteAveria.Enabled = False
+  CmbArticuloAveria.Enabled = False
+  cmbarticuloaveria.Index = -1
+  CmbClienteAveria.Index = -1
+End
+
+Public Sub RdbclienteAveria_Click()
+
+  CmbClienteAveria.Enabled = True
+  CmbArticuloAveria.Enabled = False
+  cmbarticuloaveria.Index = -1
+End
+
+Public Sub RdbArticuloAveria_Click()
+
+  CmbClienteAveria.Enabled = False
+  CmbArticuloAveria.Enabled = True
+  CmbClienteAveria.Index = -1
+End
+
+Public Sub BtnAveriasGenerar_Click()
+
+  If RdbTodasAverias.Value = True Then
+   GenerarListadoAveriasTodas()
+  Else If RdbclienteAveria.Value = True
+     If CmbClienteAveria.Text = "" Then
+       Balloon("Debe elegir Cliente para ver Averias", CmbClienteAveria)
+    Else
+      Cliente_Averia = CmbClienteAveria.Text
+      GenerarListadoAveriasClientes()
+    Endif
+  Else If RdbArticuloAveria.value = True
+     If CmbArticuloAveria.Text = "" Then
+       Balloon("Debe elegir Articulo para ver Averias", Cmbarticuloaveria)
+    Else
+      Articulo_Averia = cmbarticuloaveria.Text
+      GenerarListadoAveriasArticulos()
+    Endif
+  Endif
+
+End
 
 ''*************************** Funciones privadas****************************
 ''
@@ -205,21 +255,30 @@ End
 
 '' Configuracion de los objetos del formulario
 Private Sub Configurar_Objetos_Informmes()
-  
+  Dim sql As String
   RdbGeneralArticulos.Value = True
   rdbClientes.Value = True
   RdbProveedor.Value = True
   RdbVendedor.Value = True
+  RdbTodasAverias.Value = True
   Utilidades.Llenar_Combobox("select nombre from articulo", cmbarticulos, "nombre")
   Utilidades.Llenar_Combobox("select razonsocial from clientes", cmbclientes, "razonsocial")
   Utilidades.Llenar_Combobox("select razonsocial from proveedor", cmbproveedor, "razonsocial")
   Utilidades.Llenar_Combobox("select nombre from vendedor", cmbvendedor, "nombre")
   Utilidades.Llenar_Combobox("select codigolote from lotes", cmblote, "codigolote")
+   sql = "select distinct C.razonsocial,T.nombre,A.peso,A.lote,A.descripcion from averia A" &
+  " left join vendedor V on A.vendedor=V.codigovendedor left join clientes C on A.cliente=C.codigocliente left join " &
+  " articulo T on A.articulo=T.codigoarticulo"
+ ' Utilidades.Llenar_Combobox("select nombre from articulo", cmbarticuloaveria, "nombre")
+  Utilidades.Llenar_Combobox(sql, cmbarticuloaveria, "T.nombre")
+  Utilidades.Llenar_Combobox(sql, CmbClienteAveria, "C.razonsocial")
   cmbclientes.Index = -1
   cmbarticulos.Index = -1
   cmbproveedor.Index = -1
   cmbvendedor.Index = -1
   cmblote.Index = -1
+  cmbarticuloaveria.Index = -1
+  CmbClienteAveria.Index = -1
   
 End
 
@@ -301,7 +360,7 @@ Private Sub GenerarListadoVendedorClientes()
   activar(listado)
   
 End
-
+'' Procedimiento para generar El Lote
 Private Sub GenerarLote()
   
   Dim Listado As Form
@@ -311,5 +370,34 @@ Private Sub GenerarLote()
   
 End
 
+'' Procedimiento para generar el Listado de todas las Averias
 
+Private Sub GenerarListadoAveriasTodas()
+  
+  Dim Listado As Form
+  Accion_Realizar = "RdbTodasAverias"
+  listado = New Frm_Listado 
+  activar(listado)
+  
+End
+
+'' Procedimiento para generar el Listado de las Averias dado un Cliente
+Private Sub GenerarListadoAveriasClientes()
+  
+  Dim Listado As Form
+  Accion_Realizar = "RdbClientesAverias"
+  listado = New Frm_Listado 
+  activar(listado)
+  
+End
+
+'' Procedimiento para generar el Listado de las Averias dado un Articulo
+Private Sub GenerarListadoAveriasArticulos()
+  
+  Dim Listado As Form
+  Accion_Realizar = "RdbArticulosAverias"
+  listado = New Frm_Listado 
+  activar(listado)
+  
+End
 

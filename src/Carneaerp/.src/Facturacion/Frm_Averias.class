@@ -241,8 +241,8 @@ Public Sub Configurar_GridAveria()
   Gridaverias.Header = Gridaverias.Both
   GridAverias.Columns[0].Title = "Codigo"
   GridAverias.Columns[1].Title = "Fecha"
-  GridAverias.Columns[2].Title = "Cliente"
-  GridAverias.Columns[3].Title = "Vendedor"
+  GridAverias.Columns[2].Title = "Vendedor"
+  GridAverias.Columns[3].Title = "Cliente"
   GridAverias.Columns[4].Title = "Articulo"
   GridAverias.Columns[5].Title = "Lote"
   GridAverias.Columns[6].Title = "Peso"

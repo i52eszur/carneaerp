@@ -36,47 +36,57 @@
     }
     { TxtHost TextBox
       MoveScaled(13,14,24,4)
+      Visible = False
     }
     { LblPuertoConexion Label
       MoveScaled(4,19,22,4)
+      Visible = False
       Font = Font["+2,Bold"]
       Text = ("Puerto Conexion  : ")
     }
     { TxtPuerto TextBox
       MoveScaled(28,19,24,4)
+      Visible = False
     }
     { LblUsuario Label
       MoveScaled(4,25,13,4)
+      Visible = False
       Font = Font["Bold,+3"]
       Text = ("Usuario :")
     }
     { TxtUsuario TextBox
       MoveScaled(18,25,24,4)
+      Visible = False
     }
     { Lblpassword Label
       MoveScaled(4,31,16,4)
+      Visible = False
       Font = Font["Bold,+3"]
       Text = ("Contraseña : ")
     }
     { TxtPassword TextBox
       MoveScaled(22,31,24,4)
+      Visible = False
       Password = True
     }
     { LblBaseDatos Label
       MoveScaled(4,37,28,4)
+      Visible = False
       Font = Font["Bold,+3"]
       Text = ("Nombre Base Datos : ")
     }
     { TxtBaseDatos TextBox
       MoveScaled(33,37,24,4)
+      Visible = False
     }
     { LblHost Label
       MoveScaled(4,14,7,4)
+      Visible = False
       Font = Font["+2,Bold"]
       Text = ("Host : ")
     }
     { TextMensaje TextLabel
-      MoveScaled(60,21,40,15)
+      MoveScaled(57,20,40,15)
       Visible = False
       Font = Font["Bold,+1"]
       Alignment = Align.Center
@@ -106,6 +116,10 @@
     }
     { TxtFicheroRuta TextBox
       MoveScaled(77,49,34,4)
+    }
+    { PictureBox1 PictureBox
+      MoveScaled(4,16,49,26)
+      Picture = Picture["imagenes/imagenes/basedatos.png"]
     }
     Index = 1
     Text = ("RESTAURAR COPIA")

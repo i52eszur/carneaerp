@@ -14,15 +14,39 @@ Public Sub BtnSalirVisualizar_Click()
 End
 Public Sub BtnBorrar_Click()
 
+  Dim sql As String
+  Dim respuesta As Integer
   
+  If Comprobar_Campos() Then
+
+    If RdbFacturas.Value = True Then
+      Respuesta = Message.Delete("Desea Borrar Factura :<b> " & UCase(CmbFacturaAlbaran.Text) & "</b>", "Si", "No")
+    Else
+      Respuesta = Message.Delete("Desea Borrar Albaran :<b> " & UCase(CmbFacturaAlbaran.Text) & "</b>", "Si", "No")
+    Endif
+    If respuesta = 1 Then
+      ' Cabecera de Factura / Albaran
+      If RdbFacturas.Value = True Then
+        sql = "delete from facturas where numerofactura='" & UCase(CmbFacturaAlbaran.Text) & "'"
+        Utilidades.In_Act_Bor(Sql)
+     ' linea Detalles
+        sql = "delete from facturasdetalles where numerofactura='" & UCase(CmbFacturaAlbaran.Text) & "'"
+        Utilidades.In_Act_Bor(Sql)
+      Else
+         sql = "delete from albaranes where numeroalbaran='" & UCase(CmbFacturaAlbaran.Text) & "'"
+        Utilidades.In_Act_Bor(Sql)
+     ' linea Detalles
+        sql = "delete from albaranesdetalle where numeroalbaran='" & UCase(CmbFacturaAlbaran.Text) & "'"
+        Utilidades.In_Act_Bor(Sql)
+      Endif
+     Endif
+  Endif  
 
 End
 Public Sub BtnEditar_Click()
   
   Dim Sql As String
-  If CmbFacturaAlbaran.text = "" Then
-    Balloon.Error("Debe elegir Factura/Albaran para editar", CmbFacturaAlbaran)
-  Else
+  If Comprobar_Campos() Then
     Factura_Albaran_Editar = CmbFacturaAlbaran.Text
     Frm_Edicion_Factura_Albaranes.ShowModal()
     If RdbFacturas.Value = True Then
@@ -49,9 +73,7 @@ End
 
 Public Sub BtnGenerar_Click()
 
-  If CmbFacturaAlbaran.Text = "" Then
-    Balloon.Error("Debe elegir una Factura a Generar.", CmbFacturaAlbaran)
-  Else
+  If Comprobar_Campos() Then
     Utilidades.Generar_Factura_Albaran(UCase(CmbFacturaAlbaran.Text))
   Endif
 
@@ -194,6 +216,25 @@ Public Sub BtnFinCabecera_Click()
 CmbFacturaAlbaran.Text = GridCabeceras[Linea_Cabeceras, 0].Text
 End
 
+Public Sub GridCabeceras_Click()
+  Dim Numero_fila As Integer
+  Dim sql As String
+  If GridCabeceras.Rows.Selection.Count > 0 Then
+    Numero_fila = GridCabeceras.Rows.Selection[0]
+    CmbFacturaAlbaran.Text = GridCabeceras[Numero_fila, 0].Text
+    Linea_Cabeceras = Numero_fila
+     If RdbFacturas.Value = True Then
+        sql = "select L.numerofactura,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from facturasdetalles L left join articulo A on L.articulo=A.codigoarticulo" &
+        " where L.numerofactura='" & GridCabeceras[Linea_Cabeceras, 0].Text & "'"
+        Llenar_DataGrid_Detalles(sql, "F")  
+      Else
+        sql = "select L.numeroalbaran,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from albaranesdetalle L left join articulo A on L.articulo=A.codigoarticulo" &
+        " where L.numeroalbaran='" & GridCabeceras[Linea_Cabeceras, 0].Text & "'"
+        Llenar_DataGrid_Detalles(sql, "A")  
+      Endif
+  End If  
+End
+
 ''***************************FIN CABECERAS *********************************
 ''
 ''**************************************************************************
@@ -265,9 +306,9 @@ End
 ''***************************INICIO FILTROS ********************************
 ''
 ''**************************************************************************
-Public Sub ChkFechaCreacionLote_Click()
+Public Sub ChkFechaCreacion_Click()
 
-  If ChkFechaCreacionLote.Value = True Then
+  If ChkFechaCreacion.Value = True Then
     PanelFCreacion.Enabled = True
     DteFICreacion.Value = Date(Year(Now), Month(Now), Day(Now))
     DteFFCreacion.Value = Date(Year(Now), Month(Now), Day(Now))
@@ -302,13 +343,29 @@ End
 
 Public Sub BtnFiltrar_Click()
 
+   Dim Validar As Boolean
+  Validar = True
+  Uso_filtro = True
+  If ChkFechacreacion.value = False And Chkvendedor.Value = False And Chkcliente.value = False Then
+    validar = False
+    Balloon.Error("Debe elegir un filtro.", PanelFiltros)
+  Else If Chkcliente.value = True And Cmbfcliente.Text = ""
+    validar = False
+    Balloon.Error("Si activa el filtro de los Clientes debe seleccionar el Cliente para filtrar.", Cmbfcliente)
+  Else If Chkvendedor.value = True And Cmbfvendedor.Text = ""
+    validar = False
+    Balloon.Error("Si activa el filtro de los Vendedores debe seleccionar el Vendedor para filtrar.", Cmbfvendedor)
+  Endif
+  If validar Then
+    Ejecutar_Filtros()  
+  Endif
   
 
 End
 
 Public Sub BtnQuitarFiltro_Click()
 
-  
+  Quitar_Filtros()
 
 End
 
@@ -594,10 +651,139 @@ Private Sub Llenar_DataGrid_Cabeceras(Sql As String, Tipo As String)
 End
 
 
+'' Funcion para comprobar los Campos de Compras <br>
+''  Parametros:<br>
+''  Devuelve:<br>
+''    TRUE --> Si los valores son correctos.<br>
+''    FALSE --> valores erroneos.
+Private Function Comprobar_Campos() As Boolean
+  
+  Dim Validar As Boolean
+  Dim sql As String
+  Validar = True
+  If CmbFacturaAlbaran.text = "" Then
+    Balloon.Error("Debe elegir Factura/Albaran para editar", CmbFacturaAlbaran)
+    validar = False
+  Else If RdbFacturas.Value = True Then
+    Sql = "select * from facturas where numerofactura='" & UCase(CmbFacturaAlbaran.Text) & "'"
+    If Not Utilidades.Comprobar_existe_dato(Sql) Then 
+      Balloon.Error("El Numro de Factura no existe", CmbFacturaAlbaran)
+      Validar = False
+      CmbFacturaAlbaran.SetFocus  
+    Endif 
+  Else
+    Sql = "select * from albaranes where numeroalbaran='" & UCase(CmbFacturaAlbaran.Text) & "'"
+    If Not Utilidades.Comprobar_existe_dato(Sql) Then 
+      Balloon.Error("El Numro de Albaran no existe", CmbFacturaAlbaran)
+      Validar = False
+      CmbFacturaAlbaran.SetFocus  
+    Endif
+  Endif
+Return validar
+End 
 
 
 
+'' Para quitar los filtros
+Private Sub Quitar_Filtros()
+  Dim Sql As String
+  If RdbFacturas.Value = True Then
+     sql = "select F.numerofactura,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
+    ",F.descuentoesp,F.importedescuentoesp,F.cobrada,F.formapago,F.vencimiento,F.contabilizada,F.total,C.razonsocial,V.nombre from facturas F left join clientes C on" &
+    " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor order by F.numerofactura"
+    Llenar_DataGrid_Cabeceras(sql, "F")
+    sql = "select L.numerofactura,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from facturasdetalles L left join articulo A on L.articulo=A.codigoarticulo" &
+    " where L.numerofactura='" & GridCabeceras[0, 0].Text & "'"
+    Llenar_DataGrid_Detalles(sql, "F")  
+  Else
+    sql = "select F.numeroalbaran,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
+    ",F.descuentoesp,F.importedescuentoesp,F.pagado,F.formapago,F.vencimiento,F.facturado,F.total,C.razonsocial,V.nombre from albaranes F left join clientes C on" &
+    " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor order by F.numeroalbaran"
+    Llenar_DataGrid_Cabeceras(sql, "A")
+     sql = "select L.numeroalbaran,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from albaranesdetalle L left join articulo A on L.articulo=A.codigoarticulo" &
+    " where L.numeroalbaran='" & GridCabeceras[0, 0].Text & "'"
+    Llenar_DataGrid_Detalles(sql, "A")  
+  Endif
+  Linea_Cabeceras = 0
+  Linea_Detalles = 0
+  Cmbfcliente.Index = -1
+  Cmbfvendedor.Index = -1
+  ChkCliente.Value = False
+  ChkVendedor.Value = False
+  ChkFechaCreacion.Value = False
+End
 
+'' Ejecutamos los filtros cuando se han configurado Correctamente.
+Private Sub Ejecutar_Filtros()
+  Dim Filtrado As Integer
+  Dim Sql As String
+  filtrado = 0
+  If RdbFacturas.Value = True Then
+     sql = "select F.numerofactura,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
+    ",F.descuentoesp,F.importedescuentoesp,F.cobrada,F.formapago,F.vencimiento,F.contabilizada,F.total,C.razonsocial,V.nombre from facturas F left join clientes C on" &
+    " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor where " 
+  Else
+    sql = "select F.numeroalbaran,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
+    ",F.descuentoesp,F.importedescuentoesp,F.pagado,F.formapago,F.vencimiento,F.facturado,F.total,C.razonsocial,V.nombre from albaranes F left join clientes C on" &
+    " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor where " 
+  Endif
+  
+   ' Seleccion del filtro Fecha Creacion
+    If ChkFechaCreacion.value = True Then
+      If DteFICreacion.Value = DteFFCreacion.value Then
+        sql &= " F.fecha='" & utilidades.Fecha_Correcta(DteFICreacion.value) & "'"
+      Else
+        sql &= " F.fecha between '" & utilidades.Fecha_Correcta(DteFICreacion.value) & "' and '" & utilidades.Fecha_Correcta(DteFFCreacion.value) & "'"
+      Endif
+      filtrado = 1
+    Endif
+    ' Seleccion del filtro Cliente
+    If Chkcliente.value = True Then
+      If filtrado = 0 Then
+        sql &= " C.razonsocial='" & Cmbfcliente.text & "'"
+      Else
+        sql &= " and C.razonsocial='" & Cmbfcliente.text & "'"
+      Endif
+      filtrado = 1
+    Endif
+    ' Seleccion del filtro Vendedor
+    If Chkvendedor.value = True Then
+      If filtrado = 0 Then
+        sql &= " V.nombre='" & Cmbfvendedor.text & "'"
+      Else
+        sql &= " and V.nombre='" & Cmbfvendedor.text & "'"
+      Endif
+    Endif
 
+  If RdbFacturas.Value = True Then
+    sql &= " order by F.numerofactura"
+    Llenar_DataGrid_Cabeceras(sql, "F")
+    If GridCabeceras.Rows.Count > 0 Then
+      sql = "select L.numerofactura,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from facturasdetalles L left join articulo A on L.articulo=A.codigoarticulo" &
+      " where L.numerofactura='" & GridCabeceras[0, 0].Text & "'"
+      Llenar_DataGrid_Detalles(sql, "F")  
+      Linea_Cabeceras = 0
+      Linea_Detalles = 0
+    Else
+      If GridDetalles.Rows.Count > 0 Then
+        GridDetalles.Rows.Remove(0, GridDetalles.Rows.Count)  
+      Endif  
+    Endif
+  Else
+    sql &= " order by F.numeroalbaran"
+    Llenar_DataGrid_Cabeceras(sql, "A")
+      Print sql
+    If GridCabeceras.Rows.Count > 0 Then
+      sql = "select L.numeroalbaran,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from albaranesdetalle L left join articulo A on L.articulo=A.codigoarticulo" &
+      " where L.numeroalbaran='" & GridCabeceras[0, 0].Text & "'"
+      Llenar_DataGrid_Detalles(sql, "A")  
+      Linea_Cabeceras = 0
+      Linea_Detalles = 0
+      If GridDetalles.Rows.Count > 0 Then
+        GridDetalles.Rows.Remove(0, GridDetalles.Rows.Count)  
+      Endif  
+    Endif
+  Endif
 
+End
 

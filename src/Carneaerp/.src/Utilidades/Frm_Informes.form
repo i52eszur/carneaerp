@@ -6,7 +6,7 @@
   Icon = Picture["imagenes/32x32/informes.png"]
   { IconInformes IconPanel
     MoveScaled(4,4,63,37)
-    Count = 5
+    Count = 6
     Border = True
     Index = 0
     Text = ("Articulos")
@@ -107,6 +107,36 @@
     }
     { CmbLote ComboBox
       MoveScaled(9,9,24,4)
+    }
+    Index = 5
+    Text = ("Averias")
+    Picture = Picture["imagenes/32x32/averias.png"]
+    { BtnAveriasGenerar Button
+      MoveScaled(1,30,16,4)
+      Font = Font["Bold,+1"]
+      Text = ("GENERAR")
+    }
+    { RdbTodasAverias RadioButton
+      MoveScaled(1,3,16,4)
+      Text = ("Todas Averias")
+    }
+    { RdbclienteAveria RadioButton
+      MoveScaled(1,8,11,4)
+      Text = ("Cliente")
+    }
+    { CmbClienteAveria ComboBox
+      MoveScaled(13,7,24,4)
+      Enabled = False
+      ReadOnly = True
+    }
+    { RdbArticuloAveria RadioButton
+      MoveScaled(1,13,10,4)
+      Text = ("Articulo")
+    }
+    { CmbArticuloAveria ComboBox
+      MoveScaled(13,12,24,4)
+      Enabled = False
+      ReadOnly = True
     }
     Index = 0
   }

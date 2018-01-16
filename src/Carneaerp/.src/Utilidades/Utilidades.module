@@ -294,8 +294,10 @@ Public Sub Generar_Factura_Albaran(NumeroFactura As String)
   Dim Sql As String
   Dim Sql_Cabecera As String
   Dim Sql_Linea As String
+  Dim Sql_Familia As String
   Dim Cabecera As Result
   Dim Lineas As Result
+  Dim Familias As Result
   ' Variables Cabecera.
   Dim Domicilio As String
   Dim Poblacion As String
@@ -322,6 +324,8 @@ Public Sub Generar_Factura_Albaran(NumeroFactura As String)
   Dim Precio As String
   Dim Importe As String
   Dim Lote As String
+  Dim Articulo_Familia As String
+  Dim Recargo As String
   Dim Ruta_Generar_Factura_Albaran As String
   Tipo = Mid(NumeroFactura, 1, 1)
   If Tipo = "F" Then
@@ -340,7 +344,7 @@ Public Sub Generar_Factura_Albaran(NumeroFactura As String)
   
   FMain.Conexion_Base_Datos.Close
  ' If Not FMain.Conexion_Base_Datos.Opened Then
-    FMain.Conexion_Base_Datos.Open  
+  FMain.Conexion_Base_Datos.Open  
   'Endif
 
   Cabecera = FMain.Conexion_Base_Datos.Exec(Sql_Cabecera)
@@ -383,7 +387,9 @@ Public Sub Generar_Factura_Albaran(NumeroFactura As String)
   cadena &= "<strong>Provincia :</strong> " & provincia & " <br>"
   cadena &= "<strong>Nif :</strong> " & nif & " <br></div><br><br><br><br><br><br>"
   cadena &= "<br><br><div style=\" width:500px;clear:both;margin-top:.5em;\">"
-  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Concepto</th><th>Cantidad</th><th>Precio</th><th>Importe</th><th>Lote</th></tr>"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th style=\"border:1px solid black;\">Concepto</th><th  style=\"border:1px solid black;\">"
+  cadena &= "Cantidad</th><th style=\"border:1px solid black;\">Precio</th><th style=\"border:1px solid black;\">O.M.APA</th><th style=\"border:1px solid black;\">Importe</th>"
+  cadena &= "<th style=\"border:1px solid black;\">Lote</th></tr>"
   fMain.Conexion_Base_Datos.Close
   FMain.Conexion_Base_Datos.Open
   'If Not FMain.Conexion_Base_Datos.Opened Then
@@ -397,10 +403,33 @@ Public Sub Generar_Factura_Albaran(NumeroFactura As String)
     Cantidad = Lineas["L.peso"]
     Importe = Lineas["L.importe"]
     Lote = Lineas["L.lote"]
-    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Articulo & "</td><td>" & cantidad & "</td><td>" & Precio & "</td><td>" & Importe & "</td><td>" & lote & "</td></tr>"
+    sql = "select familia from articulo where nombre='" & Articulo & "'"
+    Print sql
+    Articulo_Familia = Utilidades.Obtener_Campo_Tabla(sql, "familia")
+    sql = "select recargo from familiaarticulo where nombrefamilia='" & Articulo_Familia & "'"
+  Print sql
+    recargo = Utilidades.Obtener_Campo_Tabla(sql, "recargo")
+    cadena &= " <tr style=\"border:1px solid black;\"><td  style=\"border:1px solid black;\">" & Articulo & "</td><td  style=\"border:1px solid black;\">" 
+    cadena &= cantidad & "</td><td style=\"border:1px solid black;\">" & Precio & "</td><td style=\"border:1px solid black;\">" & Recargo & "</td>"
+    cadena &= "<td style=\"border:1px solid black;\">" & Importe & "</td><td style=\"border:1px solid black;\">" & lote & "</td></tr>"
     lineas.MoveNext
   Wend
   cadena &= " </table></div><br><br><br><br><br><br><br><br><br><br>"
+  fMain.Conexion_Base_Datos.Close
+  FMain.Conexion_Base_Datos.Open
+  Sql_Familia = "select * from familiaarticulo"
+  Familias = FMain.Conexion_Base_Datos.Exec(Sql_Familia)
+  Familias.MoveFirst
+  cadena &= "<div style=\"border:1px solid black; width:400px;float:left;\">"
+  cadena &= "<strong> O.M.APA 21/02/06</strong> <br>"
+  While Familias.Available
+    
+    cadena &= Familias["nombrefamilia"] & " - " & Familias["recargo"] & " Euros/Kg.<br>"
+    Familias.MoveNext
+  Wend
+  
+  cadena &= "<strong>  Empresa Residuos </strong></div>"
+  
   cadena &= "<div style=\"border:1px solid black; width:300px;float:right;\">"
   cadena &= "Base Imponible :<strong> " & BaseImponible & "</strong> <br>"
   cadena &= "DTO. PP :<strong> " & DescuentoPP & "</strong>%<strong>&nbsp;&nbsp;&nbsp;" & ImporteDPP & "</strong><br>"

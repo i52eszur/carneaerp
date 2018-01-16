@@ -82,7 +82,7 @@
         Border = Border.Plain
         { VBox5 VBox
           MoveScaled(0,0,19,14)
-          { ChkFechaCreacionLote CheckBox
+          { ChkFechaCreacion CheckBox
             MoveScaled(1,1,18,3)
             AutoResize = True
             Text = ("Fecha Creacion")
@@ -92,7 +92,7 @@
             Text = ("Cliente")
           }
           { ChkVendedor CheckBox
-            MoveScaled(1,5,16,4)
+            MoveScaled(1,7,16,4)
             Text = ("Vendedor")
           }
         }

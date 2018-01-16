@@ -47,6 +47,15 @@ Public Sub Form_Open()
   Else If NombreListado = "GenerarLote"
     Me.Title = "LOTE " & Frm_Informes.Lote_Generar
     GenerarLote()
+  Else If NombreListado = "RdbTodasAverias"
+    Me.Title = "LISTADO DE TODAS LAS AVERIAS"
+    GenerarInformeTodasAverias()
+  Else If NombreListado = "RdbClientesAverias"
+    Me.title = "LISTADO AVERIAS DEL CLIENTE"
+    GenerarInformeClienteAverias()
+  Else If NombreListado = "RdbArticulosAverias"
+    Me.Title = "LISTADO AVERIAS DE ARTICULOS"
+    GenerarInfomreArticuloAverias()
   Endif 
   
 End
@@ -495,6 +504,144 @@ Private Sub GenerarLote()
     Linea_Detalles.MoveNext
   Wend
 
+  cadena &= " </table></div>"
+  cadena &= "<br><br><br><br><br><br><br><br><br><br><br><br></body></html>"
+  File.Save(RutaListado & ".html", cadena)
+  Weblistado.Url = RutaListado & ".html"
+  
+End
+
+Private Sub GenerarInformeTodasAverias()
+  
+  Dim Sql As String
+  Dim Cadena As String  
+  Dim Averia As Result
+  ' Datos de las Averias
+  Dim Codigo_Averia As String
+  Dim Fecha_Averia As String
+  Dim Articulo_Averia As String
+  Dim Cliente_Averia As String
+  Dim Lote_Averia As String
+  Dim Descripcion_Averia As String
+  NombreListado = "ListadoTodasAverias"
+  RutaListado = RutaListado & "/ListadoTodasAverias"
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
+    sql = "select A.codigoaveria,A.fecha,V.nombre,C.razonsocial,T.nombre,A.peso,A.lote,A.descripcion from averia A" &
+    " left join vendedor V on A.vendedor=V.codigovendedor left join clientes C on A.cliente=C.codigocliente left join " &
+    " articulo T on A.articulo=T.codigoarticulo"
+  Averia = FMain.Conexion_Base_Datos.Exec(Sql)
+  cadena = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/></head><body>"
+  cadena &= "<style> table td {text-align:center;}  </style>"
+  cadena &= "<div><img src=\"" & FMain.CarpetaCarnea & "/logo/logo.png\" style=\" width:900px;height:200px;\"> </div><br><br>" 
+  cadena &= "<div style=\"width:900px;float:left\"><center><h1><strong>&nbsp;&nbsp;&nbsp;&nbsp;LISTADO AVERIAS </strong></h1></center></div>"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Codigo</th><th>Fecha</th><th>Articulo</th><th>Cliente</th>"
+  cadena &= "<th>Lote</th><th>Descripcion</th></tr> "
+  While averia.Available
+    Codigo_Averia = Averia["A.codigoaveria"]
+    Fecha_Averia = Averia["A.fecha"]
+    Articulo_Averia = Averia["T.nombre"]
+    Cliente_Averia = Averia["C.razonsocial"]
+    Lote_Averia = Averia["A.lote"]
+    Descripcion_Averia = Averia["A.descripcion"]
+    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Codigo_Averia & "</td><td>" & Fecha_Averia & "</td><td>" 
+    cadena &= Articulo_Averia & "</td><td>" & Cliente_Averia & "</td><td>" & Lote_Averia & "</td><td>" & Descripcion_Averia & "</td></tr>"
+    averia.MoveNext
+  Wend
+  cadena &= " </table></div>"
+  cadena &= "<br><br><br><br><br><br><br><br><br><br><br><br></body></html>"
+  File.Save(RutaListado & ".html", cadena)
+  Weblistado.Url = RutaListado & ".html"
+  
+End
+Private Sub GenerarInformeClienteAverias()
+  
+  Dim Sql As String
+  Dim Cadena As String  
+  Dim Averia As Result
+  ' Datos de las Averias
+  Dim Codigo_Averia As String
+  Dim Fecha_Averia As String
+  Dim Articulo_Averia As String
+  Dim Cliente_Averia As String
+  Dim Lote_Averia As String
+  Dim Descripcion_Averia As String
+  Dim Peso_Averia As String
+  NombreListado = "ListadoClienteAverias"
+  RutaListado = RutaListado & "/ListadoClienteAverias"
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
+  Cliente_Averia = Frm_Informes.Cliente_Averia
+  sql = "select A.codigoaveria,A.fecha,V.nombre,C.razonsocial,T.nombre,A.peso,A.lote,A.descripcion from averia A" &
+  " left join vendedor V on A.vendedor=V.codigovendedor left join clientes C on A.cliente=C.codigocliente left join " &
+  " articulo T on A.articulo=T.codigoarticulo where C.razonsocial ='" & Cliente_Averia & "'"
+  Averia = FMain.Conexion_Base_Datos.Exec(Sql)
+  cadena = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/></head><body>"
+  cadena &= "<style> table td {text-align:center;}  </style>"
+  cadena &= "<div><img src=\"" & FMain.CarpetaCarnea & "/logo/logo.png\" style=\" width:900px;height:200px;\"> </div><br><br>" 
+  cadena &= "<div style=\"width:900px;float:left\"><center><h1><strong>&nbsp;&nbsp;&nbsp;&nbsp;LISTADO AVERIAS DEL CLIENTE : " & Cliente_Averia & " </strong></h1></center></div>"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Codigo</th><th>Fecha</th><th>Articulo</th><th>Peso</th>"
+  cadena &= "<th>Lote</th><th>Descripcion</th></tr> "
+  While averia.Available
+    Codigo_Averia = Averia["A.codigoaveria"]
+    Fecha_Averia = Averia["A.fecha"]
+    Articulo_Averia = Averia["T.nombre"]
+    Peso_Averia = Averia["A.peso"]
+    Lote_Averia = Averia["A.lote"]
+    Descripcion_Averia = Averia["A.descripcion"]
+    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Codigo_Averia & "</td><td>" & Fecha_Averia & "</td><td>" 
+    cadena &= Articulo_Averia & "</td><td>" & Peso_Averia & "</td><td>" & Lote_Averia & "</td><td>" & Descripcion_Averia & "</td></tr>"
+    averia.MoveNext
+  Wend
+  cadena &= " </table></div>"
+  cadena &= "<br><br><br><br><br><br><br><br><br><br><br><br></body></html>"
+  File.Save(RutaListado & ".html", cadena)
+  Weblistado.Url = RutaListado & ".html"
+  
+End
+
+Private Sub GenerarInfomreArticuloAverias()
+  
+  Dim Sql As String
+  Dim Cadena As String  
+  Dim Averia As Result
+  ' Datos de las Averias
+  Dim Codigo_Averia As String
+  Dim Fecha_Averia As String
+  Dim Articulo_Averia As String
+  Dim Cliente_Averia As String
+  Dim Lote_Averia As String
+  Dim Descripcion_Averia As String
+  Dim Peso_Averia As String
+  NombreListado = "ListadoArticuloAverias"
+  RutaListado = RutaListado & "/ListadoArticuloAverias"
+  If Not FMain.Conexion_Base_Datos.Opened Then
+    FMain.Conexion_Base_Datos.Open  
+  Endif
+  Articulo_Averia = Frm_Informes.Articulo_Averia
+    sql = "select A.codigoaveria,A.fecha,V.nombre,C.razonsocial,T.nombre,A.peso,A.lote,A.descripcion from averia A" &
+    " left join vendedor V on A.vendedor=V.codigovendedor left join clientes C on A.cliente=C.codigocliente left join " &
+    " articulo T on A.articulo=T.codigoarticulo where T.nombre ='" & Articulo_Averia & "'"
+  Averia = FMain.Conexion_Base_Datos.Exec(Sql)
+  cadena = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/></head><body>"
+  cadena &= "<style> table td {text-align:center;}  </style>"
+  cadena &= "<div><img src=\"" & FMain.CarpetaCarnea & "/logo/logo.png\" style=\" width:900px;height:200px;\"> </div><br><br>" 
+  cadena &= "<div style=\"width:900px;float:left\"><center><h1><strong>&nbsp;&nbsp;&nbsp;&nbsp;LISTADO AVERIAS DEL ARTICULO : " & Articulo_Averia & " </strong></h1></center></div>"
+  cadena &= " <table style=\"width:900px;border: 1px solid black;border-collapse: collapse;\"><tr><th>Codigo</th><th>Fecha</th><th>Cliente</th><th>Peso</th>"
+  cadena &= "<th>Lote</th><th>Descripcion</th></tr> "
+  While averia.Available
+    Codigo_Averia = Averia["A.codigoaveria"]
+    Fecha_Averia = Averia["A.fecha"]
+    Cliente_Averia = Averia["C.razonsocial"]
+    Peso_Averia = Averia["A.peso"]
+    Lote_Averia = Averia["A.lote"]
+    Descripcion_Averia = Averia["A.descripcion"]
+    cadena &= " <tr style=\"border:1px solid black;\"><td>" & Codigo_Averia & "</td><td>" & Fecha_Averia & "</td><td>" 
+    cadena &= Cliente_Averia & "</td><td>" & Peso_Averia & "</td><td>" & Lote_Averia & "</td><td>" & Descripcion_Averia & "</td></tr>"
+    averia.MoveNext
+  Wend
   cadena &= " </table></div>"
   cadena &= "<br><br><br><br><br><br><br><br><br><br><br><br></body></html>"
   File.Save(RutaListado & ".html", cadena)
