@@ -162,8 +162,12 @@ End
 
 
 Public Sub BtnEdicionFacturas_Click()
-
-  Frm_Visualizar_Factura_Albaran.ShowModal()
+   If Utilidades.Tabla_Vacia("select * from facturas") > 0 Or Utilidades.Tabla_Vacia("select * from albaranes") > 0 Then
+      Frm_Visualizar_Factura_Albaran.ShowModal()
+   Else
+     Message.Error("No hay Facturas y Albaranes para editar")
+   Endif
+ 
 
 End
 
@@ -676,7 +680,9 @@ Private Sub Limpiar_Datos_Factura()
   CmbCliente.Index = -1
   CmbVendedor.Index = -1
   CmbFormaPago.Index = -1
-  GridLineasDetalle.Rows.Remove(0, GridLineasDetalle.Rows.Count)
+  If GridLineasDetalle.Rows.Count > 0 Then
+    GridLineasDetalle.Rows.Remove(0, GridLineasDetalle.Rows.Count)
+  End If
 End
 
 

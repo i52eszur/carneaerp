@@ -32,14 +32,17 @@ Public Sub BtnBorrar_Click()
      ' linea Detalles
         sql = "delete from facturasdetalles where numerofactura='" & UCase(CmbFacturaAlbaran.Text) & "'"
         Utilidades.In_Act_Bor(Sql)
+        RdbFacturas_Click()
       Else
          sql = "delete from albaranes where numeroalbaran='" & UCase(CmbFacturaAlbaran.Text) & "'"
         Utilidades.In_Act_Bor(Sql)
      ' linea Detalles
         sql = "delete from albaranesdetalle where numeroalbaran='" & UCase(CmbFacturaAlbaran.Text) & "'"
         Utilidades.In_Act_Bor(Sql)
+        RdbAlbaranes_Click()
       Endif
      Endif
+    
   Endif  
 
 End
@@ -80,44 +83,63 @@ Public Sub BtnGenerar_Click()
 End
 Public Sub RdbFacturas_Click()
   Dim sql As String
-  LblNumero.text = "Nº Factura :"
-  FrameDetalles.Text = "Factura Detalle"
-  FrameFacturas.Text = "Facturas"
-  FrameFiltrar.Text = "Filtrar Facturas"
-  Utilidades.Llenar_Combobox("select * from facturas", CmbFacturaAlbaran, "numerofactura") 
-  CmbFacturaAlbaran.Text = ""
-  CmbFacturaAlbaran.Index = -1
-  Configurar_DataGrid_Cabeceras_Facturas()
-  sql = "select F.numerofactura,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
-  ",F.descuentoesp,F.importedescuentoesp,F.cobrada,F.formapago,F.vencimiento,F.contabilizada,F.total,C.razonsocial,V.nombre from facturas F left join clientes C on" &
-  " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor order by F.numerofactura"
-  Llenar_DataGrid_Cabeceras(sql, "F")
-  sql = "select L.numerofactura,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from facturasdetalles L left join articulo A on L.articulo=A.codigoarticulo" &
+  If Utilidades.Tabla_Vacia("select * from facturas") > 0 Then
+    LblNumero.text = "Nº Factura :"
+    FrameDetalles.Text = "Factura Detalle"
+    FrameFacturas.Text = "Facturas"
+    FrameFiltrar.Text = "Filtrar Facturas"
+    Utilidades.Llenar_Combobox("select * from facturas", CmbFacturaAlbaran, "numerofactura") 
+    CmbFacturaAlbaran.Text = ""
+    CmbFacturaAlbaran.Index = -1
+    Configurar_DataGrid_Cabeceras_Facturas()
+    sql = "select F.numerofactura,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
+    ",F.descuentoesp,F.importedescuentoesp,F.cobrada,F.formapago,F.vencimiento,F.contabilizada,F.total,C.razonsocial,V.nombre from facturas F left join clientes C on" &
+    " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor order by F.numerofactura"
+    Llenar_DataGrid_Cabeceras(sql, "F")
+    sql = "select L.numerofactura,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from facturasdetalles L left join articulo A on L.articulo=A.codigoarticulo" &
     " where L.numerofactura='" & GridCabeceras[0, 0].Text & "'"
-  Llenar_DataGrid_Detalles(sql, "F")  
+    Llenar_DataGrid_Detalles(sql, "F") 
+  Else
+    CmbFacturaAlbaran.Clear
+    If GridCabeceras.Rows.Count > 0 Then
+      GridCabeceras.Rows.Remove(0, GridCabeceras.Rows.Count)
+    End If
+    If GridDetalles.Rows.Count > 0 Then
+      GridDetalles.Rows.Remove(0, GridDetalles.Rows.Count)
+    End If
+  End If 
 End
 
 Public Sub RdbAlbaranes_Click()
   Dim sql As String
-  LblNumero.text = "Nº Albaran :"
-  FrameDetalles.Text = "Albaran Detalle"
-  FrameFacturas.Text = "Albaranes"
-  FrameFiltrar.Text = "Filtrar Albaranes"
-  Utilidades.Llenar_Combobox("select * from albaranes", CmbFacturaAlbaran, "numeroalbaran")  
-  CmbFacturaAlbaran.Text = ""
-  CmbFacturaAlbaran.Index = -1
-  Configurar_DataGrid_Cabeceras_Albaranes()
-  sql = "select F.numeroalbaran,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
-  ",F.descuentoesp,F.importedescuentoesp,F.pagado,F.formapago,F.vencimiento,F.facturado,F.total,C.razonsocial,V.nombre from albaranes F left join clientes C on" &
-  " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor order by F.numeroalbaran"
-  Llenar_DataGrid_Cabeceras(sql, "A")
-  sql = "select L.numeroalbaran,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from albaranesdetalle L left join articulo A on L.articulo=A.codigoarticulo" &
+  If Utilidades.Tabla_Vacia("select * from albaranes") > 0 Then
+    LblNumero.text = "Nº Albaran :"
+    FrameDetalles.Text = "Albaran Detalle"
+    FrameFacturas.Text = "Albaranes"
+    FrameFiltrar.Text = "Filtrar Albaranes"
+    Utilidades.Llenar_Combobox("select * from albaranes", CmbFacturaAlbaran, "numeroalbaran")  
+    CmbFacturaAlbaran.Text = ""
+    CmbFacturaAlbaran.Index = -1
+    Configurar_DataGrid_Cabeceras_Albaranes()
+    sql = "select F.numeroalbaran,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
+    ",F.descuentoesp,F.importedescuentoesp,F.pagado,F.formapago,F.vencimiento,F.facturado,F.total,C.razonsocial,V.nombre from albaranes F left join clientes C on" &
+    " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor order by F.numeroalbaran"
+    Llenar_DataGrid_Cabeceras(sql, "A")
+    sql = "select L.numeroalbaran,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from albaranesdetalle L left join articulo A on L.articulo=A.codigoarticulo" &
     " where L.numeroalbaran='" & GridCabeceras[0, 0].Text & "'"
-  Llenar_DataGrid_Detalles(sql, "A")  
+    Llenar_DataGrid_Detalles(sql, "A")  
+  Else
+    CmbFacturaAlbaran.Clear
+    If GridCabeceras.Rows.Count > 0 Then
+      GridCabeceras.Rows.Remove(0, GridCabeceras.Rows.Count)
+    End If
+      If GridDetalles.Rows.Count > 0 Then
+      GridDetalles.Rows.Remove(0, GridDetalles.Rows.Count)
+    End If
+  End If
 End
 
 Public Sub Form_Open()
-
   Me.Title = "VISUALIZACION DE FACTURAS/ALBARANES"
   Configurar_Objetos()
 End
@@ -396,15 +418,11 @@ Private Sub Configurar_Objetos()
   Actualiza_datos = False
   Linea_Cabeceras = 0
   Linea_Detalles = 0
-  RdbFacturas.Value = True
+  
   If Utilidades.Tabla_Vacia("select * from facturas") > 0 Then
-    sql = "select F.numerofactura,F.fecha,F.hora,F.base,F.iva,F.recargo,F.importeiva,F.importerecargo,F.fechacobro,F.descuentopp,F.importedescuentopp" &
-    ",F.descuentoesp,F.importedescuentoesp,F.cobrada,F.formapago,F.vencimiento,F.contabilizada,F.total,C.razonsocial,V.nombre from facturas F left join clientes C on" &
-    " F.cliente=C.codigocliente left join vendedor V on F.vendedor=V.codigovendedor order by F.numerofactura"
-    Llenar_DataGrid_Cabeceras(sql, "F")
-    sql = "select L.numerofactura,L.linea,L.precio,L.peso,L.importe,L.lote,A.nombre from facturasdetalles L left join articulo A on L.articulo=A.codigoarticulo" &
-    " where L.numerofactura='" & GridCabeceras[0, 0].Text & "'"
-    Llenar_DataGrid_Detalles(sql, "F")  
+    RdbFacturas.Value = True
+  Else If Utilidades.Tabla_Vacia("select * from albaranes") > 0
+    RdbAlbaranes.Value = True
   Endif
 End
 

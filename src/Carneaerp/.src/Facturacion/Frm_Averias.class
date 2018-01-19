@@ -47,13 +47,15 @@ Public Sub BtnBorrarAveria_Click()
   Dim Numero_fila As Integer
   Dim Respuesta As Integer
   Dim Texto As String
+  Dim Codigo_Averia As String
   If GridAverias.Rows.Selection.Count > 0 Then
     Numero_fila = GridAverias.Rows.Selection[0]
-    Texto = "Desea borrar la Averia : <b>" & GridAverias[Numero_fila, 0].Text & "</b> y Articulo: <b>" & GridAverias[Numero_fila, 4].Text & "</b>"
+    Codigo_Averia = GridAverias[Numero_fila, 0].Text
+    Texto = "Desea borrar la Averia : <b>" & Codigo_Averia & "</b> y Articulo: <b>" & GridAverias[Numero_fila, 4].Text & "</b>"
     Respuesta = Message.Delete(Texto, "Si", "No")
     'Respuesta = Message.Delete("Desea Borrar Averia : " & GridAverias.View[Numero_fila, 0].Text, "Si", "No")
     If respuesta = 1 Then
-      sql = "delete from averia where codigoaveria='" & GridAverias.View[Numero_fila, 0].Text & "'"
+      sql = "delete from averia where codigoaveria='" & Codigo_Averia & "'"
       Utilidades.In_Act_Bor(Sql)
       sql = "select A.codigoaveria,A.fecha,V.nombre,C.razonsocial,T.nombre,A.peso,A.lote,A.descripcion from averia A" &
       " left join vendedor V on A.vendedor=V.codigovendedor left join clientes C on A.cliente=C.codigocliente left join " &
@@ -90,6 +92,8 @@ Public Sub BtnEditarAveria_Click()
     txtDescripcion.Text = GridAverias[Numero_fila, 7].Text
     BtnEditarAveria.text = "ACTUALIZAR"
     TxtCodigoAveria.Enabled = False
+    BtnAgregarAveria.Enabled = False
+    BtnBorrarAveria.Enabled = False
   Else
     If Comprobar_Datos_Averia("EDITAR") Then
       Fecha_Averia = Utilidades.Fecha_Correcta(DteFecha.Value)
@@ -109,6 +113,8 @@ Public Sub BtnEditarAveria_Click()
       Llenar_DataGrid_Averias(sql)
       BtnEditarAveria.text = "EDITAR"
       TxtCodigoAveria.Enabled = True
+      BtnAgregarAveria.Enabled = True
+      BtnBorrarAveria.Enabled = True
       Borrar_Datos_Averias()
       Calculo_Numero_Averia()
     Endif 

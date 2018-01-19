@@ -350,17 +350,19 @@ Public Sub BtnModificarDM_Click()
     BtnBorrardm.Enabled = False
     TxtNombreDM.SetFocus
    Else
-    sql = "update dispositivomovil set nombre='" & UCase(TxtNombreDM.Text) & "',especificaciones='" & UCase(TxtEspecificacionesDM.text) & "' where codigodispositivomovil='" & UCase(TxtCodigoDM.Text) & "'"
-    Utilidades.In_Act_Bor(sql)    
-    LblModificarFormaPago.Text = "EDITAR"
-    TxtCodigoDM.Text = ""
-    TxtNombreDM.Text = ""
-    TxtEspecificacionesDM.Text = ""
-    TxtCodigoDM.Enabled = True
-    BtnAgregarDM.Enabled = True 
-    BtnBorrarDM.Enabled = True
-    TxtCodigoDM.SetFocus
-    Configurar_Dispositivo_Movil()
+    If Comprobar_Datos_Dispositivo_Movil("MODIFICAR") Then
+      sql = "update dispositivomovil set nombre='" & UCase(TxtNombreDM.Text) & "',especificaciones='" & UCase(TxtEspecificacionesDM.text) & "' where codigodispositivomovil='" & UCase(TxtCodigoDM.Text) & "'"
+      Utilidades.In_Act_Bor(sql)    
+      LblModificarFormaPago.Text = "EDITAR"
+      TxtCodigoDM.Text = ""
+      TxtNombreDM.Text = ""
+      TxtEspecificacionesDM.Text = ""
+      TxtCodigoDM.Enabled = True
+      BtnAgregarDM.Enabled = True 
+      BtnBorrarDM.Enabled = True
+      TxtCodigoDM.SetFocus
+      Configurar_Dispositivo_Movil()
+    Endif
   Endif
 
 End
@@ -382,6 +384,10 @@ Private Function Comprobar_Datos_Dispositivo_Movil(Accion As String) As Boolean
     Balloon.Error("Debe introducir un Codigo para el Dispositivo Movil.", TxtCodigoDM)
     Validar = False
     TxtCodigoDM.SetFocus
+  Else If TxtNombreDM.text = "" 
+    Balloon.Error("Debe introducir un Nombre para el Dispositivo Movil.", TxtNombreDM)
+    Validar = False
+    TxtNombreDM.SetFocus
   Endif
 
   If Accion = "AGREGAR" Then

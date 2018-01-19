@@ -249,6 +249,7 @@ Public Sub BtnEditarCompra_Click()
     BtnBorrarCompra.Enabled = False
     BtnAgregarCompra.Enabled = False
     FrameFiltrar.Enabled = False
+    GridCompras.Enabled = False
     BtnEditarCompra.text = "ACTUALIZAR"
   Else
     If Comprobar_Campos_Compras() Then
@@ -256,6 +257,7 @@ Public Sub BtnEditarCompra_Click()
       Fecha_Recepcion = utilidades.Fecha_Correcta(Aux)
       Aux = DteFFacturaCompra.Value
       Fecha_Factura_Compra = utilidades.Fecha_Correcta(Aux)
+      Codigo_Compra = GridCompras[Numero_fila, 0].Text
       If RdbHigieneAceptable.Value = True Then
         Higiene = "ACEPTABLE"
       Else
@@ -279,8 +281,9 @@ Public Sub BtnEditarCompra_Click()
       sql = "update compras set fecharecepcion='" & Fecha_Recepcion & "',fechafacturacompra='" & Fecha_Factura_Compra & "',cantidad=" & CFloat(VlbCantidad.Text) &
       ",lotecompra='" & UCase(TxtNLoteCompra.Text) & "',nfacturacompra='" & UCase(TxtNFacturaCompra.text) & "',higiene='" & higiene & "',carolep='" & carolep & "',precio=" & CFloat(VlbPrecio.Text) &
       ",firma='" & TxtFirma.Text & "',observaciones='" & TxtObservaciones.text & "',transporte=" & CInt(VlbTransporte.Text) & ",stock='" & Stock & "',proveedor='" &
-     Codigo_Proveedor & "',materiaprima='" & Codigo_Materia_Prima & "' where codigocompra=" & Codigo_Compra
-     utilidades.In_Act_Bor(sql)   
+      Codigo_Proveedor & "',materiaprima='" & Codigo_Materia_Prima & "' where codigocompra=" & Codigo_Compra
+      Print sql
+       utilidades.In_Act_Bor(sql)   
       ' Añadimos a Stock si hemos marcado Y no esta aun en stock
     sql = "select * from stock where materiaprima='" & Codigo_Materia_Prima & "' and proveedor='" & Codigo_Proveedor & "' and lotecompra='" &
     TxtNLoteCompra.Text & "' and nfacturacompra='" & TxtNFacturaCompra.text & "'"
@@ -321,6 +324,7 @@ Public Sub BtnEditarCompra_Click()
       BtnBorrarCompra.Enabled = True
       BtnAgregarCompra.Enabled = True
       FrameFiltrar.Enabled = True
+      GridCompras.Enabled = True
       Borrar_Campos_Compras()
       BtnEditarCompra.text = "EDITAR"
       TxtlerrorCompras.Visible = False

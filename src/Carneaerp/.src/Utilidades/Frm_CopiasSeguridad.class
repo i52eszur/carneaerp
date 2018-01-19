@@ -31,6 +31,8 @@ Public Sub BtnRealizaCopia_Click()
   Dim Comando As String
   Dim Opciones As String 
   Dim Conexion As New Connection
+  Dim validar As Boolean
+  validar = True
   'mysqldump -h localhost -P 3306 -u gambas -pgambas --databases carnea --add-drop-database --add-drop-table > /home/rescobar/carnea/copiasseguridad/carnea.sql
   Opciones = " --add-drop-database --add-drop-table"
   Copia_Mysql = DircopiaMysql.Value & "/" & Txtfichero.Text
@@ -42,30 +44,44 @@ Public Sub BtnRealizaCopia_Click()
   Conexion.User = TxtUsuario.Text
   Conexion.Password = TxtPassword.Text
   Conexion.Name = TxtBaseDatos.Text
-  Try Conexion.Open
-      Conexion.Close
-  If Error Then
-    Message.Error("Error en datos de conexion. Revise la configuracion.")
-  Else 
-    Shell Comando Wait
-      
-  Endif  
-  
-  'tar czfv carneaerp.tar.gz /home/rescobar/carneaerp
-  
-  comando = "tar czf " & dircopiatar.Value & "/" & Txtficheroruta.Text & " " & FMain.CarpetaCarnea
-  Shell Comando Wait
-  
-  
-  If (Not Exist(Copia_Mysql)) Or (Not Exist(dircopiatar.Value & "/" & Txtficheroruta.Text)) Then
-    textmensaje.Visible = True
-    textmensaje.Foreground = Color.Red
-    textmensaje.Text = "ERROR AL CREAR COPIA"
-  Else
-    textmensaje.Visible = True
-    textmensaje.Foreground = Color.Green
-    textmensaje.Text = "COPIA REALIZADA CON EXITO"
+  If DirCopiaMysql.Value = "" Then
+    Balloon.Error("Debe introducir Ruta para generar el fichero", DirCopiaMysql)
+    validar = False
+  Else If TxtFichero.Text = ""  
+    Balloon.Error("Debe introducir nombre de fichero", Txtfichero)
+    validar = False
+  Else If DirCopiatar.Value = ""
+    Balloon.Error("Debe introducir Ruta para generar el fichero", DirCopiatar)
+    validar = False
+  Else If TxtFicheroRuta.Text = ""
+    Balloon.Error("Debe introducir nombre de fichero", Txtficheroruta)
+    validar = False
+
   Endif
+  
+  If validar Then
+    Try Conexion.Open
+      Conexion.Close
+    If Error Then
+      Message.Error("Error en datos de conexion. Revise la configuracion.")
+    Else 
+      Shell Comando Wait
+    Endif  
+  'tar czfv carneaerp.tar.gz /home/rescobar/carneaerp
+    comando = "tar czf " & dircopiatar.Value & "/" & Txtficheroruta.Text & " " & FMain.CarpetaCarnea
+    Shell Comando Wait
+    If (Not Exist(Copia_Mysql)) Or (Not Exist(dircopiatar.Value & "/" & Txtficheroruta.Text)) Then
+      textmensaje.Visible = True
+      textmensaje.Foreground = Color.Red
+      textmensaje.Text = "ERROR AL CREAR COPIA"
+    Else
+      textmensaje.Visible = True
+      textmensaje.Foreground = Color.Green
+      textmensaje.Text = "COPIA REALIZADA CON EXITO"
+    Endif
+  End If
+  
+  
 End
 
 

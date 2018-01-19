@@ -291,8 +291,8 @@ Private Sub Configurar_Objetos_Stock()
     " From stock S, proveedor P,materiaprima M where S.proveedor=P.codigoproveedor and S.materiaprima=M.codigomateriaprima"
   Configurar_Grid_Stock()
   Llenar_Datagrid_Stock(sql)
-   DteFICompra.Value = Date(Year(Now), Month(Now), Day(Now))
-    DteFFCompra.Value = Date(Year(Now), Month(Now), Day(Now))
+  DteFICompra.Value = Date(Year(Now), Month(Now), Day(Now))
+  DteFFCompra.Value = Date(Year(Now), Month(Now), Day(Now))
   
   End
 

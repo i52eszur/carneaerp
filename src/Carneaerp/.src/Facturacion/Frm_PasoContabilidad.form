@@ -17,6 +17,7 @@
   }
   { TxtVenta TextBox
     MoveScaled(11,16,15,4)
+    Enabled = False
     Text = ("1234567")
     Alignment = Align.Center
     MaxLength = 7
@@ -28,6 +29,7 @@
   }
   { TxtIva TextBox
     MoveScaled(11,23,15,4)
+    Enabled = False
     Text = ("1234567")
     Alignment = Align.Center
     MaxLength = 7
@@ -39,6 +41,7 @@
   }
   { TxtIvaRe TextBox
     MoveScaled(22,29,15,4)
+    Enabled = False
     Text = ("1234567")
     Alignment = Align.Center
     MaxLength = 7
@@ -50,6 +53,7 @@
   }
   { TxtRecargoE TextBox
     MoveScaled(28,35,15,4)
+    Enabled = False
     Text = ("1234567")
     Alignment = Align.Center
     MaxLength = 7
@@ -61,6 +65,7 @@
   }
   { TxtCobro TextBox
     MoveScaled(11,41,15,4)
+    Enabled = False
     Text = ("1234567")
     Alignment = Align.Center
     MaxLength = 7

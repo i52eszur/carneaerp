@@ -1,5 +1,6 @@
 [Breakpoints]
-Count=0
+Count=1
+Breakpoint[1]="Frm_Facturacion.684"
 
 [DebugWindow]
 Count=0
@@ -8,15 +9,15 @@ Count=0
 Path="Carneaerp.gambas"
 
 [OpenFile]
-Active=1
-File[1]=".src/Utilidades/Utilidades.module:31.401"
+Active=7
+File[1]=".src/Utilidades/Utilidades.module:37.114"
 Count=7
-File[2]=".src/Facturacion/Frm_Visualizar_Factura_Albaran.form"
-File[3]=".src/Facturacion/Frm_Visualizar_Factura_Albaran.class:2.75"
-File[4]=".src/Utilidades/Frm_Informes.form"
-File[5]=".src/Utilidades/Frm_Informes.class:26.259"
-File[6]=".src/Utilidades/Frm_Listado.form"
-File[7]=".src/Utilidades/Frm_Listado.class:45.578"
+File[2]=".src/Almacen/Frm_Stock.form"
+File[3]=".src/Almacen/Frm_Stock.class:170.386"
+File[4]=".src/Lotes/Frm_Lotes.form"
+File[5]=".src/Lotes/Frm_Lotes.class:94.869"
+File[6]=".src/Utilidades/Frm_CopiasSeguridad.form"
+File[7]=".src/Utilidades/Frm_CopiasSeguridad.class:0.58"
 
 [Watches]
 Count=0

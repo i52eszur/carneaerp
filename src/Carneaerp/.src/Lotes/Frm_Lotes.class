@@ -867,9 +867,8 @@ Private Function Comprobar_Datos_Lotes(Accion As String) As Boolean
     Endif  
   Else If Accion = "GRABAR"
     If VlbCantidadFabricada.Value = "" Or VlbCantidadFabricada.Value = "0"
-      Balloon.Error("Introduzca cantidad fabricada", VlbCantidadFabricada)
+      Balloon.Error("No puede crear lote sin composicion de materias primas", GridLoteDetalle)
       Validar = False
-      VlbCantidadFabricada.SetFocus
     Else If VlbCosteLoteTotal.Value = "" Or VlbCosteLoteTotal.Value = "0"
       Balloon.Error("El coste del lote no puede ser 0, introduzca cantidad y pulse INTRO para calcular coste.", VlbCosteLoteTotal)
       Validar = False
