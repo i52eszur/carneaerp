@@ -81,7 +81,11 @@ Public Sub BtnAceptar_Click()
   Endif
   
   If validar Then
-    
+     fmain.Conexion_Base_Datos.Host = TxtHost.Text
+      fmain.Conexion_Base_Datos.Port = TxtPuerto.Text
+      fmain.Conexion_Base_Datos.User = TxtUsuario.Text
+      fmain.Conexion_Base_Datos.Password = TxtPassword.Text
+      fmain.Conexion_Base_Datos.Name = TxtBaseDatos.Text
     Try fmain.Conexion_Base_Datos.Open
       fmain.Conexion_Base_Datos.Close
     If Error Then
@@ -94,11 +98,7 @@ Public Sub BtnAceptar_Click()
       fmain.FicheroConexionBD["ConexionBD/Password"] = Utilidades.cripto(1, TxtPassword.text)
       fmain.FicheroConexionBD["ConexionBD/BaseDatos"] = TxtBaseDatos.text
       fmain.FicheroConexionBD.Save
-      fmain.Conexion_Base_Datos.Host = TxtHost.Text
-      fmain.Conexion_Base_Datos.Port = TxtPuerto.Text
-      fmain.Conexion_Base_Datos.User = TxtUsuario.Text
-      fmain.Conexion_Base_Datos.Password = TxtPassword.Text
-      fmain.Conexion_Base_Datos.Name = TxtBaseDatos.Text
+     
     Endif  
   Endif
 
