@@ -9,21 +9,9 @@ Count=0
 Path="Carneaerp.gambas"
 
 [OpenFile]
-Active=13
-File[1]=".src/Utilidades/Utilidades.module:37.114"
-Count=13
-File[2]=".src/Almacen/Frm_Stock.form"
-File[3]=".src/Almacen/Frm_Stock.class:170.386"
-File[4]=".src/Lotes/Frm_Lotes.form"
-File[5]=".src/Lotes/Frm_Lotes.class:94.869"
-File[6]=".src/Utilidades/Frm_CopiasSeguridad.form"
-File[7]=".src/Utilidades/Frm_CopiasSeguridad.class:0.58"
-File[8]=".src/FMain.form"
-File[9]=".src/FMain.class:2.23"
-File[10]=".src/Utilidades/Frm_Conexionbasedatos.form"
-File[11]=".src/Utilidades/Frm_Conexionbasedatos.class:0.88"
-File[12]=".src/Utilidades/Frm_Utilidades.form"
-File[13]=".src/Utilidades/Frm_Utilidades.class:56.87"
+Active=1
+File[1]=".src/FMain.form"
+Count=1
 
 [Watches]
 Count=0

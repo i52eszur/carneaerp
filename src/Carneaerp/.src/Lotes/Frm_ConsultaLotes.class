@@ -16,9 +16,6 @@ Public Sub BtnSalirStock_Click()
 End
 
 
-
-
-
 Public Sub BtnLDInicio_Click()
 
   If GridLoteDetalleConsulta.Rows.Count > 0 Then
@@ -129,7 +126,6 @@ End
 
 Public Sub BtnGenerarLote_Click()
 
-  Dim Sql As String
   If CmbLote.Text = "" Then
      Balloon.Error("Lote no existe.", CmbLote)
   Else If utilidades.Tabla_Vacia("select * from lotes where codigolote='" & UCase(CmbLote.Text) & "'") > 0
@@ -181,7 +177,6 @@ End
 
 '' Configuramos Cabeceras de DataGridLotes
 Private Sub Configurar_Datagrid_LotesDetalles()
-  Dim Sql As String
   GridLoteDetalleConsulta.Columns.Count = 9
   GridLoteDetalleConsulta.Header = GridLoteDetalleConsulta.Both
   GridLoteDetalleConsulta.Columns[0].Title = "Codigo"

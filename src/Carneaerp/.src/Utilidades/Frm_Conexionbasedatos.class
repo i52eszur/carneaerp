@@ -26,8 +26,6 @@ Public Sub BtnSalir_Click()
 End
 
 Public Sub BtnAceptar_Click()
-  Dim Cadena As String
-  Dim Fichero As File
   Dim Validar As Boolean = True
   Dim FicheroConexionBD As Settings
   FicheroConexionBD = New Settings(fmain.DirConexion & "/conexion.conf")

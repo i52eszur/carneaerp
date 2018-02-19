@@ -133,7 +133,6 @@ End
 ''
 ''**************************************************************************
 Private Sub Configurar_Cuentas_Contabilidad()
-  Dim Sql As String
   
   TxtVenta.Text = Utilidades.Obtener_Campo_Tabla("select * from cuentascontabilidad", "venta")
   TxtIva.Text = Utilidades.Obtener_Campo_Tabla("select * from cuentascontabilidad", "iva")

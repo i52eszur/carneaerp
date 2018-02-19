@@ -23,7 +23,6 @@ End
 
 Public Sub BtnVisualizar_Click()
  Dim Lote As Form
- Dim i As Integer
  If ComprobarLote() Then
     Factura_Albaran = cmblotes.Text
     lote = New Frm_Visualiza_Lote_Trazabilidad 
@@ -64,7 +63,7 @@ Public Procedure activar(elform As Form, lote As String)
     Endif
 
 End
-'' comprobamos que se ha
+'' comprobamos que se ha introducido un lote correcto
 Private Function ComprobarLote() As Boolean
   
   Dim Validar As Boolean

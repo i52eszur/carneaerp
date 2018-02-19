@@ -17,7 +17,6 @@ Public Sub Form_Close()
   Dim Numero_Lineas As Integer
   Dim i As Integer
   Dim Sql As String
-  Dim Texto As String
   Dim Detalle_Cantidad As String
   Dim Detalle_Coste As String
   Dim Detalle_Codigo_Materia_Prima As String
@@ -390,8 +389,6 @@ Public Sub BtnBorrarLineaLote_Click()
 
   Dim Sql As String
   Dim Numero_fila As Integer
-  Dim Respuesta As Integer
-  Dim Texto As String
   Dim Detalle_Cantidad As String
   Dim Detalle_Coste As String
   Dim Detalle_Codigo_Materia_Prima As String
@@ -464,8 +461,6 @@ End
 ''**************************************************************************
 Public Sub BtnAgregarLote_Click()
   Dim Sql As String
-  Dim Codigo_Articulo As String
-  
   If Comprobar_Datos_Lotes("NUEVO") Then
     If BtnAgregarLote.Text = "NUEVO" Then
       BtnAgregarLote.Text = "GRABAR"
@@ -663,8 +658,6 @@ End
 Private Sub Configurar_Objetos_Lotes()
   Dim Error_Tablas_Vacias As String
   Dim Error_V As Boolean
-  Dim Numero_Clientes As Integer
-  Dim Valor_Subcuenta_Iva As Integer
   Error_V = False
   Uso_Filtro = False
   If Utilidades.Tabla_Vacia("select * from articulo") = 0 Then

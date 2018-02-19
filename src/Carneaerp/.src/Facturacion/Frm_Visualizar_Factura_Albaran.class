@@ -403,7 +403,6 @@ End
 '' Procedimiento para configurar los objetos del Formulario.
 Private Sub Configurar_Objetos()
   
-  Dim Sql As String
   CmbFCliente.Clear
   Utilidades.Llenar_Combobox("select * from clientes", CmbFCliente, "razonsocial")  
   CmbFCliente.Index = -1

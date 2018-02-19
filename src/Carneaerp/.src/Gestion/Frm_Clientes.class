@@ -14,7 +14,6 @@ End
 Public Sub Configurar_Objetos_Clientes()
   Dim Error_Tablas_Vacias As String
   Dim Error_V As Boolean
-  Dim Numero_Clientes As Integer
   Dim Valor_Subcuenta_Iva As Integer
   Error_V = False
   
@@ -111,7 +110,6 @@ Public Sub BtnAgregarCliente_Click()
 
   Dim Sql As String
   Dim i As Integer
-  Dim Codigo_DM As String
   Dim Tiene_Iva As String
   Dim Tiene_re As String
   Dim Email As String
@@ -181,7 +179,6 @@ End
 Public Sub BtnEditarCliente_Click()
   Dim Sql As String
   Dim Numero_fila As Integer 
-  Dim Codigo_DM As String
   Dim Tiene_Iva As String
   Dim Tiene_re As String
   Dim Email As String

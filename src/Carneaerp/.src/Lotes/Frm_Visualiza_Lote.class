@@ -25,7 +25,6 @@ End
 
 Private Sub Generar_Lote()
   
-  Dim Tipo As String
   Dim cadena As String
   Dim Sql As String
   Dim Linea_Detalles As Result

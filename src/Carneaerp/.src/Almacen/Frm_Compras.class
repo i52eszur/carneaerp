@@ -782,8 +782,6 @@ End
 Private Sub Configurar_Objetos_Compras()
   Dim Error_Tablas_Vacias As String
   Dim Error_V As Boolean
-  Dim Numero_Clientes As Integer
-  Dim Valor_Subcuenta_Iva As Integer
   Error_V = False
   Linea_Compras = 0
   Uso_Filtro = False

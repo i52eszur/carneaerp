@@ -627,7 +627,6 @@ End
 Private Sub Eliminar_Materia_Prima_Listboxmp()
   Dim i As Integer
   Dim j As Integer
-  Dim Lista_Materia_Prima As New String[]
   Dim Contador_Listobox_MP As Integer
   Dim Contador_Listobox_Composicion As Integer
   Dim Salida As Integer

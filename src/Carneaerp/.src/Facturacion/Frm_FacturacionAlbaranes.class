@@ -78,11 +78,9 @@ Public Sub BtnBorrarAlbaran_Click()
 End
 Public Sub CmbCliente_Click()
 
-  Dim Sql As String
   Dim Codigo_Cliente As String
   Dim Iva As Integer
   Dim RE As Integer
-  Dim Dias As Integer
   If CmbCliente.Text = "" Then
   Else
     iva = Utilidades.Obtener_Campo_Tabla("select iva from tipoiva", "iva")
@@ -319,7 +317,7 @@ Private Sub Agregar_LineaAlbaran_LineaFactura(Albaran As String)
   Dim Numero_fila As Integer
   Dim Sql As String
   Dim NombreArticulo As String
-  Dim Linea As Integer
+  'Dim Linea As Integer
   ' Datos del Albaran
   Dim Albaran_Peso As Float
   Dim Albaran_Precio As Float

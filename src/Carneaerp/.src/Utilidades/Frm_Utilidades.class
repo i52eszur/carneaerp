@@ -41,8 +41,6 @@ End
 
 
 Public Sub BtnAceptar_Click()
-  Dim Cadena As String
-  Dim Fichero As File
   Dim Validar As Boolean = True
  
   If TxtHost.text = "" Then
@@ -486,8 +484,6 @@ Private Function Comprobar_Datos_Cuentas() As Boolean
 End
 
 Private Sub Configurar_Cuentas_Contabilidad()
-  Dim Sql As String
-  
   TxtVenta.Text = Utilidades.Obtener_Campo_Tabla("select * from cuentascontabilidad", "venta")
   TxtIva.Text = Utilidades.Obtener_Campo_Tabla("select * from cuentascontabilidad", "iva")
   TxtIvaRe.Text = Utilidades.Obtener_Campo_Tabla("select * from cuentascontabilidad", "ivare")

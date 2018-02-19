@@ -490,7 +490,6 @@ End
 Private Sub Visualizar_Datos_Factura_Albaran(sql As String)
   
   Dim Result_Trabajo As Result
-  Dim Numero_fila As Integer
   Dim Cobrada As String
   Dim Contabilizada As String
   Dim Dia As String

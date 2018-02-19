@@ -332,7 +332,6 @@ Configurar_DataSet_Proveedores()
 End
 '' Configuracion de los botones de Agregar, Borra y Modificar Comerciales
 Public Sub BtnAgregarComerdial_Click()
-  Dim Sql As String
   Dim Numero_fila As Integer
   If Comprobar_Campos_Comercial("AGREGAR") Then
     
@@ -351,7 +350,6 @@ End
 
 Public Sub BtnBorrarComercial_Click()
 
-  Dim Sql As String
   Dim Numero_fila As Integer
   Dim Respuesta As Integer
   If GridComerciales.Rows.Selection.Count > 0 Then
@@ -365,7 +363,6 @@ End
 
 Public Sub BtnModificarComercial_Click()
 
-  Dim Sql As String
   Dim Numero_fila As Integer
   
   If GridComerciales.Rows.Selection.Count > 0 Then
@@ -567,7 +564,6 @@ End
 Private Sub Eliminar_Materia_Prima_Listboxmp()
   Dim i As Integer
   Dim j As Integer
-  Dim Lista_Materia_Prima As New String[]
   Dim Contador_Listobox_MP As Integer
   Dim Contador_Listobox_Composicion As Integer
   Dim Salida As Integer
