@@ -1,9 +1,9 @@
 #!/bin/bash
 # -*- ENCODING: UTF-8 -*-
 
-echo "Comienza la desinstalacion del programa"
+echo "Comienza la Desinstalacion del programa."
 usuario=$(whoami)
 ruta="/home/"$usuario"/carnea"
-echo $ruta
-cd $ruta
+$(rm -rf $ruta)
+echo "Software Desinstalado."
 exit
