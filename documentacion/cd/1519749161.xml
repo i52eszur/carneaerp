@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding='UTF-8'?>
+<?xml-stylesheet href="hojaestilo.xsl" type="text/xsl"?>
+<proyecto>
+	<título>Solucion para la gestion de empresas carnicas basadas en Gnu/Linux y Software Libre</título>
+	<alumnos>
+		<alumno>
+			<tratamiento>Don</tratamiento>
+			<nombre>Rafael Ernesto</nombre>
+			<apellidos>Escobar Zurita</apellidos>
+			<titulación>Grado en Ingeniería Informática</titulación>
+			<plan>2011</plan>
+		</alumno>
+	</alumnos>
+	<directores>
+		<director>
+			<tratamiento>Prof. Don</tratamiento>
+			<nombre>Domingo</nombre>
+			<apellidos>Ortiz Boyer</apellidos>
+		</director>
+	</directores>
+	<convocatoria>
+		<mes>1</mes>
+		<año>2018</año>
+	</convocatoria>
+	<claves>
+		<clave>Gestion</clave>
+		<clave>Carnica</clave>
+		<clave>Linux</clave>
+		<clave>Software</clave>
+		<clave>Libre</clave>
+	</claves>
+	<resumen>Software para la gestion diaria de una empresa carnica, articulos, proveedores, lotes, trazabilidad, facturacion. Basada en Software Libre y Linux.</resumen>
+	<archivos>
+		<archivo>
+			<nombre>Manual_Tecnico.pdf</nombre>
+			<descripción>Documentación del proceso de diseño del TFG</descripción>
+		</archivo>
+		<archivo>
+			<nombre>Manual_Usuario.pdf</nombre>
+			<descripción>Manual de Usuario, descripción del funcionamiento del Software.</descripción>
+		</archivo>
+		<archivo>
+			<nombre>Manual_Codigo.pdf</nombre>
+			<descripción>Manual que contiene el código fuente del programa así como de la base de datos.</descripción>
+		</archivo>
+	</archivos>
+</proyecto>
