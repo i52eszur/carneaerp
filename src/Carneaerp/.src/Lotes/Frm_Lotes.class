@@ -853,7 +853,7 @@ Private Function Comprobar_Datos_Lotes(Accion As String) As Boolean
       Balloon.Error("Debe introducir una cantidad mayor que 0 ", VlbCLCantidad)
       Validar = False
       VlbCLCantidad.SetFocus
-    Else If Val(VlbCLcantidad.value) > Val(TxtLStockMateriaPrima.Text)
+    Else If CFloat(VlbCLcantidad.value) > CFloat(TxtLStockMateriaPrima.Text)
       Balloon.Error("La cantidad de Materia Prima es superior al Stock", VlbCLCantidad)
       Validar = False 
       VlbCLCantidad.SetFocus
@@ -913,10 +913,10 @@ Private Sub Calculo_Costes_Linea_Detalle()
   Codigo_Proveedor = Utilidades.Obtener_Campo_Tabla("select * from proveedor where razonsocial='" & TxtCLProveedor.Text & "'", "codigoproveedor")
   sql = "select * from stock where materiaprima='" & Codigo_MateriaPrima & "'and ffacturacompra='" & CmbCLFechaFactura.Text &
   "' and lotecompra='" & CmbCLNumeroLote.text & "' and proveedor='" & Codigo_Proveedor & "' and nfacturacompra='" & TxtCLNumeroFactura.text & "'"
-  TxtLStockMateriaPrima.Text = Format(Val(TxtLStockMateriaPrima.text) - Val(VlbCLCantidad.Value), "##0.00")
-  VlbCantidadBruta.Value = Format(Val(VlbCantidadBruta.value) + Val(VlbCLCantidad.Value), "##0.00")
-  TxtCLCoste.text = Format(Val(VlbCLCantidad.value) * Val(Utilidades.Obtener_Campo_Tabla(sql, "precio")), "##0.00")
-  VlbCosteLoteTotal.Value = Format(Val(VlbCosteLoteTotal.Value) + Val(TxtCLCoste.Text), "##0.00")
+  TxtLStockMateriaPrima.Text = Format(CFloat(TxtLStockMateriaPrima.text) - CFloat(VlbCLCantidad.Value), "##0.00")
+  VlbCantidadBruta.Value = Format(CFloat(VlbCantidadBruta.value) + CFloat(VlbCLCantidad.Value), "##0.00")
+  TxtCLCoste.text = Format(CFloat(VlbCLCantidad.value) * CFloat(Utilidades.Obtener_Campo_Tabla(sql, "precio")), "##0.00")
+  VlbCosteLoteTotal.Value = Format(CFloat(VlbCosteLoteTotal.Value) + CFloat(TxtCLCoste.Text), "##0.00")
   
 End
 
@@ -1072,23 +1072,5 @@ Private Sub Ejecutar_Filtros()
     Llenar_Datagrid_LoteDetalle(sql)
   Endif
 End
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

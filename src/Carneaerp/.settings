@@ -1,6 +1,5 @@
 [Breakpoints]
-Count=1
-Breakpoint[1]="Frm_Facturacion.684"
+Count=0
 
 [DebugWindow]
 Count=0
@@ -9,9 +8,12 @@ Count=0
 Path="Carneaerp.gambas"
 
 [OpenFile]
-Active=1
+Active=3
 File[1]=".src/FMain.form"
-Count=1
+Count=4
+File[2]=".src/Lotes/Frm_Lotes.form"
+File[3]=".src/Lotes/Frm_Lotes.class:2.366"
+File[4]=".src/Facturacion/Frm_Facturacion.class:0.684"
 
 [Watches]
 Count=0

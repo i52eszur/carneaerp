@@ -3,7 +3,7 @@
 Title=Carnea ERP
 Startup=FMain
 Icon=imagenes/imagenes/Logo.ico.png
-Version=1.0.2
+Version=1.0.4
 Component=gb.image
 Component=gb.qt4
 Component=gb.form
