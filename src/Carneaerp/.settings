@@ -8,12 +8,22 @@ Count=0
 Path="Carneaerp.gambas"
 
 [OpenFile]
-Active=3
+Active=13
 File[1]=".src/FMain.form"
-Count=4
+Count=14
 File[2]=".src/Lotes/Frm_Lotes.form"
 File[3]=".src/Lotes/Frm_Lotes.class:2.366"
-File[4]=".src/Facturacion/Frm_Facturacion.class:0.684"
+File[4]=".src/Facturacion/Frm_Facturacion.form"
+File[5]=".src/Facturacion/Frm_Facturacion.class:2.50"
+File[6]=".src/Utilidades/Utilidades.module:59.258"
+File[7]=".src/Lotes/Frm_Trazabilidad.form"
+File[8]=".src/Lotes/Frm_Trazabilidad.class:1.24"
+File[9]=".src/Lotes/Frm_Visualiza_Lote_Trazabilidad.form"
+File[10]=".src/Lotes/Frm_Visualiza_Lote_Trazabilidad.class:2.6"
+File[11]=".src/Lotes/Frm_Visualiza_Lote.form"
+File[12]=".src/Lotes/Frm_ConsultaLotes.form"
+File[13]=".src/Lotes/Frm_Visualiza_Lote.class:20.31"
+File[14]=".src/Lotes/Frm_ConsultaLotes.class:2.128"
 
 [Watches]
 Count=0

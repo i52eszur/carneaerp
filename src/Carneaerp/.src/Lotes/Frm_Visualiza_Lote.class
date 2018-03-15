@@ -18,9 +18,10 @@ End
 
 Public Sub BtnGenerarPdf_Click()
 
-    Exec ["wkhtmltopdf", FMain.CarpetaTrazabilidad & "/" & Lote_Actual & ".html", FMain.CarpetaTrazabilidad & "/" & Lote_Actual & ".pdf"] Wait
-  Exec ["evince", FMain.CarpetaTrazabilidad & "/" & Lote_Actual & ".pdf"]
-
+ ' Exec ["wkhtmltopdf", FMain.CarpetaTrazabilidad & "/" & Lote_Actual & ".html", FMain.CarpetaTrazabilidad & "/" & Lote_Actual & ".pdf"] Wait
+ ' Exec ["evince", FMain.CarpetaTrazabilidad & "/" & Lote_Actual & ".pdf"]
+   Exec ["wkhtmltopdf", FMain.CarpetaListados & "/" & "Lote.html", FMain.CarpetaListados & "/" & "Lote.pdf"] Wait
+   Exec ["evince", FMain.CarpetaListados & "/" & "Lote.pdf"]
 End
 
 Private Sub Generar_Lote()

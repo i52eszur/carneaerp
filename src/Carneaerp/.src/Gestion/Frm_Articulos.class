@@ -195,6 +195,23 @@ End
 '' *****************************************************************************************
 ''                INICIO CODIGO CONFIGURACION MATERIA PRIMA                                *
 '' *****************************************************************************************
+
+Private Sub calcula_codigo_MP()
+  Dim Numero As String
+  Dim Aux As Integer
+  Dim sql As String
+  
+   If Utilidades.Tabla_Vacia("select * from materiaprima") > 0 Then
+      numero = Utilidades.Valor_Maximo("select * from materiaprima order by 1", "codigomateriaprima")
+      aux = CInt(numero)
+      TxtCodigoMateriaPrima.Text = CStr(CInt(aux + 1))
+    Else
+      TxtCodigoMateriaPrima.Text = "001"
+    Endif
+  
+End
+
+
 '' Configuracion Tab Materia Prima y sus Objetos
 Private Sub Configurar_Tab_MateriaPrima()
   Dim Cabeceras As New String[]
@@ -207,6 +224,7 @@ Private Sub Configurar_Tab_MateriaPrima()
   DtbMateriaPrima.View.Columns[0].width = 100
   DtbMateriaPrima.View.Columns[1].width = 150
   LCDNumeroMP.Text = CStr(DtbMateriaPrima.View.Rows.Count)
+  calcula_codigo_MP()
   
 End
 
@@ -223,6 +241,7 @@ Public Sub BtnAgregarMP_Click()
    Configurar_Tab_Articulos("LISTBOX")
    DtsMateriaPrima.table = "materiaprima"  
    LCDNumeroMP.Text = CStr(DtbMateriaPrima.View.Rows.Count)
+   calcula_codigo_MP()
  Endif
 
 End
@@ -408,6 +427,27 @@ End
 '' *****************************************************************************************
 ''                INICIO CODIGO CONFIGURACION ARTICULOS                                    *
 '' *****************************************************************************************
+
+'' Calcula el siguiente codigo del articulo
+Private Sub calcula_codigo_Articulo()
+  Dim Numero As String
+  Dim Aux As Integer
+  Dim sql As String
+  
+   If Utilidades.Tabla_Vacia("select * from articulo") > 0 Then
+      numero = Utilidades.Valor_Maximo("select * from articulo order by 1", "codigoarticulo")
+      aux = CInt(numero)
+      TxtCodigoArticulo.Text = CStr(CInt(aux + 1))
+    Else
+      TxtCodigoArticulo.Text = "001"
+    Endif
+  
+End
+
+
+
+
+
 '' Configuramos Tab Articulos y sus objetos <br>
 '' Parametros:<br>
 ''    Accion:<br>
@@ -455,7 +495,7 @@ Private Sub Configurar_Tab_Articulos(Accion As String)
     DtbArticulos.View.Columns[1].width = 200
     DtbArticulos.View.Columns[2].width = 200
   Endif
-  
+  calcula_codigo_Articulo()
   
 End 
 
@@ -500,6 +540,7 @@ Public Sub BtnAgregarArticulo_Click()
       Configurar_Tab_Articulos("TODO")
       TxtCodigoArticulo.SetFocus
       Configurar_tab_Tarifa()
+      calcula_codigo_Articulo()
   Endif
 End
 
