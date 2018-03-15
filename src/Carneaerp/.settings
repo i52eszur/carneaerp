@@ -8,9 +8,9 @@ Count=0
 Path="Carneaerp.gambas"
 
 [OpenFile]
-Active=13
+Active=18
 File[1]=".src/FMain.form"
-Count=14
+Count=18
 File[2]=".src/Lotes/Frm_Lotes.form"
 File[3]=".src/Lotes/Frm_Lotes.class:2.366"
 File[4]=".src/Facturacion/Frm_Facturacion.form"
@@ -24,6 +24,10 @@ File[11]=".src/Lotes/Frm_Visualiza_Lote.form"
 File[12]=".src/Lotes/Frm_ConsultaLotes.form"
 File[13]=".src/Lotes/Frm_Visualiza_Lote.class:20.31"
 File[14]=".src/Lotes/Frm_ConsultaLotes.class:2.128"
+File[15]=".src/Facturacion/Frm_Edicion_Factura_Albaranes.form"
+File[16]=".src/Facturacion/Frm_Mostrar_Factura.form"
+File[17]=".src/Facturacion/Frm_Visualizar_Factura_Albaran.form"
+File[18]=".src/Facturacion/Frm_Visualizar_Factura_Albaran.class:2.16"
 
 [Watches]
 Count=0
